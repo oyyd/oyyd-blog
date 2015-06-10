@@ -1,17 +1,18 @@
 var gulp = require('gulp');
+var uglify = require('gulp-uglify');
 var webpack = require('webpack');
 var path = require('path');
 
-gulp.task("webpack", function(callback) {
+gulp.task('webpack', function(callback) {
   webpack({
-    entry: './es6/main.js',
+    entry: './src/client/entry.js',
     output: {
-        path: __dirname,
+        path: path.join(__dirname, 'dist/client'),
         filename: 'bundle.js'
     },
     module: {
         loaders: [
-            { test: path.join(__dirname, 'es6'),
+            { test: path.join(__dirname, 'src'),
               loader: 'babel-loader' }
         ]
     }
@@ -22,3 +23,11 @@ gulp.task("webpack", function(callback) {
     callback();
   });
 });
+
+gulp.task('minify', ['webpack'], function(){
+  return gulp.src(path.join(__dirname, 'dist/client/*.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('dist/client'));
+});
+
+gulp.task('build', ['webpack', 'minify']);
