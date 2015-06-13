@@ -19,8 +19,9 @@ gulp.task('pack', function(callback) {
   }, function(err, stats){
     if(err){
       console.log(err);
+    }else{
+      callback();      
     }
-    callback();
   });
 });
 
@@ -35,4 +36,3 @@ gulp.task('watch', function(){
 });
 
 gulp.task('build', ['webpack', 'minify']);
-
