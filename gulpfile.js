@@ -3,7 +3,7 @@ var uglify = require('gulp-uglify');
 var webpack = require('webpack');
 var path = require('path');
 
-gulp.task('webpack', function(callback) {
+gulp.task('pack', function(callback) {
   webpack({
     entry: './src/client/entry.js',
     output: {
@@ -24,10 +24,15 @@ gulp.task('webpack', function(callback) {
   });
 });
 
-gulp.task('minify', ['webpack'], function(){
+gulp.task('minify', ['pack'], function(){
   return gulp.src(path.join(__dirname, 'dist/client/*.js'))
     .pipe(uglify())
     .pipe(gulp.dest('dist/client'));
 });
 
+gulp.task('watch', function(){
+  var watcher = gulp.watch(path.join(__dirname, 'src/client/*.js'), ['pack']);
+});
+
 gulp.task('build', ['webpack', 'minify']);
+

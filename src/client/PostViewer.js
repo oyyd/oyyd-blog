@@ -3,17 +3,15 @@ var React = require('react');
 var marked = require('marked');
 
 var PostViewer = React.createClass({
-
-  render: function() {
+  render() {
     return (
       <Editor>###Hello world!</Editor>
     );
   }
-
 });
 
 var Editor = React.createClass({
-  render: function(){
+  render() {
     return(
       <div dangerouslySetInnerHTML={{__html: marked(this.props.children.toString())}} />
     );
