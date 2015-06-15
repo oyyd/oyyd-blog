@@ -1,5 +1,6 @@
 const React = require('react');
 const {RouteHandler} = require('react-router');
+const UI = require('../../ui/UI');
 
 var App = React.createClass({
   render: function() {
@@ -18,6 +19,7 @@ App.Header = React.createClass({
     return (
       <div>
         <h1>oyyd blog</h1>
+        <UI.FloatingActionButton />
       </div>
     )
   }
@@ -35,4 +37,5 @@ App.Footer = React.createClass({
     )
   }
 });
+
 module.exports = App;
