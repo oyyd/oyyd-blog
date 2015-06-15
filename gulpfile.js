@@ -1,20 +1,24 @@
-var gulp = require('gulp');
-var uglify = require('gulp-uglify');
-var webpack = require('webpack');
 var path = require('path');
+
+var gulp = require('gulp');
+var watch = require('gulp-watch');
+var uglify = require('gulp-uglify');
+var less = require('gulp-less');
+var minifyCSS = require('gulp-minify-css');
+var webpack = require('webpack');
 
 gulp.task('pack', function(callback) {
   webpack({
-    entry: './src/client/entry.js',
+    entry: './src/client/bootstrap.js',
     output: {
         path: path.join(__dirname, 'dist/client'),
         filename: 'bundle.js'
     },
     module: {
-        loaders: [
-            { test: path.join(__dirname, 'src'),
-              loader: 'babel-loader' }
-        ]
+      loaders: [{ 
+        test: path.join(__dirname, 'src'),
+        loader: 'babel-loader' 
+      }]
     }
   }, function(err, stats){
     if(err){
@@ -25,6 +29,13 @@ gulp.task('pack', function(callback) {
   });
 });
 
+gulp.task('pack-style', function(callback){
+  return gulp.src(path.join(__dirname, 'src/client/style.less'))
+    .pipe(less())
+    .pipe(minifyCSS())
+    .pipe(gulp.dest(path.join(__dirname, 'dist/client')));
+});
+
 gulp.task('minify', ['pack'], function(){
   return gulp.src(path.join(__dirname, 'dist/client/*.js'))
     .pipe(uglify())
@@ -32,7 +43,12 @@ gulp.task('minify', ['pack'], function(){
 });
 
 gulp.task('watch', function(){
-  var watcher = gulp.watch(path.join(__dirname, 'src/client/*.js'), ['pack']);
+  watch(path.join(__dirname, 'src/client/**/*.js'), function(){
+    gulp.run(['pack']);
+  });
+  watch(path.join(__dirname, 'src/client/**/*.less'), function(){
+    gulp.run(['pack-style']);
+  });
 });
 
 gulp.task('build', ['webpack', 'minify']);

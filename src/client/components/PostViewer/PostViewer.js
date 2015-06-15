@@ -1,4 +1,3 @@
-// import React from 'react';
 const React = require('react');
 const marked = require('marked');
 const hljs = require('highlight.js/lib/highlight.js');
@@ -8,8 +7,9 @@ hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascri
 var PostViewer = React.createClass({
   render() {
     let string = '#Hello world!\n'
-    + '```js\n'
-    + 'var a = function(a){alert(a)};'
+    + '```javascript\n'
+    + 'var a = function(a){alert(a)};\n'
+    + 'function b(abc){}' 
     + '```';
     return (
       <Editor >{string}</Editor>
@@ -18,8 +18,11 @@ var PostViewer = React.createClass({
 });
 
 var Editor = React.createClass({
-  componentDidUpdate(){
-    hljs.highlightBlock(React.findDOMNode(this));
+  componentDidMount(){
+    let codes = React.findDOMNode(this).querySelectorAll('code');
+    for (var i=0;i<codes.length;i++){
+      hljs.highlightBlock(codes[i]);
+    }
   },
   render() {
     return(
