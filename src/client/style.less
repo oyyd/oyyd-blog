@@ -2,11 +2,15 @@
 @import "/node_modules/highlight.js/styles/dark.css";
 @import "/node_modules/normalize.css/normalize.css";
 
-//UI
-@import "./ui/UI.less";
-
 // components
+@import "./components/UI/UI.less";
 @import "./components/App/App.less";
 @import "./components/ErrorPage/ErrorPage.less";
 @import "./components/PostViewer/PostViewer.less";
 @import "./components/PostsList/PostsList.less";
+
+// global
+body{
+  font-family: Helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif;
+  font-size: 14px;
+}

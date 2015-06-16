@@ -2,7 +2,7 @@
   "name": "blog",
   "version": "0.0.1",
   "description": "oyyd blog",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,16 +17,21 @@
     "gulp-uglify": "^1.2.0",
     "gulp-watch": "^4.2.4",
     "highlight.js": "^8.6.0",
+    "jquery": "^2.1.4",
     "less": "^2.5.1",
-    "material-ui": "^0.9.1",
+    "marked": "^0.3.3",
     "node-libs-browser": "^0.5.2",
     "normalize.css": "^3.0.3",
     "react": "^0.13.3",
     "react-router": "^0.13.3",
     "react-tap-event-plugin": "^0.1.7",
+    "sequelize": "^3.2.0",
     "webpack": "^1.9.10"
   },
   "dependencies": {
-    "marked": "^0.3.3"
+    "koa": "^0.21.0",
+    "koa-router": "^5.1.2",
+    "mysql": "^2.7.0",
+    "sequelize": "^3.2.0"
   }
 }

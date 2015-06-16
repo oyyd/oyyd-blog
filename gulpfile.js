@@ -19,7 +19,12 @@ gulp.task('pack', function(callback) {
         test: path.join(__dirname, 'src'),
         loader: 'babel-loader' 
       }]
-    }
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        $: 'jquery'
+      })
+    ]
   }, function(err, stats){
     if(err){
       console.log(err);

@@ -1,6 +1,5 @@
 const React = require('react');
 const {RouteHandler} = require('react-router');
-const UI = require('../../ui/UI');
 
 var App = React.createClass({
   render: function() {
@@ -18,8 +17,7 @@ App.Header = React.createClass({
   render(){
     return (
       <div>
-        <h1>oyyd blog</h1>
-        <UI.FloatingActionButton />
+        <h1>OYYD Blog</h1>
       </div>
     )
   }
