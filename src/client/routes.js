@@ -10,7 +10,9 @@ var routes = (
   <Route path="/" handler={App}>
     <DefaultRoute handler={PostsList}/>
     <NotFoundRoute handler={ErrorPage}/>
-    <Route path="post_viewer" handler={PostViewer}></Route>
+    <Route path="post/">
+      <Route path=":id" handler={PostViewer}></Route>
+    </Route>
   </Route>
 );
 

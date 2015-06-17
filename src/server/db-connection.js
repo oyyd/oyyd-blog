@@ -1,5 +1,5 @@
 var Sequelize = require('sequelize');
-var con = new Sequelize('test', 'root', '107room', {
+var con = new Sequelize('blog', 'root', '107room', {
   host: 'localhost',
   dialect: 'mysql',
   pool: {

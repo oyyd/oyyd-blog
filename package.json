@@ -4,7 +4,7 @@
   "description": "oyyd blog",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --harmony src/server/app.js"
   },
   "author": "oyyd",
   "license": "MIT",
