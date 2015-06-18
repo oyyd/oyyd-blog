@@ -1,7 +1,8 @@
 var Sequelize = require('sequelize');
 var con = require('../db-connection');
 
-var WordpressPost = con.define('wp_posts',{
+var wordpressPost = {};
+wordpressPost.db = con.define('wp_posts',{
   id:{
     type: Sequelize.BIGINT(20),
     field: 'ID'
@@ -17,10 +18,18 @@ var WordpressPost = con.define('wp_posts',{
   postTitle:{
     type: Sequelize.TEXT,
     field: 'post_title'
+  },
+  postType:{
+    type: Sequelize.STRING(20),
+    field: 'post_type'
   }
 }, {
   freezeTableName: true,
   timestamps: false
 });
 
-module.exports = WordpressPost;
+wordpressPost.isPost = function(post){
+  return (post.postType === 'post');
+};
+
+module.exports = wordpressPost;
