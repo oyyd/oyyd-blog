@@ -4,7 +4,7 @@ var $ = require('jquery');
 var PostsList = React.createClass({
   render: function() {
     return (
-      <div>
+      <div className="blog-PostList">
         <PostLink linkRef="http://www.baidu.com" linkTitle="baidu" />
         <PostLink linkRef="http://bilibili.com" linkTitle="bilibili" />
       </div>
@@ -15,20 +15,31 @@ var PostsList = React.createClass({
 var PostLink = React.createClass({
   render: function(){
     return(
-      <a href={this.props.linkRef}>{this.props.linkTitle}</a>
+      <a href={this.props.linkRef} className="blog-PostLink">{this.props.linkTitle}</a>
     );
   }
 });
 
-var PostsList.OldPosts = React.createClass({
-  getDefaultProps(){
-    $.post('/old_blog/post/title').done(function(){
-
-    });
+PostsList.Wordpress = React.createClass({
+  getInitialState(){
+    return {
+      list: []
+    };
+  },
+  componentDidMount(){
+    $.get('/wordpress/post/title').done(function(data){
+      this.setState({
+        list: data
+      });
+    }.bind(this));
   },
   render(){
     return (
-      <div></div>
+      <div className="blog-PostList">
+        {this.state.list.map(function(item){
+          return <PostLink key={item.id} linkRef={"/#/post/wordpress/" + item.id} linkTitle={item.title}></PostLink>
+        })}
+      </div>
     );
   }
 });

@@ -3,13 +3,14 @@ var koa = require('koa');
 var router = require('koa-router')();
 var app = koa();
 
-var wordpressPost = require('./model/wordpressPost');
+var staticMiddleware = require('./static');
+var wordpressPost = require('./model/wordpress_post');
 
-router.get('/', function*(next){
-  this.body = 'Hello World';
-});
+// static file
+app.use(staticMiddleware);
 
-router.get('/old_blog/post/title', function*(next){
+// routes
+router.get('/wordpress/post/title', function*(next){
   var that = this;
 
   yield function(cb){
@@ -18,7 +19,10 @@ router.get('/old_blog/post/title', function*(next){
       for(var i = 0; i < posts.length; i++){
         var post = posts[i].dataValues;
         if(wordpressPost.isPost(post)){
-          titles.push(post.postTitle)          
+          titles.push({
+            'title': post.postTitle,
+            'id': post.id
+          });
         }
       }
       that.body = titles;
@@ -27,7 +31,7 @@ router.get('/old_blog/post/title', function*(next){
   };
 });
 
-router.get('/old_blog/post/:id', function*(next){
+router.get('/wordpress/post/:id', function*(next){
   var that = this;
 
   yield function(cb){
@@ -37,7 +41,11 @@ router.get('/old_blog/post/:id', function*(next){
         postType: 'post'
       }
     }).then(function(post){
-      that.body = (!!post)?post.dataValues:{};
+      if(post){
+        that.body = post.dataValues; 
+      }else{
+        that.body = null;
+      }
       cb();
     });
   };
@@ -50,6 +58,7 @@ router.post('/post', function*(next){
 app.use(router.routes())
   .use(router.allowedMethods());
 
+// listen
 app.listen(8000);
 
-console.log('port 8000!');
+console.log('Listen on port 8000');

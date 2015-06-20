@@ -1,4 +1,5 @@
 var path = require('path');
+var fs = require('fs');
 
 var gulp = require('gulp');
 var watch = require('gulp-watch');
@@ -19,17 +20,13 @@ gulp.task('pack', function(callback) {
         test: path.join(__dirname, 'src'),
         loader: 'babel-loader' 
       }]
-    }
-    // plugins: [
-    //   new webpack.ProvidePlugin({
-    //     $: 'jquery'
-    //   })
-    // ]
+    },
+    bail: true
   }, function(err, stats){
     if(err){
       console.log(err);
     }else{
-      callback();      
+      callback();
     }
   });
 });

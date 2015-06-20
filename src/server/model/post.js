@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize');
 var con = require('../db-connection');
 
-var Post = con.define('post', {
+var post.db = con.define('post', {
   title:{
     type: Sequelize.STRING
   },
@@ -15,4 +15,4 @@ var Post = con.define('post', {
   freezeTableName: true
 });
 
-module.exports = Post;
+module.exports = post;

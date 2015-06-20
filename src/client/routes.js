@@ -10,10 +10,11 @@ var routes = (
   <Route path="/" handler={App}>
     <DefaultRoute handler={PostsList}/>
     <NotFoundRoute handler={ErrorPage}/>
-    <Route path="post_list">
-      <Route path="/old" handler={PostsList}></Route>
+    <Route path="posts/">
+      <Route path="wordpress/" handler={PostsList.Wordpress}></Route>
     </Route>
     <Route path="post/">
+      <Route path="wordpress/:id" handler={PostViewer.Wordpress}></Route>
       <Route path=":id" handler={PostViewer}></Route>
     </Route>
   </Route>
