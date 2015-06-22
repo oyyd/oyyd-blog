@@ -5,11 +5,29 @@ const $ = require('jquery');
 
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
 
+var highlightCode = function(codeBlockArr){
+  for (var i=0;i<codeBlockArr.length;i++){
+    hljs.highlightBlock(codeBlockArr[i]);
+  }
+};
+
 var PostViewer = React.createClass({
+  getInitialState(){
+    return {
+      content: null
+    };
+  },
+  componentDidMount(){
+    $.get('/post/' + this.props.params.id).done(function(post){
+      var content = '#' + post.title + '\n\n' + post.content;
+      this.setState({
+        content: content
+      });
+    }.bind(this));
+  },
   render(){
-    console.log(this.props.params.id);
     return (
-      <PostDetail contentType="markdown">{string}</PostDetail>
+      <PostDetail contentType="markdown">{(this.state.content)?this.state.content:''}</PostDetail>
     );
   }
 });
@@ -21,23 +39,34 @@ PostViewer.Wordpress = React.createClass({
   },{
     reg: /http:\/\/oyyd\.net\/wp-content\/uploads/g,
     value: '/static/wp'
+  },{
+    reg: /\n/g,
+    value: '<br/>'
   }],
   getInitialState(){
     return {
-      title: '',
       content : ''
     };
   },
   componentDidMount(){
     $.get('/wordpress/post/' + this.props.params.id).done(function(data){
+      //add title
+      data.postContent = '<h1 class="entry-title">'+data.postTitle+'</h1><br/>' + data.postContent;
+
       this.setState({
-        title: data.postTitle,
         content: this.handleWordpressContent(data.postContent)
-      });
+      }, function(){
+        let pres = React.findDOMNode(this).querySelectorAll('pre');
+        console.log(pres);
+        highlightCode(pres);
+      }.bind(this));
     }.bind(this));
   },
+
   handleWordpressContent(content){
+    window.content = content;
     var handledContent = content;
+
     for(var i=0;i<this.replacePairs.length;i++){
       handledContent = handledContent.replace(this.replacePairs[i].reg, this.replacePairs[i].value);
     }
@@ -72,9 +101,7 @@ var PostDetail = React.createClass({
 var MarkedContent = React.createClass({
   componentDidMount(){
     let codes = React.findDOMNode(this).querySelectorAll('code');
-    for (var i=0;i<codes.length;i++){
-      hljs.highlightBlock(codes[i]);
-    }
+    highlightCode(codes);
   },
   render() {
     return(

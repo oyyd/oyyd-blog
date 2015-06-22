@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 
 var gulp = require('gulp');
 var watch = require('gulp-watch');
@@ -7,6 +8,25 @@ var uglify = require('gulp-uglify');
 var less = require('gulp-less');
 var minifyCSS = require('gulp-minify-css');
 var webpack = require('webpack');
+
+var tasks = [];
+var runTask = function(taskName){
+  var task = tasks[taskName];
+  if(task){
+    task.kill('SIGHUP');
+  }
+
+  task = spawn('gulp', [taskName]);
+  task.stdout.on('data', function(data){
+    console.log(data.toString());
+  });
+  task.stderr.on('data', function(data){
+    console.log(data.toString());
+  });
+  task.on('close', function(){
+    task = null;
+  });
+};
 
 gulp.task('pack', function(callback) {
   webpack({
@@ -45,11 +65,13 @@ gulp.task('minify', ['pack'], function(){
 });
 
 gulp.task('watch', function(){
+  var pack = null;
+  var packStyle = null;
   watch(path.join(__dirname, 'src/client/**/*.js'), function(){
-    gulp.run(['pack']);
+    runTask('pack');
   });
   watch(path.join(__dirname, 'src/client/**/*.less'), function(){
-    gulp.run(['pack-style']);
+    runTask('pack-style');
   });
 });
 

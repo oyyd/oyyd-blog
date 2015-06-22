@@ -1,5 +1,5 @@
 var Sequelize = require('sequelize');
-var con = require('../db-connection');
+var con = require('../utils/db-connection');
 
 var wordpressPost = {};
 wordpressPost.db = con.define('wp_posts',{
@@ -22,6 +22,10 @@ wordpressPost.db = con.define('wp_posts',{
   postType:{
     type: Sequelize.STRING(20),
     field: 'post_type'
+  },
+  postStatus:{
+    type: Sequelize.STRING(20),
+    field: 'post_status'
   }
 }, {
   freezeTableName: true,

@@ -1,62 +1,36 @@
-var koa = require('koa');
+const fs = require('fs');
+const path = require('path');
 
-var router = require('koa-router')();
-var app = koa();
+const koa = require('koa');
+const app = koa();
 
-var staticMiddleware = require('./static');
-var wordpressPost = require('./model/wordpress_post');
+const bodyParser = require('koa-bodyparser');
+
+const staticMiddleware = require('./static');
+
+// get global config
+try{
+  var str = fs.readFileSync(path.join(__dirname, '/config.json'));
+  global.config = JSON.parse(str);
+}catch(e){
+  console.log('Invalid config.json file content, will exit.');
+  return;
+}
 
 // static file
 app.use(staticMiddleware);
 
-// routes
-router.get('/wordpress/post/title', function*(next){
-  var that = this;
+// body parser
+app.use(bodyParser());
 
-  yield function(cb){
-    wordpressPost.db.findAll().then(function(posts){
-      var titles = [];
-      for(var i = 0; i < posts.length; i++){
-        var post = posts[i].dataValues;
-        if(wordpressPost.isPost(post)){
-          titles.push({
-            'title': post.postTitle,
-            'id': post.id
-          });
-        }
-      }
-      that.body = titles;
-      cb();
-    });
-  };
-});
-
-router.get('/wordpress/post/:id', function*(next){
-  var that = this;
-
-  yield function(cb){
-    wordpressPost.db.findOne({
-      where: {
-        id: that.params.id,
-        postType: 'post'
-      }
-    }).then(function(post){
-      if(post){
-        that.body = post.dataValues; 
-      }else{
-        that.body = null;
-      }
-      cb();
-    });
-  };
-});
-
-router.post('/post', function*(next){
-  console.log(this.body);
-});
-
-app.use(router.routes())
-  .use(router.allowedMethods());
+// reads all routes
+var apiPath = path.join(__dirname , '/api/');
+var routes = fs.readdirSync(apiPath);
+for(var i = 0;i<routes.length;i++){
+  var router = require(path.join(apiPath, routes[i]));
+  app.use(router.routes())
+    .use(router.allowedMethods());
+}
 
 // listen
 app.listen(8000);

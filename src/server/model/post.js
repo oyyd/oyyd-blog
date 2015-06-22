@@ -1,18 +1,27 @@
-var Sequelize = require('sequelize');
-var con = require('../db-connection');
+const Sequelize = require('sequelize');
+const con = require('../utils/db-connection');
 
-var post.db = con.define('post', {
-  title:{
-    type: Sequelize.STRING
+var post = {};
+post.db = con.define('post', {
+  id: {
+    type: Sequelize.INTEGER
+  },
+  title: {
+    type: Sequelize.STRING(255)
   },
   content: {
-    type: Sequelize.STRING
+    type: Sequelize.TEXT
   },
   tags: {
-    type: Sequelize.STRING,
+    type: Sequelize.STRING(255)
+  },
+  createdTime: {
+    type: Sequelize.DATE,
+    field: 'created_time'
   }
 }, {
-  freezeTableName: true
+  freezeTableName: true,
+  timestamps: false
 });
 
 module.exports = post;

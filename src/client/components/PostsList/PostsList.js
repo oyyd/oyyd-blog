@@ -2,11 +2,25 @@ var React = require('react');
 var $ = require('jquery');
 
 var PostsList = React.createClass({
-  render: function() {
+  getInitialState(){
+    return {
+      titles: []
+    }
+  },
+  componentDidMount(){
+    $.get('/post/title').done(function(titles){
+      console.log(titles);
+      this.setState({
+        titles: titles
+      });
+    }.bind(this));
+  },
+  render() {
     return (
       <div className="blog-PostList">
-        <PostLink linkRef="http://www.baidu.com" linkTitle="baidu" />
-        <PostLink linkRef="http://bilibili.com" linkTitle="bilibili" />
+        {this.state.titles.map(function(item){
+          return <PostLink linkRef={"/#/post/" + item.id}  linkTitle={item.title} />
+        })}
       </div>
     );
   }
@@ -37,7 +51,7 @@ PostsList.Wordpress = React.createClass({
     return (
       <div className="blog-PostList">
         {this.state.list.map(function(item){
-          return <PostLink key={item.id} linkRef={"/#/post/wordpress/" + item.id} linkTitle={item.title}></PostLink>
+          return <PostLink key={item.id} linkRef={"/#/post/wordpress/" + item.id + '/'} linkTitle={item.title}></PostLink>
         })}
       </div>
     );

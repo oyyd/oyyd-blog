@@ -2,9 +2,7 @@
 
 ###set up
 
-You need to config your nginx server correctly. See the `nginx_config.txt`.
-
-###Tasks
+###features
 
 * back to top button
 
@@ -19,3 +17,5 @@ You need to config your nginx server correctly. See the `nginx_config.txt`.
 * nprogress
 
 * code snippet
+
+* wordpress posts compatibility

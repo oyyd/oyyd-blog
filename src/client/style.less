@@ -1,5 +1,5 @@
 // lib
-@import "/node_modules/highlight.js/styles/dark.css";
+@import "/node_modules/highlight.js/styles/github.css";
 @import "/node_modules/normalize.css/normalize.css";
 
 // components
@@ -8,9 +8,36 @@
 @import "./components/ErrorPage/ErrorPage.less";
 @import "./components/PostViewer/PostViewer.less";
 @import "./components/PostsList/PostsList.less";
+@import "./components/PostUploader/PostUploader.less";
+@import "./components/LeftNav/LeftNav.less";
 
 // global
+// const
+@color-font: #000;
+@color-white: #FFF;
+@color-main: #00bcd4;
+@color-link: #ff4081;
+@color-reverse-main: #333;
+@color-reverse-link: #FFF;
+
 body{
   font-family: Helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", Arial, sans-serif;
   font-size: 14px;
+  color: @color-font;
+}
+
+a{
+  color:@color-link;
+}
+
+.blog-font{
+  &.small{
+    font-size: 12px;    
+  }
+  &.normal{
+    font-size: 14px;
+  }
+  &.large{
+    font-size: 20px;
+  }
 }
