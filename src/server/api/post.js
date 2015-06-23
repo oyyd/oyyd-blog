@@ -10,7 +10,7 @@ router.get('/post/title', function*(next){
 
   yield function(cb){
     post.db.findAll({
-      attributes: ['id', 'title']
+      attributes: ['id', 'title', 'tags', 'createdTime']
     }).then(function(data){
       for(var i=0;i<data.length;i++){
         titles.push(data[i].dataValues);

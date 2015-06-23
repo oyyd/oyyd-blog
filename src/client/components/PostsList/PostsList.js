@@ -1,10 +1,11 @@
-var React = require('react');
-var $ = require('jquery');
+const React = require('react');
+const mui = require('material-ui');
+const $ = require('jquery');
 
 var PostsList = React.createClass({
   getInitialState(){
     return {
-      titles: []
+      titles: null
     }
   },
   componentDidMount(){
@@ -16,20 +17,54 @@ var PostsList = React.createClass({
     }.bind(this));
   },
   render() {
-    return (
-      <div className="blog-PostList">
-        {this.state.titles.map(function(item){
-          return <PostLink linkRef={"/#/post/" + item.id}  linkTitle={item.title} />
-        })}
-      </div>
-    );
+    if(this.state.titles){
+      return (
+        <div className="blog-PostList">
+          <h1 className="title">Posts</h1>
+          <div>
+            {this.state.titles.map(function(item){
+              return <PostLink key={item.id} createdTime={item.createdTime}
+                linkRef={"/#/post/" + item.id}  linkTitle={item.title} />
+            })}
+          </div>
+        </div>
+      );      
+    }else{
+      return (
+        <div className="blog-PostList">
+          <mui.CircularProgress mode="indeterminate" />
+        </div>
+      );
+    }
   }
 });
 
 var PostLink = React.createClass({
+  getInitialState(){
+    return{
+      depth: 1
+    }
+  },
+  moveUp(){
+    this.setState({
+      depth: 3
+    });
+  },
+  moveBack(){
+    this.setState({
+      depth: 1
+    });
+  },
+  redirectTo(){
+    location.href = this.props.linkRef;
+  },
   render: function(){
     return(
-      <a href={this.props.linkRef} className="blog-PostLink">{this.props.linkTitle}</a>
+      <mui.Paper onMouseEnter={this.moveUp} onMouseLeave={this.moveBack}
+        className="blog-PostLink" onClick={this.redirectTo} zDepth={this.state.depth}>
+        <h1 className="title">{this.props.linkTitle}</h1>
+        <p>{this.props.createdTime}</p>
+      </mui.Paper>
     );
   }
 });
@@ -51,7 +86,8 @@ PostsList.Wordpress = React.createClass({
     return (
       <div className="blog-PostList">
         {this.state.list.map(function(item){
-          return <PostLink key={item.id} linkRef={"/#/post/wordpress/" + item.id + '/'} linkTitle={item.title}></PostLink>
+          return <PostLink key={item.id} createdTime={item.createdTime}
+            linkRef={"/#/post/wordpress/" + item.id + '/'} linkTitle={item.title}></PostLink>
         })}
       </div>
     );

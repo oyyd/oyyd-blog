@@ -6,13 +6,32 @@ var LeftNav = React.createClass({
   mixins: [Navigation],
   menuItems:[{ 
     type: mui.MenuItem.Types.SUBHEADER,
-    text: 'Navigation' 
+    text: 'Posts' 
   },{ 
     route: 'PostsList',
     text: 'Posts' 
   },{ 
     route: 'PostsList.Wordpress',
     text: 'Wordpress Posts'
+  },{ 
+    type: mui.MenuItem.Types.SUBHEADER,
+    text: 'Showcase'
+  },{ 
+    route: 'ShowCases',
+    text: 'Show Cases'
+  },{
+    route: 'AboutBlog',
+    text: 'About oyyd-blog'
+  },{
+    route: 'AboutMe',
+    text: 'About Me'
+  },{ 
+    type: mui.MenuItem.Types.SUBHEADER,
+    text: 'Links' 
+  },{ 
+    type: mui.MenuItem.Types.LINK,
+    payload: 'https://github.com/oyyd',
+    text: 'oyyd@github' 
   }],
   componentDidMount(){
     if(this.props.isOpen){

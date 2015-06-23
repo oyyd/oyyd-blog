@@ -41975,13 +41975,32 @@
 	  mixins: [Navigation],
 	  menuItems: [{
 	    type: mui.MenuItem.Types.SUBHEADER,
-	    text: 'Navigation'
+	    text: 'Posts'
 	  }, {
 	    route: 'PostsList',
 	    text: 'Posts'
 	  }, {
 	    route: 'PostsList.Wordpress',
 	    text: 'Wordpress Posts'
+	  }, {
+	    type: mui.MenuItem.Types.SUBHEADER,
+	    text: 'Showcase'
+	  }, {
+	    route: 'ShowCases',
+	    text: 'Show Cases'
+	  }, {
+	    route: 'AboutBlog',
+	    text: 'About oyyd-blog'
+	  }, {
+	    route: 'AboutMe',
+	    text: 'About Me'
+	  }, {
+	    type: mui.MenuItem.Types.SUBHEADER,
+	    text: 'Links'
+	  }, {
+	    type: mui.MenuItem.Types.LINK,
+	    payload: 'https://github.com/oyyd',
+	    text: 'oyyd@github'
 	  }],
 	  componentDidMount: function componentDidMount() {
 	    if (this.props.isOpen) {
@@ -53541,6 +53560,7 @@
 	'use strict';
 
 	var React = __webpack_require__(1);
+	var mui = __webpack_require__(198);
 	var $ = __webpack_require__(345);
 
 	var PostsList = React.createClass({
@@ -53548,7 +53568,7 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      titles: []
+	      titles: null
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -53560,24 +53580,70 @@
 	    }).bind(this));
 	  },
 	  render: function render() {
-	    return React.createElement(
-	      'div',
-	      { className: 'blog-PostList' },
-	      this.state.titles.map(function (item) {
-	        return React.createElement(PostLink, { linkRef: '/#/post/' + item.id, linkTitle: item.title });
-	      })
-	    );
+	    if (this.state.titles) {
+	      return React.createElement(
+	        'div',
+	        { className: 'blog-PostList' },
+	        React.createElement(
+	          'h1',
+	          { className: 'title' },
+	          'Posts'
+	        ),
+	        React.createElement(
+	          'div',
+	          null,
+	          this.state.titles.map(function (item) {
+	            return React.createElement(PostLink, { key: item.id, createdTime: item.createdTime,
+	              linkRef: '/#/post/' + item.id, linkTitle: item.title });
+	          })
+	        )
+	      );
+	    } else {
+	      return React.createElement(
+	        'div',
+	        { className: 'blog-PostList' },
+	        React.createElement(mui.CircularProgress, { mode: 'indeterminate' })
+	      );
+	    }
 	  }
 	});
 
 	var PostLink = React.createClass({
 	  displayName: 'PostLink',
 
+	  getInitialState: function getInitialState() {
+	    return {
+	      depth: 1
+	    };
+	  },
+	  moveUp: function moveUp() {
+	    this.setState({
+	      depth: 3
+	    });
+	  },
+	  moveBack: function moveBack() {
+	    this.setState({
+	      depth: 1
+	    });
+	  },
+	  redirectTo: function redirectTo() {
+	    location.href = this.props.linkRef;
+	  },
 	  render: function render() {
 	    return React.createElement(
-	      'a',
-	      { href: this.props.linkRef, className: 'blog-PostLink' },
-	      this.props.linkTitle
+	      mui.Paper,
+	      { onMouseEnter: this.moveUp, onMouseLeave: this.moveBack,
+	        className: 'blog-PostLink', onClick: this.redirectTo, zDepth: this.state.depth },
+	      React.createElement(
+	        'h1',
+	        { className: 'title' },
+	        this.props.linkTitle
+	      ),
+	      React.createElement(
+	        'p',
+	        null,
+	        this.props.createdTime
+	      )
 	    );
 	  }
 	});
@@ -53602,7 +53668,8 @@
 	      'div',
 	      { className: 'blog-PostList' },
 	      this.state.list.map(function (item) {
-	        return React.createElement(PostLink, { key: item.id, linkRef: '/#/post/wordpress/' + item.id + '/', linkTitle: item.title });
+	        return React.createElement(PostLink, { key: item.id, createdTime: item.createdTime,
+	          linkRef: '/#/post/wordpress/' + item.id + '/', linkTitle: item.title });
 	      })
 	    );
 	  }

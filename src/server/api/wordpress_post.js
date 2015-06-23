@@ -16,7 +16,8 @@ router.get('/wordpress/post/title', function*(next){
         var post = posts[i].dataValues;
         titles.push({
           'title': post.postTitle,
-          'id': post.id
+          'id': post.id,
+          'createdTime': post.postDate
         });
       }
       that.body = titles;
