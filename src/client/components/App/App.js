@@ -8,6 +8,7 @@ const injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
 const LeftNav = require('../LeftNav/LeftNav');
+const Icon = require('../Icon/Icon');
 
 // App
 var App = React.createClass({
@@ -34,6 +35,22 @@ var App = React.createClass({
   }
 });
 
+App.SubHeader = React.createClass({
+  render(){
+    let backToTopIcon = <Icon picSize={56} picSrc="navigation/ic_arrow_drop_up_36px.svg"/>
+    return(
+      <div className="blog-SubHeader-Wrapper">
+        <mui.Paper className="blog-SubHeader"></mui.Paper>
+        <div className="back-to-top-btn">
+          <mui.FloatingActionButton>
+            {backToTopIcon}
+          </mui.FloatingActionButton>
+        </div>
+      </div>
+    )
+  }
+});
+
 App.Header = React.createClass({
   leftIconClicked(){
     if(typeof this.props.leftIconClicked === 'function'){
@@ -42,7 +59,10 @@ App.Header = React.createClass({
   },
   render(){
     return (
-      <mui.AppBar onLeftIconButtonTouchTap={this.leftIconClicked} title='OYYD Blog亚东的(偏)技术博客'/>
+      <div>
+        <mui.AppBar onLeftIconButtonTouchTap={this.leftIconClicked} title='oyyd blog'/>
+        <App.SubHeader />
+      </div>
     )
   }
 });

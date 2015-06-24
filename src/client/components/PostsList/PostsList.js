@@ -47,7 +47,7 @@ var PostLink = React.createClass({
   },
   moveUp(){
     this.setState({
-      depth: 3
+      depth: 2
     });
   },
   moveBack(){

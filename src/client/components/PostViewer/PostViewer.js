@@ -1,6 +1,7 @@
 const React = require('react');
 const marked = require('marked');
 const hljs = require('highlight.js/lib/highlight.js');
+const mui = require('material-ui');
 const $ = require('jquery');
 
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
@@ -57,7 +58,6 @@ PostViewer.Wordpress = React.createClass({
         content: this.handleWordpressContent(data.postContent)
       }, function(){
         let pres = React.findDOMNode(this).querySelectorAll('pre');
-        console.log(pres);
         highlightCode(pres);
       }.bind(this));
     }.bind(this));
@@ -86,15 +86,17 @@ var PostDetail = React.createClass({
     };
   },
   render() {
+    let detail = null;
     if(this.props.contentType === 'markdown'){
-      return (
-        <MarkedContent>{this.props.children}</MarkedContent>
-      );      
+      detail = <MarkedContent>{this.props.children}</MarkedContent>;
     }else if(this.props.contentType === 'HTML'){
-      return (
-        <HTMLContent>{this.props.children}</HTMLContent>
-      )
+      detail = <HTMLContent>{this.props.children}</HTMLContent>;
     }
+    return (
+      <mui.Paper className="blog-PostDetail">
+        {detail}
+      </mui.Paper>
+    )
   }
 });
 

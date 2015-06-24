@@ -54,7 +54,7 @@ var LeftNav = React.createClass({
   render(){
     return(
       <mui.LeftNav ref="leftNav" docked={false} menuItems={this.menuItems} onChange={this.itemClicked}
-        header={<mui.AppBar title='OYYD_Blog' />} showMenuIconButton={false}/>
+        header={<mui.AppBar title='Navigation' />} showMenuIconButton={false}/>
     )
   }
 });
