@@ -2,6 +2,7 @@ const React = require('react');
 const {RouteHandler} = require('react-router');
 const mui = require('material-ui');
 const ThemeManager = new mui.Styles.ThemeManager();
+const $ = require('jquery');
 
 // init react-tap-event-plugin
 const injectTapEventPlugin = require("react-tap-event-plugin");
@@ -36,14 +37,16 @@ var App = React.createClass({
 });
 
 App.SubHeader = React.createClass({
+  scrollToTop(){
+    $(window).scrollTop(0);
+  },
   render(){
-    let backToTopIcon = <Icon picSize={56} picSrc="navigation/ic_arrow_drop_up_36px.svg"/>
     return(
       <div className="blog-SubHeader-Wrapper">
         <mui.Paper className="blog-SubHeader"></mui.Paper>
         <div className="back-to-top-btn">
-          <mui.FloatingActionButton>
-            {backToTopIcon}
+          <mui.FloatingActionButton onClick={this.scrollToTop}>
+            <Icon picSize={56} picSrc="navigation/ic_arrow_drop_up_36px.svg"/>
           </mui.FloatingActionButton>
         </div>
       </div>

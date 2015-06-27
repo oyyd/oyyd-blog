@@ -5,7 +5,7 @@ var ErrorPage = React.createClass({
     return {
       errorCode: 404
     }
-  },
+  }, 
   render: function() {
     return (
       <div>{this.props.errorCode}</div>
