@@ -18,6 +18,10 @@ post.db = con.define('post', {
   createdTime: {
     type: Sequelize.DATE,
     field: 'created_time'
+  },
+  picUrl: {
+    type: Sequelize.STRING(1000),
+    field: 'pic_url'
   }
 }, {
   freezeTableName: true,

@@ -3,6 +3,9 @@
 ###set up
 
 ###features
+* anime pics as background
+
+* view count
 
 * back to top button
 

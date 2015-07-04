@@ -5,6 +5,7 @@ const PostsList = require('./components/PostsList/PostsList.js');
 const ErrorPage = require('./components/ErrorPage/ErrorPage.js');
 const Router = require('react-router');
 const PostUploader = require('./components/PostUploader/PostUploader.js');
+const About = require('./components/About/About.js');
 const {Route, DefaultRoute, NotFoundRoute} = Router;
 
 var routes = (
@@ -25,6 +26,7 @@ var routes = (
       </Route>
       <Route path=":id" handler={PostViewer}></Route>
     </Route>
+    <Route path="about/" handler={About}></Route>
   </Route>
 );
 
