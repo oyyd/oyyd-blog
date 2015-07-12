@@ -24,7 +24,7 @@ var PostsList = React.createClass({
           <div>
             {this.state.titles.map(function(item){
               return <PostLink key={item.id} createdTime={item.createdTime}
-                linkRef={"/#/post/" + item.id}  linkTitle={item.title} />
+                linkRef={"/#/post/" + item.id}  linkTitle={item.title} tags={item.tags}/>
             })}
           </div>
         </div>
@@ -47,7 +47,7 @@ var PostLink = React.createClass({
   },
   moveUp(){
     this.setState({
-      depth: 2
+      depth: 3
     });
   },
   moveBack(){
@@ -58,11 +58,21 @@ var PostLink = React.createClass({
   redirectTo(){
     location.href = this.props.linkRef;
   },
+  renderTags(){
+    var tags = this.props.tags.split('|');
+    return(
+      tags.map(function(item){
+        return (<span>{item}</span>)
+      })
+    )
+  },
   render: function(){
+    console.log(this.props.createdTime);
     return(
       <mui.Paper onMouseEnter={this.moveUp} onMouseLeave={this.moveBack}
         className="blog-PostLink" onClick={this.redirectTo} zDepth={this.state.depth}>
         <h1 className="title">{this.props.linkTitle}</h1>
+        {this.renderTags()}
         <p>{this.props.createdTime}</p>
       </mui.Paper>
     );

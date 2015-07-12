@@ -53708,7 +53708,7 @@
 	          null,
 	          this.state.titles.map(function (item) {
 	            return React.createElement(PostLink, { key: item.id, createdTime: item.createdTime,
-	              linkRef: '/#/post/' + item.id, linkTitle: item.title });
+	              linkRef: '/#/post/' + item.id, linkTitle: item.title, tags: item.tags });
 	          })
 	        )
 	      );
@@ -53732,7 +53732,7 @@
 	  },
 	  moveUp: function moveUp() {
 	    this.setState({
-	      depth: 2
+	      depth: 3
 	    });
 	  },
 	  moveBack: function moveBack() {
@@ -53743,7 +53743,18 @@
 	  redirectTo: function redirectTo() {
 	    location.href = this.props.linkRef;
 	  },
+	  renderTags: function renderTags() {
+	    var tags = this.props.tags.split('|');
+	    return tags.map(function (item) {
+	      return React.createElement(
+	        'span',
+	        null,
+	        item
+	      );
+	    });
+	  },
 	  render: function render() {
+	    console.log(this.props.createdTime);
 	    return React.createElement(
 	      mui.Paper,
 	      { onMouseEnter: this.moveUp, onMouseLeave: this.moveBack,
@@ -53753,6 +53764,7 @@
 	        { className: 'title' },
 	        this.props.linkTitle
 	      ),
+	      this.renderTags(),
 	      React.createElement(
 	        'p',
 	        null,

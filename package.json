@@ -36,6 +36,7 @@
     "koa-bodyparser": "^2.0.0",
     "koa-router": "^5.1.2",
     "lwip": "0.0.7",
+    "moment": "^2.10.3",
     "mysql": "^2.7.0",
     "request": "^2.58.0",
     "sequelize": "^3.2.0"

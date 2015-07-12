@@ -1,9 +1,8 @@
 const router = require('koa-router')();
+const moment = require('moment');
 
 const post = require('../model/post');
 const verify = require('../utils/verify');
-
-const timeFormat = require('../utils/time_format');
 
 router.get('/post/title', function*(next){
   var titles = [];
@@ -14,6 +13,7 @@ router.get('/post/title', function*(next){
     }).then(function(data){
       for(var i=0;i<data.length;i++){
         titles.push(data[i].dataValues);
+        console.log(data[i].dataValues.createdTime);
       }
       cb();
     });
@@ -77,7 +77,7 @@ router.post('/post', function*(next){
         title: params.title,
         content: params.content,
         tags: params.tags,
-        createdTime: timeFormat(new Date())
+        createdTime: moment().format('YYYY-MM-DD HH:mm:ss')
       }).then(function(){
         cb();
       });
