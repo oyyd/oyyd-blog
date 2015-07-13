@@ -1,20 +1,39 @@
 var fs = require('fs');
 var path = require('path');
+var extend = require('lodash').merge;
 
 var request = require('request');
 var lwip = require('lwip');
-var timeFormat = require('./time_format');
+var mkdirp = require('mkdirp');
+var moment = require('moment');
 
-var savePic = function(url, cb){
+var options = {
+  headers:{
+    'Referer':'http://www.pixiv.net/member_illust.php?mode=medium&illust_id=51182825'
+  }
+};
+
+function getOption(url){
+  return extend({url:url}, options);
+};
+
+var requestPic = function(url, cb){
   var name = url.slice(url.lastIndexOf('/') + 1);
   var fileExt = name.slice(name.lastIndexOf('.') + 1);
-  var filePath = path.join(__dirname, '../../../test' , name);
+  var fileDir = path.join(__dirname, '../../../static/img' , moment().format('YYYY/MM/DD'));
+  var filePath = path.join(fileDir, name);
 
-  request(url, {encoding: 'binary'}, function(error, response, body){
-    fs.writeFile(filePath, body, 'binary', function (err) {
+  mkdirp(fileDir, function(err){
+    if(err){
+      cb(err);
+      return;
+    }
+    var req = request(getOption(url)).pipe(fs.createWriteStream(filePath));
+    req.on('close', function(){
       lwip.open(filePath, fileExt, function(err, image){
         if(err){
-          console.log(err);
+          cb(err);
+          return;
         }
         image.batch()
           .blur(8)
@@ -22,12 +41,9 @@ var savePic = function(url, cb){
             quality: 50,
             compression: 'high'
           }, function(err){
-            if(err){
-              console.log(err);
-            }else{
-              console.log('success');
-            }
-            cb();
+            var url = filePath.slice(filePath.indexOf('/static'));
+            console.log(filePath, url);
+            cb(err, url);
           });
       });
     });
@@ -36,17 +52,12 @@ var savePic = function(url, cb){
 
 var prefix = 'http://www.pixiv.net/ranking.php?date=';
 var getPicPath = function(cb){
-  var dateString = timeFormat.date(new Date());
-  var url = prefix + dateString;
+  // var dateString = timeFormat.date(new Date());
+  // var url = prefix + dateString;
 };
 
-module.exports = savePic;
+module.exports = requestPic;
 
-//test
-var testPic = 'http://i4.pixiv.net/c/600x600/img-master/img/2015/07/05/00/21/06/51245691_p0_master1200.jpg';
-// if(require.main === module){
-//   savePic(testPic, function(err){
-//     console.log('done', err);
-//   });
-// }
-// request.get(testPic).pipe(fs.createWriteStream('doodle.jpg'));
+if(require.main === module){
+  requestPic('https://www.baidu.com/img/bd_logo1.png', function(){})
+}

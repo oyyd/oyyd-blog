@@ -53744,6 +53744,9 @@
 	    location.href = this.props.linkRef;
 	  },
 	  renderTags: function renderTags() {
+	    if (!this.props.tags) {
+	      return;
+	    }
 	    var tags = this.props.tags.split('|');
 	    return tags.map(function (item) {
 	      return React.createElement(
@@ -53754,7 +53757,6 @@
 	    });
 	  },
 	  render: function render() {
-	    console.log(this.props.createdTime);
 	    return React.createElement(
 	      mui.Paper,
 	      { onMouseEnter: this.moveUp, onMouseLeave: this.moveBack,
@@ -53768,7 +53770,7 @@
 	      React.createElement(
 	        'p',
 	        null,
-	        this.props.createdTime
+	        new Date(this.props.createdTime).toString()
 	      )
 	    );
 	  }
@@ -53847,9 +53849,11 @@
 	      title: React.findDOMNode(this.refs.title).value,
 	      content: React.findDOMNode(this.refs.content).value,
 	      tags: React.findDOMNode(this.refs.tags).value,
-	      key: React.findDOMNode(this.refs.key).value
+	      key: React.findDOMNode(this.refs.key).value,
+	      picUrl: React.findDOMNode(this.refs.bgPic).value
 	    };
-	    if (!data.title || !data.content || !data.tags || !data.key) {
+	    console.log(data);
+	    if (!data.title || !data.content || !data.tags || !data.key || !data.picUrl) {
 	      alert('invalid form');
 	      return;
 	    }
@@ -53901,6 +53905,16 @@
 	          'Key'
 	        ),
 	        React.createElement('input', { ref: 'key', type: 'text' })
+	      ),
+	      React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'label',
+	          null,
+	          'Bg Pic'
+	        ),
+	        React.createElement('input', { ref: 'bgPic', type: 'text' })
 	      ),
 	      React.createElement(
 	        'div',

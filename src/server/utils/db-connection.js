@@ -9,8 +9,7 @@ var con = new Sequelize(config.dbName, config.username, config.password, {
     max: 5,
     min: 0,
     idle: 10000
-  },
-  timezone: '+08:00'
+  }
 });
 
 module.exports = con;

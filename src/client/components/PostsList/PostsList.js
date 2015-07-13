@@ -59,6 +59,9 @@ var PostLink = React.createClass({
     location.href = this.props.linkRef;
   },
   renderTags(){
+    if(!this.props.tags){
+      return;
+    }
     var tags = this.props.tags.split('|');
     return(
       tags.map(function(item){
@@ -67,13 +70,12 @@ var PostLink = React.createClass({
     )
   },
   render: function(){
-    console.log(this.props.createdTime);
     return(
       <mui.Paper onMouseEnter={this.moveUp} onMouseLeave={this.moveBack}
         className="blog-PostLink" onClick={this.redirectTo} zDepth={this.state.depth}>
         <h1 className="title">{this.props.linkTitle}</h1>
         {this.renderTags()}
-        <p>{this.props.createdTime}</p>
+        <p>{new Date(this.props.createdTime).toString()}</p>
       </mui.Paper>
     );
   }

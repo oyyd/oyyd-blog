@@ -34,9 +34,11 @@ var PostUploader = React.createClass({
       title : React.findDOMNode(this.refs.title).value,
       content : React.findDOMNode(this.refs.content).value,
       tags: React.findDOMNode(this.refs.tags).value,
-      key: React.findDOMNode(this.refs.key).value
+      key: React.findDOMNode(this.refs.key).value,
+      picUrl: React.findDOMNode(this.refs.bgPic).value
     };
-    if(!data.title || !data.content || !data.tags || !data.key){
+    console.log(data);
+    if(!data.title || !data.content || !data.tags || !data.key || !data.picUrl){
       alert('invalid form');
       return;
     }
@@ -63,6 +65,10 @@ var PostUploader = React.createClass({
         <div>
           <label>Key</label>
           <input ref="key" type="text"/>
+        </div>
+        <div>
+          <label>Bg Pic</label>
+          <input ref="bgPic" type="text"/>
         </div>
         <div>
           <button onClick={this.uploadPost}>Submit</button>

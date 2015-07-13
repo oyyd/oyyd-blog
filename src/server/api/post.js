@@ -4,6 +4,8 @@ const moment = require('moment');
 const post = require('../model/post');
 const verify = require('../utils/verify');
 
+const savePic = require('../utils/save_pic');
+
 router.get('/post/title', function*(next){
   var titles = [];
 
@@ -13,7 +15,7 @@ router.get('/post/title', function*(next){
     }).then(function(data){
       for(var i=0;i<data.length;i++){
         titles.push(data[i].dataValues);
-        console.log(data[i].dataValues.createdTime);
+        titles[i].createdTime = new Date(titles[i].createdTime).getTime();
       }
       cb();
     });
@@ -53,7 +55,6 @@ router.post('/post', function*(next){
   }
   
   yield function(cb){
-    console.log(params.id);
     if(params.id){
       // find and update
       post.db.findOne({
@@ -66,20 +67,29 @@ router.post('/post', function*(next){
             title: params.title,
             content: params.content,
             tags: params.tags,
+            picUrl: params.picUrl
           }).then(function(){
             cb();
           });
         }
       });
     }else{
-      // create
-      post.db.create({
-        title: params.title,
-        content: params.content,
-        tags: params.tags,
-        createdTime: moment().format('YYYY-MM-DD HH:mm:ss')
-      }).then(function(){
-        cb();
+      savePic(params.picUrl, function(err, url){
+        if(err){
+          console.log(err);
+          cb(err);
+          return;
+        }
+        // create
+        post.db.create({
+          title: params.title,
+          content: params.content,
+          tags: params.tags,
+          picUrl: url,
+          createdTime: moment().format('YYYY-MM-DD HH:mm:ss')
+        }).then(function(){
+          cb();
+        });
       });
     }
   };
