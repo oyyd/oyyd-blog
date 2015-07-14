@@ -10,7 +10,7 @@ var PostsList = React.createClass({
   },
   componentDidMount(){
     $.get('/post/title').done(function(titles){
-      console.log(titles);
+      titles.reverse();
       this.setState({
         titles: titles
       });
@@ -24,7 +24,8 @@ var PostsList = React.createClass({
           <div>
             {this.state.titles.map(function(item){
               return <PostLink key={item.id} createdTime={item.createdTime}
-                linkRef={"/#/post/" + item.id}  linkTitle={item.title} tags={item.tags}/>
+                linkRef={"/#/post/" + item.id}  linkTitle={item.title} tags={item.tags}
+                picUrl={item.picUrl}/>
             })}
           </div>
         </div>
@@ -70,9 +71,14 @@ var PostLink = React.createClass({
     )
   },
   render: function(){
+    var style = {
+      backgroundImage: 'url('+this.props.picUrl+')',
+      backgroundSize: '100%'
+    };
     return(
       <mui.Paper onMouseEnter={this.moveUp} onMouseLeave={this.moveBack}
-        className="blog-PostLink" onClick={this.redirectTo} zDepth={this.state.depth}>
+        className="blog-PostLink" onClick={this.redirectTo} zDepth={this.state.depth}
+        style={style}>
         <h1 className="title">{this.props.linkTitle}</h1>
         {this.renderTags()}
         <p>{new Date(this.props.createdTime).toString()}</p>

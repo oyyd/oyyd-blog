@@ -32,7 +32,15 @@ for(var i = 0;i<routes.length;i++){
     .use(router.allowedMethods());
 }
 
-// listen
-app.listen(8000);
+if(process.env.NODE_ENV === 'production'){
+  var options = {
+    key: fs.readFileSync('/etc/ssl/private/oyyd.net.key'),
+    cert: fs.readFileSync('/etc/ssl/certs/oyyd.net.crt')
+  };
 
-console.log('Listen on port 8000');
+  require('https').createServer(options, app.callback()).listen(443);
+  console.log('Listen on port 443');
+}else{
+  app.listen(80);
+  console.log('Listen on port 80');  
+}

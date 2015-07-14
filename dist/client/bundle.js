@@ -53687,7 +53687,7 @@
 	  },
 	  componentDidMount: function componentDidMount() {
 	    $.get('/post/title').done((function (titles) {
-	      console.log(titles);
+	      titles.reverse();
 	      this.setState({
 	        titles: titles
 	      });
@@ -53708,7 +53708,8 @@
 	          null,
 	          this.state.titles.map(function (item) {
 	            return React.createElement(PostLink, { key: item.id, createdTime: item.createdTime,
-	              linkRef: '/#/post/' + item.id, linkTitle: item.title, tags: item.tags });
+	              linkRef: '/#/post/' + item.id, linkTitle: item.title, tags: item.tags,
+	              picUrl: item.picUrl });
 	          })
 	        )
 	      );
@@ -53757,10 +53758,15 @@
 	    });
 	  },
 	  render: function render() {
+	    var style = {
+	      backgroundImage: 'url(' + this.props.picUrl + ')',
+	      backgroundSize: '100%'
+	    };
 	    return React.createElement(
 	      mui.Paper,
 	      { onMouseEnter: this.moveUp, onMouseLeave: this.moveBack,
-	        className: 'blog-PostLink', onClick: this.redirectTo, zDepth: this.state.depth },
+	        className: 'blog-PostLink', onClick: this.redirectTo, zDepth: this.state.depth,
+	        style: style },
 	      React.createElement(
 	        'h1',
 	        { className: 'title' },
