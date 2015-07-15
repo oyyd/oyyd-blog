@@ -79,9 +79,12 @@ var PostLink = React.createClass({
       <mui.Paper onMouseEnter={this.moveUp} onMouseLeave={this.moveBack}
         className="blog-PostLink" onClick={this.redirectTo} zDepth={this.state.depth}
         style={style}>
-        <h1 className="title">{this.props.linkTitle}</h1>
-        {this.renderTags()}
-        <p>{new Date(this.props.createdTime).toString()}</p>
+        <div className="mask"></div>
+        <div className="content">
+          <h1 className="title">{this.props.linkTitle}</h1>
+          {this.renderTags()}
+          <p>{new Date(this.props.createdTime).toString()}</p>
+        </div>
       </mui.Paper>
     );
   }

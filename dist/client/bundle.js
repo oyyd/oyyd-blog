@@ -53767,16 +53767,21 @@
 	      { onMouseEnter: this.moveUp, onMouseLeave: this.moveBack,
 	        className: 'blog-PostLink', onClick: this.redirectTo, zDepth: this.state.depth,
 	        style: style },
+	      React.createElement('div', { className: 'mask' }),
 	      React.createElement(
-	        'h1',
-	        { className: 'title' },
-	        this.props.linkTitle
-	      ),
-	      this.renderTags(),
-	      React.createElement(
-	        'p',
-	        null,
-	        new Date(this.props.createdTime).toString()
+	        'div',
+	        { className: 'content' },
+	        React.createElement(
+	          'h1',
+	          { className: 'title' },
+	          this.props.linkTitle
+	        ),
+	        this.renderTags(),
+	        React.createElement(
+	          'p',
+	          null,
+	          new Date(this.props.createdTime).toString()
+	        )
 	      )
 	    );
 	  }
