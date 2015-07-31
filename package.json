@@ -28,6 +28,7 @@
     "react-router": "^0.13.3",
     "react-tap-event-plugin": "^0.1.7",
     "sequelize": "^3.2.0",
+    "spec-md": "^0.4.5",
     "webpack": "^1.9.10",
     "webpack-dev-server": "^1.10.1"
   },
