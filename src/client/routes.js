@@ -1,33 +1,12 @@
-const React = require('react');
-const App = require('./components/App/App.js');
-const PostViewer = require('./components/PostViewer/PostViewer.js');
-const PostsList = require('./components/PostsList/PostsList.js');
-const ErrorPage = require('./components/ErrorPage/ErrorPage.js');
-const Router = require('react-router');
-const PostUploader = require('./components/PostUploader/PostUploader.js');
-const About = require('./components/About/About.js');
-const {Route, DefaultRoute, NotFoundRoute} = Router;
+import React from 'react';
+import SimpleApp from './components/SimpleApp';
+import SimplePost from './components/SimplePost';
+import {Route, DefaultRoute, NotFoundRoute} from 'react-router';
 
-var routes = (
-  <Route path="/" handler={App}>
-    <DefaultRoute handler={PostsList}/>
-    <NotFoundRoute handler={ErrorPage}/>
-    <Route path="post/">
-      <DefaultRoute name="PostsList" handler={PostsList}/>
-      <Route path="upload/">
-        <DefaultRoute name="PostUploader" handler={PostUploader}/>
-        <Route path=":id/" handler={PostUploader}></Route>
-      </Route>
-      <Route path="wordpress/">
-        <DefaultRoute name="PostsList.Wordpress" handler={PostsList.Wordpress}/>
-        <Route path=":id/">
-          <DefaultRoute handler={PostViewer.Wordpress}/>
-        </Route>
-      </Route>
-      <Route path=":id" handler={PostViewer}></Route>
-    </Route>
-    <Route path="about/" handler={About}></Route>
+let routes = (
+  <Route path="/" handler={SimpleApp}>
+    <Route path="test/:id" handler={SimplePost}></Route>
   </Route>
 );
 
-module.exports = routes;
+export default routes;
