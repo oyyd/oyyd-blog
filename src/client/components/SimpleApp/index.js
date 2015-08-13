@@ -4,9 +4,32 @@ import {RouteHandler} from 'react-router';
 let SimpleApp = React.createClass({
   render(){
     return (
-      <div>
-        <h1>SimpleApp</h1>
-        <RouteHandler/>
+      <div className="oyyd-blog">
+        {this.renderHeader()}
+        <div className="content">
+          <RouteHandler/>
+        </div>
+        {this.renderFooter()}
+      </div>
+    )
+  },
+  renderHeader(){
+    return (
+      <div className="header">
+        <h1>oyyd blog</h1>
+      </div>
+    )
+  },
+  renderFooter(){
+    return(
+      <div className="footer">
+        <p>
+          <span>Built by </span>
+          <a href="https://github.com/oyyd/oyyd-blog">oyyd-blog</a>
+          <span> and styled by </span>
+          <a href="">tufte-css</a>
+          <span>.</span>
+        </p>
       </div>
     )
   }

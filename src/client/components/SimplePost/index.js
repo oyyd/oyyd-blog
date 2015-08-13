@@ -1,16 +1,17 @@
 import React from 'react';
 import {State} from 'react-router';
-import marked from 'marked';
 import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
 
+import translate from './translate';
+
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
 
-var highlightCode = function(codeBlockArr){
+function highlightCode(codeBlockArr){
   for (var i=0;i<codeBlockArr.length;i++){
     hljs.highlightBlock(codeBlockArr[i]);
   }
-};
+}
 
 let SimplePost = React.createClass({
   mixins:[State],
@@ -20,7 +21,7 @@ let SimplePost = React.createClass({
     }
   },
   componentDidMount(){
-    $.get('./test/why_this.md').done((data)=>{
+    $.get('/posts/' + this.getParams().id).done((data)=>{
       this.setState({
         content: data
       });
@@ -48,7 +49,7 @@ let MarkedContent = React.createClass({
   },
   render() {
     return(
-      <div dangerouslySetInnerHTML={{__html: marked(this.props.children.toString())}} />
+      <div dangerouslySetInnerHTML={{__html: translate(this.props.children.toString())}} />
     );
   }
 });

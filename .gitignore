@@ -2,6 +2,5 @@ node_modules/**
 build/**
 log/**
 test/**
-react-hot-boilerplate/**
 config.json
 npm-debug.log
