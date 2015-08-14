@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var spawn = require('child_process').spawn;
+var exec = require('child_process').exec;
 
 var gulp = require('gulp');
 var watch = require('gulp-watch');
@@ -28,51 +28,33 @@ var runTask = function(taskName){
   });
 };
 
-gulp.task('pack', function(callback) {
-  webpack({
-    entry: './src/client/bootstrap.js',
-    output: {
-        path: path.join(__dirname, 'dist/client'),
-        filename: 'bundle.js'
-    },
-    module: {
-      loaders: [{ 
-        test: path.join(__dirname, 'src'),
-        loader: 'babel-loader' 
-      }]
-    },
-    bail: true
-  }, function(err, stats){
-    if(err){
-      console.log(err);
-    }else{
-      callback();
-    }
-  });
-});
-
-gulp.task('pack-style', function(callback){
-  return gulp.src(path.join(__dirname, 'src/client/style.less'))
-    .pipe(less())
-    .pipe(minifyCSS())
-    .pipe(gulp.dest(path.join(__dirname, 'dist/client')));
-});
-
-gulp.task('minify', ['pack'], function(){
-  return gulp.src(path.join(__dirname, 'dist/client/*.js'))
+gulp.task('minify', ['webpack'], function(){
+  gulp.src(path.join(__dirname, 'dist/*.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('dist/client'));
+    .pipe(gulp.dest('dist/'));
+  gulp.src(path.join(__dirname, 'dist/*.css'))
+    .pipe(minifyCSS())
+    .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('watch', function(){
-  var pack = null;
-  var packStyle = null;
-  watch(path.join(__dirname, 'src/client/**/*.js'), function(){
-    runTask('pack');
+gulp.task('webpack', function(callback){
+  var task = exec('NODE_ENV=production webpack --progress --color', function(error, stdout, stderr){
+    console.log(stdout);
   });
-  watch(path.join(__dirname, 'src/client/**/*.less'), function(){
-    runTask('pack-style');
+  task.on('close', function() {
+    callback();
+  });  
+});
+
+gulp.task('gen-list', function(callback){
+  fs.readdir(path.join(__dirname, '/posts'), function(err, files){
+    if(err){
+      console.log('err');
+      return;
+    }
+
+    console.log(files);
   });
 });
 
-gulp.task('build', ['webpack', 'minify']);
+gulp.task('release', ['webpack', 'minify', 'gen-list']);

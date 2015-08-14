@@ -16,7 +16,12 @@ let SimpleApp = React.createClass({
   renderHeader(){
     return (
       <div className="header">
-        <h1>oyyd blog</h1>
+        <h1>
+          <span>oyyd blog</span>
+          <a className="github-link" href="https://github.com/oyyd">
+            <img src="/static/img/icon/social-github-outline.png"/>
+          </a>
+        </h1>
       </div>
     )
   },
