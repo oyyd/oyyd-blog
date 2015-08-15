@@ -52,8 +52,7 @@ gulp.task('gen-list', function(callback){
       console.log('err');
       return;
     }
-
-    console.log(files);
+    callback();
   });
 });
 
