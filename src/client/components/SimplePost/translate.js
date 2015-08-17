@@ -19,7 +19,7 @@ commands.push({
   handler: (content)=>{
     return content;
   }
-})
+});
 
 function translate(content){
   let result = marked(content);

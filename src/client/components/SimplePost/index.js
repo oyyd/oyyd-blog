@@ -21,7 +21,7 @@ let SimplePost = React.createClass({
     }
   },
   componentDidMount(){
-    $.get('/posts/' + this.getParams().id).done((data)=>{
+    $.get('/posts/' + this.getParams().id + '.md').done((data)=>{
       this.setState({
         content: data
       });

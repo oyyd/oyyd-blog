@@ -8,6 +8,7 @@ var uglify = require('gulp-uglify');
 var less = require('gulp-less');
 var minifyCSS = require('gulp-minify-css');
 var webpack = require('webpack');
+var async = require('async');
 
 var tasks = [];
 var runTask = function(taskName){
@@ -47,12 +48,70 @@ gulp.task('webpack', function(callback){
 });
 
 gulp.task('gen-list', function(callback){
-  fs.readdir(path.join(__dirname, '/posts'), function(err, files){
+
+  function extractData(results){
+    var pubReg = /\$publicdate\((.*?)\)/;
+    var handledResult = [];
+    for (var i in results){
+      var item = results[i];
+      // remove file extension
+      item.fileName = item.fileName.slice(0, item.fileName.lastIndexOf('.md'));
+
+      // get title
+      var title = item.content.split('\n')[0];
+      title = title.slice(1);
+      item.title = title;
+
+      // get public time
+      var regRes = pubReg.exec(item.content);
+      if(regRes){
+        item.publicDate = regRes[1];
+      }
+
+      // delete content
+      delete item.content;
+
+      handledResult.push(item);
+    }
+    console.log(handledResult);
+    return handledResult;
+  }
+
+  function writeList(results, callback){
+    var fileContent = 'export default ' + JSON.stringify(results);
+    fs.writeFile(path.join(__dirname, 'src/client/posts.data.js'), fileContent, function(err){
+      callback(err);
+    });
+  }
+
+  var prefix = path.join(__dirname, '/posts');
+  fs.readdir(prefix, function(err, files){
     if(err){
       console.log('err');
       return;
     }
-    callback();
+    var result = null;
+    async.map(files, function(item, cb){
+      var filePath = path.join(prefix, item);
+      fs.readFile(filePath, {encoding: 'utf8'}, function(err, data){
+        if(err){
+          cb(err);
+          return;
+        }
+        cb(null, {
+          fileName: item,
+          content: data
+        });
+      });
+    }, function(err, res){
+      result = extractData(res);
+      writeList(result, function(err){
+        if(err){
+          console.log('Err when writing the list file.');
+        }
+        callback();
+      })
+    });
   });
 });
 

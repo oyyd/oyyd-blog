@@ -1,10 +1,30 @@
 #oyyd blog
 
+###Commands
+
+Generate the list file from posts:
+
+```
+gulp gen-list
+```
+
+Release:
+
+```
+gulp release
+```
+
+Develop:
+
+```
+node server.js
+```
+
 ###set up
 
 ###Works before alpha version
 * ssl
 
-* tags, bg-pics, created time
+* tags, created time
 
-* 4 posts
+* 1 posts
