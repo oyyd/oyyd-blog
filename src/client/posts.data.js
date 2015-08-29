@@ -1,1 +1,1 @@
-export default [{"fileName":"test","title":"testfile"},{"fileName":"why_this","title":"关于这个博客——移Wordpress上的post","publicDate":"2015年1月1日"}]
+export default [{"fileName":"why_i_choose_react_rather_than_angular_in_our_company","title":"为什么我们选择了React来做前端","publicDate":"2015年8月28日"},{"fileName":"why_this","title":"关于这个博客——移Wordpress上的post","publicDate":"2015年1月1日"}]

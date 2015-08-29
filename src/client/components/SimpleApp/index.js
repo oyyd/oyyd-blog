@@ -31,10 +31,11 @@ let SimpleApp = React.createClass({
         <p>
           <span>Built by </span>
           <a href="https://github.com/oyyd/oyyd-blog">oyyd-blog</a>
-          <span> and styled by </span>
-          <a href="">tufte-css</a>
+          <span> and styled by modified </span>
+          <a href="https://github.com/daveliepmann/tufte-css">tufte-css</a>
           <span>.</span>
         </p>
+        <p className="cert">京ICP备14040206号-1</p>
       </div>
     )
   }

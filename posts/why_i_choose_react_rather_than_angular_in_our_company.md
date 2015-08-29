@@ -1,4 +1,5 @@
-#为什么我们选择了React来做前端
+#为什么我选择了React来重构我们的前端
+$publicdate(2015年8月28日)
 
 __前言：__
 
@@ -89,7 +90,7 @@ Virtual DOM完成对DOM树的调节。
 
 由于新生成的Virtual DOM会和上一次的Virtual DOM进行比对，
 然后根据Virtual DOM之间的差别对DOM树进行最小的、必要的调节，所以这一做法在大多数
-情况下都能够保证性能$sidenote。
+情况下都能够保证性能$sidenote()。
 
 而组织Virtual DOM来操作DOM的更大好处在于：你不需要
 考虑将DOM树从当前的状态A变成目标状态B所需要进行的每一个DOM操作，而只要根据当前数据的
@@ -99,9 +100,10 @@ Virtual DOM完成对DOM树的调节。
 ，我发现Virtual DOM + jsx异常灵活。
 
 ##我没有选择Angular的原因
-你可能容易在Angular和Ember之间做比较，但却很难将React与前面两者做比较。因为他们之间过于不同，以至于我把这篇文章的初衷都稍作了修改。所以这里更多从实践的角度谈谈我的看法，可能充满了个人偏见。
 
-1. React的代码可预测行更强
+React和Angular之间过于不同，以至于我把这篇文章的初衷都稍作了修改。所以这里更多从实践的角度谈谈我的看法，可能充满了个人偏见。
+
+###1. React的代码可预测行更强
 
 把这个问题放到React，你会发现数据都放在props（外部传入）和state（本身拥有）上，部件在每个生命周期上要做的事情都有序地放置在componentWillMount、componentDidMount、componentDidUpdate等等的方法中（当然你不一定需要全都用到），涉及Virtual DOM的东西都在Render方法里，少量退回到原生（jquery）的DOM操作都可以通过refs属性找到。这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。
 
@@ -109,7 +111,7 @@ Virtual DOM完成对DOM树的调节。
 
 ，我觉得好的框架应该已经规定好了我们做一件事情的流程，不
 
-2. MVC与View$sidenote()
+###2. MVC与View$sidenote(123)
 
 我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。
 
@@ -123,11 +125,13 @@ Virtual DOM完成对DOM树的调节。
 
 事实上，如果MVC的重点在于Seperation of Concern，那么React部件之间的作用范围分明本身就可以认为是这种思想的实践。$sidenote()。只要能解决问题，是不是MVC又有什么关系呢？
 
-3. 开发效率很重要，但代码的可预测、可扩展性可能更加重要。
+###3. 开发效率很重要，但代码的可预测、可扩展性可能更加重要。
 
-4. 学习曲线很重要，并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。
+###4. 学习曲线很重要
 
-5. Use Proofed Technology$sidenote()
+并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。
+
+###5. Use Proofed Technology$sidenote()
 
 除了Facebook和Instagram以外，看看[这里]()，你会发现 AirBnb, Uber, 
 支付宝，天猫等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React，至少这些公司对React都持肯定态度。Angular虽然也同样声名远播，但却不至于如此。
