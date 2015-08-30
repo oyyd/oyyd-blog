@@ -38,13 +38,13 @@ gulp.task('minify', ['webpack'], function(){
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('webpack', function(callback){
+gulp.task('webpack', ['gen-list'], function(callback){
   var task = exec('NODE_ENV=production webpack --progress --color', function(error, stdout, stderr){
     console.log(stdout);
   });
   task.on('close', function() {
     callback();
-  });  
+  });
 });
 
 gulp.task('gen-list', function(callback){
