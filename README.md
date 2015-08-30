@@ -23,8 +23,6 @@ node server.js
 ###set up
 
 ###Works before alpha version
-* ssl
-
 * tags, created time
 
-* 1 posts
+* disqus

@@ -9,7 +9,7 @@ commands.push({
       sideNoteCount ++;
       return `<label for="${sideNoteCount}" class="margin-toggle sidenote-number"></label>` +
       `<input type="checkbox" id="${sideNoteCount}" class="margin-toggle"/>` +
-      `<span class="sidenote">${content}</span> `;      
+      `<span class="sidenote">${content}</span> `;
     }
   })()
 });
@@ -30,7 +30,7 @@ function translate(content){
       let text = regResult[1];
       result = result.replace(match, command.handler(text));
       regResult = command.reg.exec(result);
-    }    
+    }
   }
   return result;
 }

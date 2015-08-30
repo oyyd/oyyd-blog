@@ -15,15 +15,18 @@ module.exports = {
     publicPath: '/dist/'
   },
   module: {
-    loaders: [{ 
+    loaders: [{
       test: /\.js?$/,
       loaders: ['react-hot', 'babel-loader'] ,
-      include: path.join(__dirname, 'src/client')
+      include: [
+        path.join(__dirname, 'src/client'),
+        path.join(__dirname, 'node_modules')
+      ]
     },{
       test: /\.less$/,
       include: [
         path.join(__dirname, 'src/client')
-      ],      
+      ],
       loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
     }]
   },

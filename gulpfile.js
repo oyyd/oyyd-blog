@@ -73,7 +73,6 @@ gulp.task('gen-list', function(callback){
 
       handledResult.push(item);
     }
-    console.log(handledResult);
     return handledResult;
   }
 
