@@ -1,6 +1,8 @@
 import React from 'react';
 import {RouteHandler} from 'react-router';
 
+import Disqus from '../Disqus';
+
 let SimpleApp = React.createClass({
   render(){
     return (
@@ -36,6 +38,7 @@ let SimpleApp = React.createClass({
           <span>.</span>
         </p>
         <p className="cert">京ICP备14040206号-1</p>
+        <Disqus />
       </div>
     )
   }
