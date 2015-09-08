@@ -58,7 +58,8 @@ let SimplePost = React.createClass({
     return(
       <div className="blog-simple-post">
         <MarkedContent>{this.state.content}</MarkedContent>
-        <Disqus initialIdentifier={this.getParams().id} initialUrl={location.href}/>
+        <Disqus initialIdentifier={`article_${this.getParams().id}`}
+          initialUrl={`http://blog.oyyd.net/article_${this.getParams().id}`}/>
       </div>
     )
   }
