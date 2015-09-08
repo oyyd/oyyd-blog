@@ -4,11 +4,9 @@ import SimplePost from './components/SimplePost';
 import SimpleList from './components/SimpleList';
 import {Route, DefaultRoute, NotFoundRoute} from 'react-router';
 
-let routes = (
+export default (
   <Route path="/" handler={SimpleApp}>
     <DefaultRoute handler={SimpleList}/>
     <Route path="post/:id" handler={SimplePost}></Route>
   </Route>
 );
-
-export default routes;

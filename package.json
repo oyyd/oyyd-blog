@@ -4,6 +4,7 @@
   "description": "oyyd blog",
   "main": "index.html",
   "scripts": {
+    "dev": "webpack -w",
     "start": "node --harmony server.js"
   },
   "author": "oyyd",
@@ -23,6 +24,7 @@
     "jquery": "^2.1.4",
     "less": "^2.5.1",
     "less-loader": "^2.2.0",
+    "lodash": "^3.10.1",
     "marked": "^0.3.5",
     "moment": "^2.10.3",
     "react": "^0.13.3",

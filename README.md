@@ -23,6 +23,4 @@ node server.js
 ###set up
 
 ###Works before alpha version
-* tags, created time
-
-* disqus
+* tags

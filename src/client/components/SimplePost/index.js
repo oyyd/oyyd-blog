@@ -2,10 +2,36 @@ import React from 'react';
 import {State} from 'react-router';
 import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
+import {curry, flowRight} from 'lodash';
 
+import Disqus from '../Disqus';
 import translate from './translate';
 
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
+
+const trace = curry(function(tag, x) {
+  console.log(tag, x);
+  return x;
+});
+
+const getPostUrl = id => {
+  return '/posts/' + id + '.md'
+};
+
+const getPostText = curry((callback, url) => {
+  $.get(url, callback);
+});
+
+const log = data => {
+  // console.log(data);
+  return data;
+};
+
+const setContent = curry((comp, data) => {
+    comp.setState({
+      content: data
+    });
+});
 
 function highlightCode(codeBlockArr){
   for (var i=0;i<codeBlockArr.length;i++){
@@ -20,17 +46,19 @@ let SimplePost = React.createClass({
       content: ''
     }
   },
-  componentWillMount(){
-    $.get('/posts/' + this.getParams().id + '.md').done((data)=>{
-      this.setState({
-        content: data
-      });
-    });
+  initState(comp){
+    const postTextHandler = flowRight(setContent(comp), log);
+    const initState = flowRight(getPostText(postTextHandler), getPostUrl);
+    initState(comp.getParams().id);
+  },
+  componentDidMount(){
+    this.initState(this);
   },
   render(){
     return(
       <div className="blog-simple-post">
         <MarkedContent>{this.state.content}</MarkedContent>
+        <Disqus initialIdentifier={this.getParams().id} initialUrl={location.href}/>
       </div>
     )
   }

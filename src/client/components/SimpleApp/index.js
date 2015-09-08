@@ -1,6 +1,8 @@
 import React from 'react';
 import {RouteHandler} from 'react-router';
 
+import Disqus from '../Disqus';
+
 let SimpleApp = React.createClass({
   render(){
     return (
@@ -17,7 +19,7 @@ let SimpleApp = React.createClass({
     return (
       <div className="header">
         <h1>
-          <span>oyyd blog</span>
+          <a href="/" className="site-name">oyyd blog</a>
           <a className="github-link" href="https://github.com/oyyd">
             <img src="/static/img/icon/social-github-outline.png"/>
           </a>
