@@ -1,1 +1,1 @@
-export default [{"fileName":"why_i_choose_react_rather_than_angular_in_our_company","title":" 为什么我选择了React来重构我们的前端\r","publicDate":"2015年8月28日"}]
+export default [{"fileName":"why_i_choose_react_rather_than_angular_in_our_company","title":" 为什么我选择了React来重构我们的前端","publicDate":"2015年8月28日"}]

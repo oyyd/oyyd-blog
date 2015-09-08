@@ -19,7 +19,7 @@ let SimpleApp = React.createClass({
     return (
       <div className="header">
         <h1>
-          <span>oyyd blog</span>
+          <a href="/" className="site-name">oyyd blog</a>
           <a className="github-link" href="https://github.com/oyyd">
             <img src="/static/img/icon/social-github-outline.png"/>
           </a>
@@ -38,7 +38,6 @@ let SimpleApp = React.createClass({
           <span>.</span>
         </p>
         <p className="cert">京ICP备14040206号-1</p>
-        <Disqus />
       </div>
     )
   }

@@ -4,6 +4,7 @@ import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
 import {curry, flowRight} from 'lodash';
 
+import Disqus from '../Disqus';
 import translate from './translate';
 
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
@@ -13,14 +14,16 @@ const trace = curry(function(tag, x) {
   return x;
 });
 
-const getPostUrl = id => '/posts/' + id + '.md';
+const getPostUrl = id => {
+  return '/posts/' + id + '.md'
+};
 
 const getPostText = curry((callback, url) => {
   $.get(url, callback);
 });
 
 const log = data => {
-  console.log(data);
+  // console.log(data);
   return data;
 };
 
@@ -48,18 +51,14 @@ let SimplePost = React.createClass({
     const initState = flowRight(getPostText(postTextHandler), getPostUrl);
     initState(comp.getParams().id);
   },
-  componentWillMount(){
-    // $.get(getPostUrl(this.getParams().id)).done((data)=>{
-    //   this.setState({
-    //     content: data
-    //   });
-    // });
+  componentDidMount(){
     this.initState(this);
   },
   render(){
     return(
       <div className="blog-simple-post">
         <MarkedContent>{this.state.content}</MarkedContent>
+        <Disqus initialIdentifier={this.getParams().id} initialUrl={location.href}/>
       </div>
     )
   }

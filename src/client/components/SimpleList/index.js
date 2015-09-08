@@ -1,5 +1,7 @@
 import React from 'react';
+
 import posts from '../../posts.data';
+import Disqus from '../Disqus';
 
 let SimpleList = React.createClass({
   render(){
@@ -12,6 +14,7 @@ let SimpleList = React.createClass({
             <a href={"/#/post/" + item.fileName}>{item.title}</a>
           </h3>
         ))}
+        <Disqus/>
       </div>
     )
   }
