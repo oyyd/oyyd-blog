@@ -1,5 +1,17 @@
 #oyyd blog
 
+###Develop
+
+```
+npm run dev
+```
+
+or
+
+```
+webpack -w
+```
+
 ###Commands
 
 Generate the list file from posts:

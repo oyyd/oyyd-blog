@@ -1,5 +1,15 @@
+@quoteBorderColor: #eee;
+@quoteColor: #999;
 .oyyd-blog{
   font-family: ETBembo, Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  code{
+    font-family: Tahoma, Arial, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  }
+  blockquote{
+    color: @quoteColor;
+    border-left: 5px solid @quoteBorderColor;
+    padding-left: 20px;
+  }
   >.header{
     .site-name{
       cursor: pointer;
@@ -38,7 +48,9 @@
     font-style: normal;
   }
   h3{
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    font-style: normal;
+    font-weight: bold;
   }
   h4{
     font-size: 1.3rem;
@@ -52,6 +64,7 @@
   pre{
     code{
       width: 55%;
+      line-height: 2em;
     }
   }
   code{
