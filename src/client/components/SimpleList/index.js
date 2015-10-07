@@ -9,7 +9,7 @@ let SimpleList = React.createClass({
       <div className="blog-simple-list">
         <h2>Posts</h2>
         {posts.map((item, index)=>(
-          <h3 key={item.title+item.publicDate}>
+          <h3 className="post-item" key={item.title+item.publicDate}>
             <span className="public-date">{item.publicDate}</span>
             <a href={"/#/post/" + item.fileName}>{item.title}</a>
           </h3>

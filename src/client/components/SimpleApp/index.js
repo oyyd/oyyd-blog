@@ -19,8 +19,8 @@ let SimpleApp = React.createClass({
     return (
       <div className="header">
         <h1>
-          <a href="/" className="site-name">oyyd blog</a>
-          <a className="github-link" href="https://github.com/oyyd">
+          <a href="/" className="site-name" title="返回列表">oyyd blog</a>
+          <a className="github-link" href="https://github.com/oyyd" title="查看github账户">
             <img src="/static/img/icon/social-github-outline.png"/>
           </a>
         </h1>

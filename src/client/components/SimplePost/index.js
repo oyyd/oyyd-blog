@@ -65,7 +65,7 @@ let SimplePost = React.createClass({
   }
 });
 
-let MarkedContent = React.createClass({
+const MarkedContent = React.createClass({
   componentDidMount(){
     this.highlightCodes();
   },
