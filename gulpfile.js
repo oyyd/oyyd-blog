@@ -39,10 +39,12 @@ gulp.task('minify', ['webpack'], function(){
 });
 
 gulp.task('webpack', ['gen-list'], function(callback){
-  var task = exec('NODE_ENV=production webpack --progress --color', function(error, stdout, stderr){
+  var task = exec('webpack --progress --color', function(error, stdout, stderr){
     console.log(stdout);
-  });
-  task.on('close', function() {
+    if(error !== null){
+      console.log('ERROR', error.message);
+      return;
+    }
     callback();
   });
 });
