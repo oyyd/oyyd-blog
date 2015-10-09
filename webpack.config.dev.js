@@ -17,7 +17,7 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.js?$/,
-      loaders: ['react-hot', 'babel-loader'] ,
+      loaders: ['react-hot', 'babel?optional[]=runtime'] ,
       include: [
         path.join(__dirname, 'src/client'),
         path.join(__dirname, 'node_modules')
