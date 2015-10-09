@@ -14,7 +14,7 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.js?$/,
-      loaders: ['babel-loader'] ,
+      loaders: ['babel?optional[]=runtime'] ,
       include: [
         path.join(__dirname, 'src/client')
       ],
