@@ -15,15 +15,23 @@
       cursor: pointer;
       border-bottom: none;
     }
-    .github-link{
+    .header-icon{
       border-bottom: none;
+      margin-left: 5%;
+      &:hover{
+        img{
+          transform: rotateZ(15deg);
+        }
+      }
+      &.github-link{
+        margin-left: 10%;
+      }
       img{
         vertical-align: bottom;
         @size: 30px;
         width: @size;
         height: @size;
       }
-      margin-left: 10%;
       font-size: 20px;
     }
   }

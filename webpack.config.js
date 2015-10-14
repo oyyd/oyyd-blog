@@ -4,12 +4,12 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-  entry: [
-    './src/client/bootstrap.js'
-  ],
+  entry: {
+    bundle: './src/client/bootstrap.js'
+  },
   output: {
     path: path.join(__dirname, 'dist/'),
-    filename: 'bundle.js'
+    filename: '[name].js'
   },
   module: {
     loaders: [{
