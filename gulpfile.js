@@ -11,11 +11,13 @@ var webpack = require('webpack');
 
 require('./tasks/gen-list');
 
-gulp.task('minify', ['webpack'], function(){
+gulp.task('minifyJs', ['webpack'], function(callback){
   return gulp.src(path.join(__dirname, 'dist/*.js'))
     .pipe(uglify())
     .pipe(gulp.dest('dist/'));
-  gulp.src(path.join(__dirname, 'dist/*.css'))
+});
+gulp.task('minifyCss', ['minifyJs'], function(callback){
+  return gulp.src(path.join(__dirname, 'dist/*.css'))
     .pipe(minifyCSS())
     .pipe(gulp.dest('dist/'));
 });
@@ -31,4 +33,4 @@ gulp.task('webpack', ['gen-list'], function(callback){
   });
 });
 
-gulp.task('release', ['webpack', 'minify', 'gen-list']);
+gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'minifyCss']);

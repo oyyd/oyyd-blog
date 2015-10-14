@@ -4,6 +4,7 @@
   "description": "oyyd blog",
   "main": "index.html",
   "scripts": {
+    "release": "gulp release",
     "dev": "webpack --watch --progress --colors",
     "start": "node --harmony server.js"
   },
