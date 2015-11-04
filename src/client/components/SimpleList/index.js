@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDON from 'react-dom';
 
 import posts from '../../posts.data';
 import Disqus from '../Disqus';

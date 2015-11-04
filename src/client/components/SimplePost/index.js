@@ -1,5 +1,5 @@
 import React from 'react';
-import {State} from 'react-router';
+import ReactDOM from 'react-dom';
 import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
 import {curry, flowRight} from 'lodash';
@@ -40,7 +40,6 @@ function highlightCode(codeBlockArr){
 }
 
 let SimplePost = React.createClass({
-  mixins:[State],
   getInitialState(){
     return{
       content: ''
@@ -49,7 +48,7 @@ let SimplePost = React.createClass({
   initState(comp){
     const postTextHandler = flowRight(setContent(comp), log);
     const initState = flowRight(getPostText(postTextHandler), getPostUrl);
-    initState(comp.getParams().id);
+    initState(comp.props.params.id);
   },
   componentDidMount(){
     this.initState(this);
@@ -58,8 +57,8 @@ let SimplePost = React.createClass({
     return(
       <div className="blog-simple-post">
         <MarkedContent>{this.state.content}</MarkedContent>
-        <Disqus initialIdentifier={`article_${this.getParams().id}`}
-          initialUrl={`http://blog.oyyd.net/article_${this.getParams().id}`}/>
+        <Disqus initialIdentifier={`article_${this.props.params.id}`}
+          initialUrl={`http://blog.oyyd.net/article_${this.props.params.id}`}/>
       </div>
     )
   }
@@ -73,7 +72,7 @@ const MarkedContent = React.createClass({
     this.highlightCodes();
   },
   highlightCodes(){
-    let codes = React.findDOMNode(this).querySelectorAll('code');
+    let codes = ReactDOM.findDOMNode(this).querySelectorAll('code');
     highlightCode(codes);
   },
   render() {

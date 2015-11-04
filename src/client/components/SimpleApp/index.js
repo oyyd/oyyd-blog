@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteHandler} from 'react-router';
+import ReactDOM from 'react-dom';
 
 import Disqus from '../Disqus';
 
@@ -9,7 +9,7 @@ let SimpleApp = React.createClass({
       <div className="oyyd-blog">
         {this.renderHeader()}
         <div className="content">
-          <RouteHandler/>
+          {this.props.children}
         </div>
         {this.renderFooter()}
       </div>
