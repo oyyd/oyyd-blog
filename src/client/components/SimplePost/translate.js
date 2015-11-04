@@ -3,9 +3,9 @@ import marked from 'marked';
 let commands = [];
 commands.push({
   reg: /\$sidenote\((.*?)\)/,
-  handler: (()=>{
+  handler: (() => {
     let sideNoteCount = 0;
-    return (content)=>{
+    return (content) => {
       sideNoteCount ++;
       return `<label for="${sideNoteCount}" class="margin-toggle sidenote-number"></label>` +
       `<input type="checkbox" id="${sideNoteCount}" class="margin-toggle"/>` +
@@ -16,7 +16,7 @@ commands.push({
 
 commands.push({
   reg: /\$publicdate\((.*?)\)/,
-  handler: (content)=>{
+  handler: (content) => {
     return content;
   }
 });

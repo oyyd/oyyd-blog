@@ -20,8 +20,11 @@ let SimpleApp = React.createClass({
       <div className="header">
         <h1>
           <a href="/" className="site-name" title="返回列表">oyyd blog</a>
-          <a className="github-link" href="https://github.com/oyyd" title="查看github账户">
-            <img src="/static/img/icon/social-github-outline.png"/>
+          <a className="header-icon github-link" href="https://github.com/oyyd" title="github">
+            <span className="icon-github"/>
+          </a>
+          <a className="header-icon rss-feed" href="/dist/feed.xml" title="rss feed">
+            <span className="icon-feed4"/>
           </a>
         </h1>
       </div>

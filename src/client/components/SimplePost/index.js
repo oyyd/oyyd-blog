@@ -23,7 +23,6 @@ const getPostText = curry((callback, url) => {
 });
 
 const log = data => {
-  // console.log(data);
   return data;
 };
 
