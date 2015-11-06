@@ -10,12 +10,14 @@ var minifyCSS = require('gulp-minify-css');
 var webpack = require('webpack');
 
 require('./tasks/gen-list');
+require('./tasks/build-page');
 
 gulp.task('minifyJs', ['webpack'], function(callback){
   return gulp.src(path.join(__dirname, 'dist/*.js'))
     .pipe(uglify())
     .pipe(gulp.dest('dist/'));
 });
+
 gulp.task('minifyCss', ['minifyJs'], function(callback){
   return gulp.src(path.join(__dirname, 'dist/*.css'))
     .pipe(minifyCSS())
@@ -33,4 +35,4 @@ gulp.task('webpack', ['gen-list'], function(callback){
   });
 });
 
-gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'minifyCss']);
+gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'minifyCss', 'build-page']);

@@ -1,14 +1,15 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
 
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: {
-    bundle: './src/client/bootstrap.js'
+    'dist/bundle': './src/client/bootstrap.js',
+    'about/bundle': './src/client/pages/About/index.js'
   },
   output: {
-    path: path.join(__dirname, 'dist/'),
+    path: path.join(__dirname),
     filename: '[name].js'
   },
   module: {

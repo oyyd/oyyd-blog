@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Disqus from '../Disqus';
-
 let SimpleApp = React.createClass({
   render(){
     return (

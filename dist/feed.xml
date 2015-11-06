@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[oyyd]]></title>
+        <description><![CDATA[oyyd]]></description>
+        <link>http://blog.oyyd.net/</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Fri, 06 Nov 2015 14:10:14 GMT</lastBuildDate>
+        <atom:link href="http://blog.oyyd.net/dist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[ Universal(isomorphic) javascript的介绍及React上的实现]]></title>
+            <description><![CDATA[<h1 id="universal-isomorphic-javascript-react-">Universal(isomorphic) javascript的介绍及React上的实现</h1>
+<p>2015年11月4日</p>
+<p><strong>相关链接推荐:</strong></p>
+]]></description>
+            <link>http://blog.oyyd.net/#/post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
+            <guid isPermaLink="false">4a736e05cbc84599b1fa7d72335115da</guid>
+            <pubDate>Tue, 03 Nov 2015 16:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>
+            <description><![CDATA[<h1 id="javascript-immutable-">Javascript中的不可变（immutable）数据结构</h1>
+<p>2015年10月6日</p>
+<p><strong>前言</strong></p>
+<p><a href="http://jlongster.com/Using-Immutable-Data-Structures-in-JavaScript">James Long</a>
+的这篇文章对在javascript中使用
+不可变数据结构的情况进行了阐述，看完之后我发现里面的不少
+话都说到我的心坎里去了。这里我会阐述一些我对此的一些的想法，
+并尝试总结一下文中的部分想法，做一个简单的
+总结（尽可能在十数分钟的阅读内了解内容并对此留下一个较为深刻印象）。</p>
+<p>下文将“不可变的数据结构”简称为“immutable”，将leebyron写的库immutable称为“immutablejs”。</p>
+<h2 id="-immutable-">什么是immutable?</h2>
+<p>引用immutablejs文档上的话，并夹杂一些我自己的解释，
+即“一旦创建后便不可再发生改变的数据结构”，
+“因为原来的数据一旦创建创建后便不可发生
+改变，<strong>所以当你进行改变数据的操作时，实际上是替换掉原来的整个数据</strong>
+（因为你不能改变原来数据中的某一部分）。并且这种做法会
+带来各种好处”。</p>
+<p>再让我们来看一下immutablejs文档上的例子：</p>
+<pre><code class="lang-js">var Immutable = require(&#39;immutable&#39;);
+// map1是一个Map结构的数据
+var map1 = Immutable.Map({a:1, b:2, c:3});
+// 把map2赋值成一个“改变过的”map1
+var map2 = map1.set(&#39;b&#39;, 50);
+// 结果是map1仍旧是map1，它不会发生改变，
+// 而map2变成了“改变后的map1”
+map1.get(&#39;b&#39;); // 2
+map2.get(&#39;b&#39;); // 50
+// 并且 map1 !== map2。后面的例子也会利用到这一点
+</code></pre>
+<p>代码中的注释更确切地说应该是“map1所引用的数据对象
+不会发生改变”，因为你仍旧可以改变
+map1变量所指向的数据。immutable不同于<code>const</code>。</p>
+<h2 id="-immutable-">为什么需要immutable？</h2>
+<h3 id="1-immutable-">1.Immutable可以简化我们对数据的使用</h3>
+<p>当你在使用React（flux）或是Angular等框架时，你会绑定视图和你的
+数据，好让视图跟随数据发生改变。如果数据没有发生变化，
+那我们也就不需要重新渲染视图，否则会浪费性能。</p>
+<p>一个最清晰的例子便是React的class中的<code>shouldComponentUpdate</code>方法。
+每次尝试改变数据后，React都会带着新数据调用这一方法。只要我们在这个方法中返回false，
+那React就不会重新进行渲染。</p>
+<p>那么问题在于：在我们决定要不要重新渲染数据时，
+我们怎么知道我们的数据到底有没有发生变化？</p>
+<p>如果我们需要比对的数据是Number, String, Boolean这样
+的简单数据类型的话，我们很容易通过全等来判断数据
+是否发生变化：</p>
+<pre><code class="lang-js">var state = true;
+var newState = false;
+if (state !== newState){
+  // 重新渲染视图的代码
+}
+</code></pre>
+<p>但如果你的数据是原生可变的Object（或Array）,
+像下面这样的情况：</p>
+<pre><code class="lang-js">var state = {count: 0};
+var newState = {count: 0};
+if (state !== newState){
+  // 因为`state`和`newState`的引用是不同的，所以
+  // 重新渲染视图的代码一定会执行
+}
+// 或是
+var state = {count: 0};
+var newState = state;
+newState.count = 1;
+if (state !== newState) {
+  // 因为`state`和`newState`的引用是相同的，所以
+  // 重新渲染视图的代码一定不会执行  
+}
+</code></pre>
+<p>你就没办法通过全等来判断数据是否发生了
+改变。你需要遍历这个对象上的属性（或数组中的元素）
+来判断是否发生了改变（注意下面的例子并不完备）：</p>
+<pre><code class="lang-js">var state = {count: 0};
+var newState = {count: 0};
+var isDataChanged = false;
+for(var key in newState){
+  if(newState.hasOwnProperty(key)
+    &amp;&amp; newState[key] !== state[key]){
+      isDataChanged = true;
+      break;
+    }
+}
+
+if (isDataChanged){
+  // 执行重新渲染视图的代码
+}
+</code></pre>
+<p>对于上面这个例子，如果对象的属性（或是数组的
+元素）也是可变的数据类型的话，那你就需要递归地
+检验每一个属性（元素）及其子属性（元素）。
+这一操作的复杂程度和其消耗可想而知。</p>
+<p>但如果你使用了immutablejs中的数据结构，你就可以很轻松的达成这一目的：</p>
+<pre><code class="lang-js">var Immutable = require(&#39;immutable&#39;);
+var state = Immutable.Map({count: 0});
+var newState = state.set(&#39;count&#39;, 1);
+if (state !== newState){
+  // 重新渲染视图
+}
+</code></pre>
+<h3 id="2-immutable-">2.使用immutable性能更好</h3>
+<p>同上文所述，如果我们能够快速有效的判断数据是否发生了变化，从而避免不必要的渲染，那我们
+的App就会有更好的性能。并且像是immutablejs这样的库
+一般在实现细节上都会更加优秀，以让变动数据的操作本身有更好的性能
+<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
+<blockquote>
+<p>...it implements fully persistent data structures from scratch using advanced things like tries to implement structural sharing. All updates return new values, but internally structures are shared to drastically reduce memory usage （and GC thrashing).</p>
+</blockquote>
+<h3 id="3-immutable-mutable">3.从函数式编程的角度来讲，immutable优于mutable</h3>
+<p>因为immutable不会背地里改变数据。</p>
+<h2 id="-immutable-">不使用immutable的理由</h2>
+<p>在实现immutabl(或达到相同目的)的库中:</p>
+<p>无疑<a href="https://facebook.github.io/immutable-js/">immutablejs</a>是该类项目中最流行的。</p>
+<p>而<a href="https://github.com/rtfeldman/seamless-immutable">seamless-immutable</a>则轻量得多，
+但它在使用上更接近原生的javascript数据结构。</p>
+<p>使用React的项目则可以直接利用<a href="https://facebook.github.io/react/docs/update.html">immutability-helpers</a>
+来达到类似的效果。</p>
+<p>使用immutable有种种的好处，但至少直到现在为止，它
+在使用javascript的生产环境中，似乎也还没有很流行。<strong>究其原因，一是现在大部分的web app规模相对较小，
+不能很好体现出immutable的优势；再者便是使用像immutablejs这样非轻量级的库会增加程序的复杂程度，
+因为其数据结构及使用方法与javascript中原生的数据结构相差甚远</strong>。</p>
+<p>对于我自己的体会来说，我们在公司里用React+Redux重构了原来的大部分代码，并开发新功能。
+而在这一过程中我们没有加入immutablejs，即便Redux使用全等来判断是否要重新渲染，强制要求使用
+符合immutable特点的数据结构。
+其原因完全同前面所述。单从主观感觉上来讲，引入immutablejs比引入React给程序员带来的负担要更大，
+而且使用immutablejs还要面对绝大多数不使用immutablejs的第三方的问题，你可能要写大量的代码
+来在immutable和mutable类型的数据结构之间进行转换。</p>
+<p>所以我们最后只使用了React自带addons中的immutability-helpers来实现这一目的，虽然这一小工具
+从数据结构本身并不会给我们带来性能提升，但它帮助我们少写了很多代码，而React也能够利用全等来
+简单地判断数据是否发生了改变。</p>
+<h2 id="-">结论</h2>
+<p>immutable可以简化数据操作上的一些问题，提高应用的性能。但我们更需要根据实际情况来考虑
+其带来的副作用，根据情况做出选择。</p>
+]]></description>
+            <link>http://blog.oyyd.net/#/post/immutable_data_structure_in_javascript</link>
+            <guid isPermaLink="false">fd6bc6dad2cf0e938d67908a4f3fd2af</guid>
+            <pubDate>Mon, 05 Oct 2015 16:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[ 为什么我选择了React来重构我们的前端]]></title>
+            <description><![CDATA[<h1 id="-react-">为什么我选择了React来重构我们的前端</h1>
+<p>2015年8月28日</p>
+<p><strong>前言：</strong></p>
+<p>很早以前，我曾经写过自己对React的看法，但那时候自己基本是囫囵吞枣，
+只是去看了React最明显的那些特性，完全没有去尝试深入理解其中的设计思想。
+其结果便是我完全没有理解到React的优点。直到最近，我们公司和其他大多数初创
+公司一样，需要真正地正视前端开发中的问题，并开始进行重构。这时我不得不
+从我熟悉的Angular和另一个不少大牛极力推荐的框架——React中作出选择。
+于是在仔细思考我们开发中的问题，并结合了他人的看法之后，我选择了React。</p>
+<p>这里特别推荐<a href="http://jlongster.com/Removing-User-Interface-Complexity,-or-Why-React-is-Awesome">James Long的这篇关于React的文章</a>。</p>
+<p>当然首先让我们从稍远一点的话题开始。</p>
+<h2 id="-jquery-">只用原生（或jQuery）开发时遇到的问题</h2>
+<h3 id="-">原生开发缺少统一的抽象方法</h3>
+<p>当一个项目刚刚开始时，用原生js进行开发一般不会遇到特别严重的问题。但当
+项目进行了一段时间以后，我们多半会发现我们需要想办法来帮我们管理一团糟
+的代码。</p>
+<p>我们可以看看当我们尝试去修改一个功能或修复一个bug时的一般性做法：</p>
+<ol>
+<li><p>寻找DOM（在浏览器审查元素）</p>
+</li>
+<li><p>看一下这个DOM上比较像钩子的属性（<code>id</code>, <code>class</code>, <code>role</code>, <code>data-xxx</code>）</p>
+</li>
+<li><p>搜索代码中用了这个钩子的地方（基本上通过文本搜索找<code>$()</code>）</p>
+</li>
+<li><p>若命中则进入下一个地方，否则从1, 2, 3中的某一步重新开始，直到命中。</p>
+</li>
+</ol>
+<p>而即便你找到了要修改代码，如果你没有遍历上述流程中每一种可能的情况的话，你就很难保证你没有
+遗漏其他情况。特别是在修改他人的代码时，你很难保证自己做出的修改是完整的、没有副作
+用的。</p>
+<p>产生这一问题的原因，我认为是我们的代码缺少有效的抽象方法。原生（和jQuery）中的api
+都是用来完成某种特定的功能，但并不能帮助我们写出更容易预测，更容易维护、扩展的代码。
+<strong>这就导致了在阅读、维护较为复杂的代码时，虽然能很明确每一个小操作的作用，但自顶至底来看，
+却很难明确每一个操作的目的。</strong> 你很难看懂别人的代码或是自己以前的代码。</p>
+<p>虽然我们平时也会用某些方式（面向对象，jQuery plugin，或一些更简单细碎的方式）
+来帮助我们实现目的，但这大多都是我们为我们当前面临的问题临时想出来的办法。
+这样的抽象是混乱的、不统一的，对于别人来说也不一定能够理解。</p>
+<p>除了缺少抽象导致的代码难以理解、修改以外，另一个不良后果便是很难确定代码的作用范围，
+很难复用代码。而ES5及以前的javascript缺少原生模块机制也是造成这一后果的重要原因。</p>
+<h3 id="-dom-dom-">需要人工DOM操作来维护DOM树的状态</h3>
+<p>看一眼我们的jQuery代码（或原生），不难发现我们绝大多数时候都是在“query DOM”（$(),或是getElement...）。
+因为我们需要找出目标DOM，然后改变目标DOM。</p>
+<p>这是因为在应用中DOM树的状态和javascript（中的数据）的状态是分离的，
+而我们修改目标DOM的目的实际上是要维护维护DOM树和javascript
+状态的一致。</p>
+<p>维护这两者一致的工作本身是不可避免的，但问题是在代码量变大、代码变复杂的情况下，
+人工维护的代价可能要比我们想象的要复杂的多<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
+是确定的，但当前DOM树的状态却可能是多种多样的（不确定的）。理论上要把DOM树改变成目标状态的话，
+你的代码就需要考虑当前DOM树各种可能的状态。不仅如此，你的代码还需要包含改变DOM树状态
+的一步步的操作。</p>
+<h2 id="-react-">对于这些问题，React做了什么？</h2>
+<h3 id="-">树状结构的应用与声明式的代码</h3>
+<p>React要求每一个ReactClass的渲染方法中，都有且只有一个最外层的Virtual DOM，但它内部
+（children属性）可以包含多个Virtual DOM。所以用React写的应用的结构是树状的。
+React应用的树状结构使得任何一个ReactClass都只和它的外层ReactClass以及
+子ReactClass进行直接交互，也即我们很容易弄清楚我们某一部分代码的作用范围。
+不仅如此你只要从<code>render</code>方法中就可以得知你代码使用到的其他部件所用到的当前部件的
+属性、方法，这就使得我们在修改React的代码时会格外轻松。</p>
+<p>实际上这一点对于涉及到UI的代码来说是十分重要的，
+因为我个人觉得通常在产品需求变化时，UI的变化经常会需要你不断地考虑是否要对代码做
+抽象，分离出一部分公用的内容。而React会让你的每一部分代码都为复用做好准备。</p>
+<h3 id="-virtual-dom-dom-">直接生成Virtual DOM来取代DOM操作</h3>
+<p>我们写的React代码并不直接操作DOM，而是根据当前的数据组织出一个Virtual DOM，然后由
+Virtual DOM完成对DOM树的调节。</p>
+<p>由于新生成的Virtual DOM会和上一次的Virtual DOM进行比对，
+然后根据Virtual DOM之间的差别对DOM树进行最小的、必要的调节，所以这一做法在大多数
+情况下都能够保证性能。</p>
+<p>而组织Virtual DOM来操作DOM的更大好处在于：你不需要
+考虑将DOM树从当前的状态A变成目标状态B所需要进行的每一个DOM操作，而只要根据当前数据的
+状态去组织一个目标状态B的Virtual DOM即可，所以这种做法节省了我们的很多工作。并且你的
+应用越是复杂，Virtual DOM这种做法的优势便越是明显。</p>
+<p>另外值得一提的是，组织Virtual DOM的过程完全可以被当成是模板引擎的一种实现。
+并且与其他模板做对比时，我发现Virtual DOM + jsx异常灵活。</p>
+<h3 id="-">容易确定的数据流</h3>
+<p>大多数情况下，我们都可以通过改变应用中的数据来改变React应用的状态。很多时候我们在追踪
+应用的状态时，实际上都是在追踪数据的变化。所以掌握数据的状态在维护及扩展时是非常重要的。
+得益于前面所述的树状结构以及数据和视图的紧密贴合，React应用的数据流向十分清晰明。</p>
+<p>除了这点，React应用中的每一部分都使用props和states两个属性来储存状态。
+其中props属性是外部传入的，在ReactElement部不（应该）发生改变；
+而state属性产生于ReactElement的内部，可传递到子ReactElement中作为props。
+这两个属性很好地将控制components状态的数据进行了分类，让我们更容易在局部代码中对数据进行朔源。</p>
+<h2 id="-angular-">我没有选择Angular的原因</h2>
+<p>React和Angular之间过于不同，以至于我把这篇文章的初衷都稍作了修改。
+所以这里更多从实践的角度谈谈我的看法，可能充满了个人偏见。</p>
+<h3 id="1-react-">1. React的代码可预测行更强</h3>
+<p>把这个问题放到React，你会发现数据都放在props（外部传入）和state（本身拥有）上，
+部件在每个生命周期上要做的事情都有序地放置在componentWillMount、componentDidMount、
+componentDidUpdate等等的方法中（当然你不一定需要全都用到），涉及Virtual DOM的东西都在Render方法里，
+少量退回到原生（jquery）的DOM操作都可以通过refs属性找到。
+这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。</p>
+<p>说这是个问题，是因为我觉得适合生产环境上的框架应该单靠框架本身就能使团队中的每个人都对某一个功能的开发抱有相近的想法。
+这样代码就更容易预测。</p>
+<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
+<p>我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。</p>
+<p>比如Angular的Controller和Directive可以分别被认为是MVC（或MVVM）中的Model和View。
+这就意味着你可以将一个component拆分开来，分别实现这两个部分，也让更小粒度的代码复用成为了可能。</p>
+<p>但问题是明确地分割出Model和View可能在涉及复杂UI交互的领域并不是个最好的选择，
+更多的场景可能需要我们根据实际情况和需求进行思考选择。
+而Angular的这一套抽象方法很难适应现实的复杂情况。</p>
+<p>并且你需要考虑如何去组织这些代码，并决定一个Controller或Directive到底要涉及多少功能，才能用的顺手。
+Angular给我们提供了一套强大的工具，但你仍要去学习、实践怎么用好它们。</p>
+<p>对于React来说，由于React并不分割Model和View，并且代码非常容易被修改、扩展，
+所以你完全可以凭直觉来决定一个功能要如何实现，等待问题出现以后在进行修改。
+因为只要你的代码不是真的太糟糕的话，这一过程真的并不痛苦。</p>
+<p>事实上，如果MVC的重点在于Seperation of Concern，
+那么React部件之间的作用范围分明本身就可以认为是这种思想的实践。
+只要能解决问题，是不是MVC又有什么关系呢？</p>
+<h3 id="3-">3. 学习曲线很重要</h3>
+<p>并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。
+虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。</p>
+<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
+<p>除了Facebook和Instagram以外，看看<a href="https://github.com/facebook/react/wiki/Sites-Using-React">这里</a>，你会发现
+Amazon, AirBnb, Uber,
+支付宝，淘宝等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React
+，至少这些公司对React都持肯定态度。Angular虽然也同样声名远播，但却不至于如此。</p>
+<h2 id="-">结论</h2>
+<p>我们需要框架来帮助我们的开发，其目的还是要解决现有的问题，加快开发效率，增强代码的复用，
+并尽可能让我们可以把精力放在业务上。React虽然在开发效率上的优势不那么明显，但在其他问题
+上发挥的作用是毋庸置疑的。</p>
+<p>而React在拥有Virtual DOM以及不分离View、Model的大胆做法的同时，本身却非常注重工程实践。
+特别是我们在从原生过渡到React的这一过程中更是能深刻地体会到这一点。React是适合用在生产环境上的。</p>
+<h2 id="-react-">附：我们React一些实践结果</h2>
+<p><strong>Virtual DOM的性能问题</strong></p>
+<p>相比于原生js直接修改DOM，Virtual DOM需要多做一次“生成Virtual DOM“和一次”Virtual DOM“的比对，
+所以我在开发过程中一直很关注React的性能问题（这可能同时也是不少反对前端框架开发的工程师的
+论点之一）。碰巧我们应用的某个页面中，有可能会出现数百张
+卡片同时出现在页面中的情况。在我按照这之前的方式把这个页面从原生改为React以后，我发现一旦
+数百张卡片出现，每次改变应用的状态（state）都会有2秒左右的卡顿。</p>
+<p>于是我按照<a href="https://facebook.github.io/react/docs/advanced-performance.html">React doc</a>的教程来
+来尝试优化这个页面。这个教程上优化的要点实际上只有两点：</p>
+<ol>
+<li><p>使用<code>PureRenderMixin</code>，或是<code>componentShouldUpdate</code>阶段在不必要的情况下返回false。</p>
+</li>
+<li><p>在第一点的基础上，使用<a href="https://facebook.github.io/immutable-js/">Immutablejs</a>，来使得在数据结构比较复杂的情况下（Array, Object），
+我们可以只比较reference的变化就判断component是否应该重新渲染。相当于减轻了比对过程的消耗，
+同时也避免了一些本不必要的视图更新。</p>
+</li>
+</ol>
+<p>这两个方法中我采用了前一个，我没有使用Immutablejs，但我用了React自带的
+<a href="http://facebook.github.io/react/docs/update.html">Immutable Helper</a>来
+达到相似的效果。</p>
+<p>其结果是，问题并没有得到很好的改善。因为即便我避免了额外的Virtual DOM的生成、比对过程，但我们
+的应用在状态发生改变时，仍会同时进行数百次对”是否要生成Virtual DOM并进行比对“的判断。</p>
+<p>那么这个问题是否无法解决了呢？答案是否定的。我最后跳过了比对过程，直接利用<code>refs</code>和卡片中
+事先定义好的方法来直接改变目标卡片的状态。这实际上就是退回到了原生实现。结果令人我满意。</p>
+<p>所以我现在对React性能的看法是：<strong>绝大多数情况下没有问题，有问题的话也可以退回原生</strong>。</p>
+<p><strong>代码量的变化</strong></p>
+<p>代码越少，问题越少。在刚开始写Angular代码时，我印象深刻的一点是，你觉得自己的代码刚写
+到一半，就突然发现你的功能已经基本完成了。我觉得。</p>
+<p>那么对比原生，React的代码量会有什么变化呢？在我们的应用中，我正好有大量的机会来将原声代码
+该写成React代码。根据我的观察，我们应用的React版本和原生的版本代码量（行数）差别不大。
+有时React甚至会稍多一些。</p>
+<p><strong>能否从原生（jquery）平滑迁移到React？</strong>
+可以，我们正在做。你可能需要看看文档，结合实际情况多思考一下怎么做比较合适。</p>
+<p><strong>在用React进行了一段时间的实践以后我最大的主观感受</strong>
+我不再那么害怕我以前的代码和我同事的代码了。</p>
+<blockquote>
+<p>2015/8/30 TODO：补充示例和图片，每一点讲的更详细一些。</p>
+</blockquote>
+]]></description>
+            <link>http://blog.oyyd.net/#/post/why_i_choose_react_rather_than_angular_in_our_company</link>
+            <guid isPermaLink="false">46302d6994a8636ebb23f88ab4f1519b</guid>
+            <pubDate>Thu, 27 Aug 2015 16:00:00 GMT</pubDate>
+        </item>
+    </channel>
+</rss>

@@ -1,5 +1,9 @@
 #oyyd blog
 
+### Environment
+
+node > 4.2.x
+
 ###Develop
 
 ```
