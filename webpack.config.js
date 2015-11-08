@@ -5,17 +5,17 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: {
-    'dist/bundle': './src/client/bootstrap.js',
-    'about/bundle': './src/client/pages/About/index.js'
+    'bundle': './src/client/bootstrap.js',
+    'about-bundle': './src/client/pages/About/index.js'
   },
   output: {
-    path: path.join(__dirname),
+    path: path.join(__dirname, './dist'),
     filename: '[name].js'
   },
   module: {
     loaders: [{
       test: /\.js?$/,
-      loaders: ['babel?optional[]=runtime'] ,
+      loaders: ['babel-loader'] ,
       include: [
         path.join(__dirname, 'src/client')
       ],
@@ -31,7 +31,7 @@ module.exports = {
     }]
   },
   plugins: [
-    new ExtractTextPlugin('style.css', {
+    new ExtractTextPlugin('./style.css', {
       allChunks: true
     })
   ]

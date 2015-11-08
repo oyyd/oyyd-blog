@@ -39,4 +39,7 @@ node server.js
 ###set up
 
 ###Works before alpha version
+
 * tags
+
+* hosts on Qiniu and generate pages with SEO
