@@ -2,7 +2,13 @@
 @quoteColor: #999;
 .oyyd-blog{
   font-family: ETBembo, Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  pre{
+    code{
+      background-color: #f8f8f8;
+    }
+  }
   code{
+    background-color: transparent;
     font-family: Tahoma, Arial, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
   }
   blockquote{
@@ -19,7 +25,7 @@
       border-bottom: none;
       margin-left: 5%;
       &:hover{
-        [class^="icon-"], [class*=" icon-"]{
+        [class^="icon-"], [class*=" icon-"], .alike-icon{
           transform: rotateZ(15deg);
         }
       }

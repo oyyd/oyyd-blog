@@ -43,3 +43,5 @@ node server.js
 * tags
 
 * hosts on Qiniu and generate pages with SEO
+
+* use local webpack

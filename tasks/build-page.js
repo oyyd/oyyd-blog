@@ -16,6 +16,7 @@ require('./gen-lib');
 
 gulp.task('build-page', ['gen-lib'], (done) => {
   const About = require('../lib/client/pages/About').default;
+  const title = About.title;
 
   const readTemplate = new Promise((resolve, reject) => {
     fs.readFile(join(prefix, './template/page.html'), {encoding: 'utf8'}, (err, data) => {
@@ -31,7 +32,7 @@ gulp.task('build-page', ['gen-lib'], (done) => {
     const markup = ReactDOMServer.renderToString(React.createElement(About));
 
     const pageStr = ejs.render(templateStr, {
-      title: 'test-title',
+      title,
       content: markup,
       bootstrap: '/dist/about-bundle.js',
     });

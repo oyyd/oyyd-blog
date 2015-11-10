@@ -24,6 +24,18 @@ let SimpleApp = React.createClass({
           <a className="header-icon rss-feed" href="/dist/feed.xml" title="rss feed">
             <span className="icon-feed4"/>
           </a>
+          <a className="header-icon" href="/about" title="about me" style={{
+            marginLeft: '5%',
+            verticalAlign: 'middle',
+            borderBottom: 'none',
+          }}>
+            <span className="alike-icon" style={{
+              fontSize: 18,
+              display: 'inline-block',
+            }}>
+              About
+            </span>
+          </a>
         </h1>
       </div>
     )
