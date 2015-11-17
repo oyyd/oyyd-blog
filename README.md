@@ -18,7 +18,7 @@ webpack -w
 
 ###Commands
 
-Generate the list file from posts:
+Generate the rss-feed file from posts:
 
 ```
 gulp gen-list
@@ -38,10 +38,8 @@ node server.js
 
 ###set up
 
-###Works before alpha version
+###TODO
 
 * tags
 
-* hosts on Qiniu and generate pages with SEO
-
-* use local webpack
+* Support both ajax and html loading when rendering a same page

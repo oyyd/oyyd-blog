@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%-title%></title>
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}"/>
+    <link rel="shortcut icon" href="/static/favicon.ico" />
     <link rel="stylesheet" href="/dist/style.css"/>
-    <meta></meta>
   </head>
   <body>
-    <div id="main"><%-content%></div>
-    <script src="<%-bootstrap%>"></script>
+    <div id="main">{{content | safe}}</div>
+    <script src="/dist/bundle.js"></script>
   </body>
 </html>

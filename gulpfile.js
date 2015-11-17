@@ -10,7 +10,7 @@ var minifyCSS = require('gulp-minify-css');
 var webpack = require('webpack');
 
 require('./tasks/gen-list');
-require('./tasks/build-page');
+require('./tasks/dev');
 
 gulp.task('minifyJs', ['webpack'], function(callback){
   return gulp.src(path.join(__dirname, 'dist/*.js'))
@@ -35,4 +35,4 @@ gulp.task('webpack', ['gen-list'], function(callback){
   });
 });
 
-gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'minifyCss', 'build-page']);
+gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'minifyCss']);

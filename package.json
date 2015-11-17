@@ -5,8 +5,10 @@
   "main": "index.html",
   "scripts": {
     "release": "gulp release",
-    "dev": "webpack --watch --progress --colors",
-    "build:lib": "babel src --out-dir lib"
+    "build:rss": "gulp gen-list",
+    "build:bundle": "webpack --watch --progress --colors",
+    "build:lib": "babel src -w --out-dir lib",
+    "start": "pm2 start process.json"
   },
   "author": "oyyd",
   "license": "MIT",
@@ -20,7 +22,6 @@
     "babel-runtime": "^6.0.14",
     "css-loader": "^0.15.6",
     "del": "^2.0.2",
-    "ejs": "^2.3.4",
     "extract-text-webpack-plugin": "^0.8.2",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.0",
@@ -43,5 +44,10 @@
     "rss": "^1.1.1",
     "style-loader": "^0.12.3",
     "webpack": "^1.10.5"
+  },
+  "dependencies": {
+    "compression": "^1.6.0",
+    "express": "^4.13.3",
+    "nunjucks": "^2.1.0"
   }
 }

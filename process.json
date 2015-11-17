@@ -1,0 +1,7 @@
+{
+  "apps": [{
+      "name": "oyyd-blog",
+      "script": "lib/server/app.js",
+      "watch": "../"
+    }]
+}

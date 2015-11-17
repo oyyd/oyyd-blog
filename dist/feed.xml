@@ -4,7 +4,7 @@
         <description><![CDATA[oyyd]]></description>
         <link>http://blog.oyyd.net/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Tue, 10 Nov 2015 12:14:52 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 15 Nov 2015 09:32:22 GMT</lastBuildDate>
         <atom:link href="http://blog.oyyd.net/dist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[ Universal(Isomorphic) JavaScript在React上的应用]]></title>
@@ -69,7 +69,7 @@ if (Meteor.isClient) {
 <h2 id="-">相关链接</h2>
 <p>StrongLoop: <a href="https://strongloop.com/strongblog/node-js-react-isomorphic-javascript-why-it-matters/">How to Implement Node + React Isomorphic JavaScript &amp; Why it Matters</a></p>
 ]]></description>
-            <link>http://blog.oyyd.net/#/post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
+            <link>http://blog.oyyd.net//post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
             <guid isPermaLink="false">4a736e05cbc84599b1fa7d72335115da</guid>
             <pubDate>Tue, 03 Nov 2015 16:00:00 GMT</pubDate>
         </item>
@@ -207,7 +207,7 @@ if (state !== newState){
 <p>immutable可以简化数据操作上的一些问题，提高应用的性能。但我们更需要根据实际情况来考虑
 其带来的副作用，根据情况做出选择。</p>
 ]]></description>
-            <link>http://blog.oyyd.net/#/post/immutable_data_structure_in_javascript</link>
+            <link>http://blog.oyyd.net//post/immutable_data_structure_in_javascript</link>
             <guid isPermaLink="false">fd6bc6dad2cf0e938d67908a4f3fd2af</guid>
             <pubDate>Mon, 05 Oct 2015 16:00:00 GMT</pubDate>
         </item>
@@ -373,7 +373,7 @@ Amazon, AirBnb, Uber,
 <p>2015/8/30 TODO：补充示例和图片，每一点讲的更详细一些。</p>
 </blockquote>
 ]]></description>
-            <link>http://blog.oyyd.net/#/post/why_i_choose_react_rather_than_angular_in_our_company</link>
+            <link>http://blog.oyyd.net//post/why_i_choose_react_rather_than_angular_in_our_company</link>
             <guid isPermaLink="false">46302d6994a8636ebb23f88ab4f1519b</guid>
             <pubDate>Thu, 27 Aug 2015 16:00:00 GMT</pubDate>
         </item>

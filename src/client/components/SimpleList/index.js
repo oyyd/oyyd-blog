@@ -12,7 +12,7 @@ let SimpleList = React.createClass({
         {posts.map((item, index)=>(
           <h3 className="post-item" key={item.title+item.publicDate}>
             <span className="public-date">{item.publicDate}</span>
-            <a href={"/#/post/" + item.fileName}>{item.title}</a>
+            <a href={"/post/" + item.fileName}>{item.title}</a>
           </h3>
         ))}
         <Disqus/>

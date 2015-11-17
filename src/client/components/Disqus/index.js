@@ -14,7 +14,7 @@ const Disqus = React.createClass({
     return {
       initialIdentifier: constants.DEFAULT_IDENTIFIER,
       initialTitle: constants.DEFAULT_TITLE,
-      initialUrl: location.href
+      // initialUrl: location.href
     }
   },
   componentDidMount(){
