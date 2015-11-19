@@ -1,7 +1,7 @@
 import express from 'express';
 import compression from 'compression';
 
-function static(app){
+function applyStatic(app){
   app.use('/dist', compression());
   app.use('/dist', express.static(path.join(prefix, './dist')));
   app.use('/static', compression());
@@ -10,4 +10,4 @@ function static(app){
   app.use('/posts', express.static(path.join(prefix, './posts')));
 }
 
-export default static;
+export default applyStatic;

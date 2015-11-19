@@ -2,6 +2,9 @@
   "apps": [{
       "name": "oyyd-blog",
       "script": "lib/server/app.js",
-      "watch": "../"
+      "watch": "./lib/server",
+      "args": [],
+      "out_file": "./logs/common.log",
+      "error_file": "./logs/error.log"
     }]
 }

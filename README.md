@@ -18,7 +18,7 @@ webpack -w
 
 ###Commands
 
-Generate the rss-feed file from posts:
+translate md to html and generate the rss-feed file from posts:
 
 ```
 gulp gen-list

@@ -1,0 +1,60 @@
+<h1 id="universal-isomorphic-javascript-react-">Universal(Isomorphic) JavaScript在React上的应用</h1>
+<p>2015年11月4日</p>
+<h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
+<p>Universal Javascript又称Isomorphic JavaScript<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">名称来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
+<p>Universal Javascript的原理实际上非常简单，比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
+<pre><code class="lang-js">if (Meteor.isServer) {
+  // This code only runs on the server
+}
+
+if (Meteor.isClient) {
+  // This code only runs on the client
+}
+</code></pre>
+<p>只要通过<code>Meteor.isServer</code>和<code>Meteor.isClient</code>，我们就能够控制代码在不同环境下要执行的部分，从而使得这份代码可以同时在客户端和服务器上执行，并根据环境返回对应的结果。</p>
+<h2 id="universal-javascript-react-">Universal JavaScript可以给React应用带来什么？</h2>
+<p>那么对于React来讲，Universal Javascript又有什么用呢?我们知道，html标签加载了一部分就会显示一部分； 而React是通过javascript来渲染html内容的，而这也就意味着应用完成加载并运行脚本之前，React应用的html内容是不会出现在页面上的。</p>
+<p>像是blog.oyyd.net是用React + React Router写的，一开始的页面内容是这样的：</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;oyyd blog - 这是亚东的博客（偏技术），你可以在上面看到我的一些想法和实践，欢迎来访。&lt;/title&gt;
+    &lt;meta charset=&quot;utf-8&quot;/&gt;
+    &lt;meta name=&quot;description=&quot; content=&quot;内容偏前端，但不局限于前端，没准你会感兴趣。&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/dist/style.css&quot;/&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;main&quot;&gt;&lt;/div&gt;
+    &lt;script src=&quot;/dist/bundle.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>上面的内容基本没有有效的html标签，这就会产生<strong>一些问题</strong>：</p>
+<ol>
+<li><p>用户在脚本加载运行之前是不会看到React部分的内容，从体验上来讲好像等待了更多的时间（特别是在网速差的时候）。</p>
+</li>
+<li><p>搜索引擎无法有效地爬取页面内容<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">对于google而言有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a></span> ，难以进行SEO。</p>
+</li>
+</ol>
+<p>对于这些问题，我们可以利用Universal JavaScript来在服务器上渲染React应用中的内容，从而解决这些问题。</p>
+<h2 id="-">实现</h2>
+<p>这个网站的<a href="http://blog.oyyd.net/about">About</a>页面的实现便是一个非常简洁的例子，其实现的思路大致如下：</p>
+<ol>
+<li><p>生成初始状态下的React应用的html字符串。</p>
+</li>
+<li><p>配合模板引擎ejs生成完整的html内容。</p>
+</li>
+<li><p>在前端启动React应用。</p>
+</li>
+</ol>
+<p>如果你在找更适合用在生产环境上的做法，可以查看下面StrongLoop的教程。</p>
+<h2 id="react-universal-javascript-">React + Universal JavaScript还有更多潜力</h2>
+<p>好处：</p>
+<ol>
+<li><p>替代模板引擎。</p>
+</li>
+<li><p>减少ajax请求（需要redux配合？）。</p>
+</li>
+</ol>
+<h2 id="-">相关链接</h2>
+<p>StrongLoop: <a href="https://strongloop.com/strongblog/node-js-react-isomorphic-javascript-why-it-matters/">How to Implement Node + React Isomorphic JavaScript &amp; Why it Matters</a></p>

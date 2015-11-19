@@ -11,6 +11,7 @@ var cwd = process.cwd();
 var translate = require(path.join(cwd, './lib/client/components/SimplePost/translate.es5'));
 var metaData = require(path.join(cwd, './lib/client/posts.data')).default;
 var assign = require('lodash.assign');
+var translate = require(path.join(cwd, './lib/client/components/SimplePost/translate.es5.js'));
 
 var AUTHOR = 'oyyd';
 var SITE_URL = 'http://blog.oyyd.net/';
@@ -40,11 +41,14 @@ function writeFeedFile(posts, callback){
 
   posts.slice(0, 5).map(function(item){
     const content = getPostContent(item.fileName + '.md');
+    const htmlContent = translate(content);
+    fs.writeFileSync(path.join(cwd, `./dist/posts/${item.fileName}.html`), htmlContent);
+
     var md5 = crypto.createHash('md5');
     var guid = md5.update(item.fileName).digest('hex');
     return {
       title: item.title,
-      description: translate(content),
+      description: htmlContent,
       url: getPostUrl(item.fileName),
       guid: guid,
       date: moment(item.publicDate, 'YYYY年MM月DD日')

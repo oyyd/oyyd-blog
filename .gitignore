@@ -5,3 +5,4 @@ test/**
 config.json
 npm-debug.log
 lib/**
+logs/**

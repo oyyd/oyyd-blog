@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "release": "gulp release",
-    "build:rss": "gulp gen-list",
+    "build:list": "gulp gen-list",
     "build:bundle": "webpack --watch --progress --colors",
     "build:lib": "babel src -w --out-dir lib",
     "start": "pm2 start process.json"

@@ -41,7 +41,7 @@ function highlightCode(codeBlockArr){
 let SimplePost = React.createClass({
   getInitialState(){
     return{
-      content: ''
+      content: this.props.content?this.props.content:'',
     }
   },
   initState(comp){
@@ -50,7 +50,9 @@ let SimplePost = React.createClass({
     initState(comp.props.params.id);
   },
   componentDidMount(){
-    this.initState(this);
+    if(!this.state.content){
+      this.initState(this);
+    }
   },
   render(){
     return(
