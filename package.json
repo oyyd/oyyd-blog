@@ -8,7 +8,9 @@
     "build:list": "gulp gen-list",
     "build:bundle": "webpack --watch --progress --colors",
     "build:lib": "babel src -w --out-dir lib",
-    "start": "pm2 start process.json"
+    "start:single": "node lib/server/app.js",
+    "start": "pm2 start process.json",
+    "start:dev": "pm2 start process.dev.json"
   },
   "author": "oyyd",
   "license": "MIT",

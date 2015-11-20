@@ -6,32 +6,33 @@ commands.push({
   handler: (() => {
     let sideNoteCount = 0;
     return (content) => {
-      sideNoteCount ++;
+      sideNoteCount++;
       return `<label for="${sideNoteCount}" class="margin-toggle sidenote-number"></label>` +
       `<input type="checkbox" id="${sideNoteCount}" class="margin-toggle"/>` +
       `<span class="sidenote">${content}</span> `;
-    }
-  })()
+    };
+  })(),
 });
 
 commands.push({
   reg: /\$publicdate\((.*?)\)/,
   handler: (content) => {
     return content;
-  }
+  },
 });
 
-function translate(content){
+function translate(content) {
   let result = marked(content);
-  for(let command of commands){
+  for (let command of commands) {
     let regResult = command.reg.exec(result);
-    while(regResult){
+    while (regResult) {
       let match = regResult[0];
       let text = regResult[1];
       result = result.replace(match, command.handler(text));
       regResult = command.reg.exec(result);
     }
   }
+
   return result;
 }
 

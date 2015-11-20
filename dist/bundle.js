@@ -195,6 +195,7 @@
 	});
 
 	React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
+	React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 	module.exports = React;
 
@@ -10545,6 +10546,7 @@
 	    multiple: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
 	    muted: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
 	    name: null,
+	    nonce: MUST_USE_ATTRIBUTE,
 	    noValidate: HAS_BOOLEAN_VALUE,
 	    open: HAS_BOOLEAN_VALUE,
 	    optimum: null,
@@ -10556,6 +10558,7 @@
 	    readOnly: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
 	    rel: null,
 	    required: HAS_BOOLEAN_VALUE,
+	    reversed: HAS_BOOLEAN_VALUE,
 	    role: MUST_USE_ATTRIBUTE,
 	    rows: MUST_USE_ATTRIBUTE | HAS_POSITIVE_NUMERIC_VALUE,
 	    rowSpan: null,
@@ -18758,7 +18761,7 @@
 
 	'use strict';
 
-	module.exports = '0.14.2';
+	module.exports = '0.14.3';
 
 /***/ },
 /* 148 */
@@ -20367,8 +20370,6 @@
 	 * This source code is licensed under the BSD-style license found in the
 	 * LICENSE file in the root directory of this source tree. An additional grant
 	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule invariant
 	 */
 
 	'use strict';
@@ -20402,9 +20403,9 @@
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
 	      error = new Error(
-	        'Invariant Violation: ' +
 	        format.replace(/%s/g, function() { return args[argIndex++]; })
 	      );
+	      error.name = 'Invariant Violation';
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
@@ -24498,11 +24499,7 @@
 	}
 
 	function generateRoutes(env) {
-	  if (env === 'server') {
-	    return _react2.default.createElement(_reactRouter.Router, null, _react2.default.createElement(_reactRouter.Route, { path: '/', component: _SimpleApp2.default }, _react2.default.createElement(_reactRouter.IndexRoute, { component: _SimpleList2.default }), _react2.default.createElement(_reactRouter.Route, { path: 'post/:id', component: _SimplePost2.default })), _react2.default.createElement(_reactRouter.Route, { path: '/about', component: _index2.default }));
-	  } else {
-	    return _react2.default.createElement(_reactRouter.Router, { history: (0, _createBrowserHistory2.default)() }, _react2.default.createElement(_reactRouter.Route, { path: '/', component: _SimpleApp2.default }, _react2.default.createElement(_reactRouter.IndexRoute, { component: _SimpleList2.default }), _react2.default.createElement(_reactRouter.Route, { path: 'post/:id', component: _SimplePost2.default })), _react2.default.createElement(_reactRouter.Route, { path: '/about', component: _index2.default }));
-	  }
+	  return _react2.default.createElement(_reactRouter.Router, { history: env === 'server' ? null : (0, _createBrowserHistory2.default)() }, _react2.default.createElement(_reactRouter.Route, { path: '/', component: _SimpleApp2.default }, _react2.default.createElement(_reactRouter.IndexRoute, { component: _SimpleList2.default }), _react2.default.createElement(_reactRouter.Route, { path: 'post/:id', component: _SimplePost2.default })), _react2.default.createElement(_reactRouter.Route, { path: '/about', component: _index2.default }));
 	}
 
 	exports.default = generateRoutes;
@@ -24581,7 +24578,7 @@
 	var SimplePost = _react2.default.createClass({
 	  getInitialState: function getInitialState() {
 	    return {
-	      content: ''
+	      content: this.props.content ? this.props.content : ''
 	    };
 	  },
 	  initState: function initState(comp) {
@@ -24590,7 +24587,9 @@
 	    initState(comp.props.params.id);
 	  },
 	  componentDidMount: function componentDidMount() {
-	    this.initState(this);
+	    if (!this.state.content) {
+	      this.initState(this);
+	    }
 	  },
 	  render: function render() {
 	    return _react2.default.createElement('div', { className: 'blog-simple-post' }, _react2.default.createElement(MarkedContent, null, this.state.content), _react2.default.createElement(_Disqus2.default, { initialIdentifier: 'article_' + this.props.params.id,

@@ -18,53 +18,71 @@ const prefix = process.cwd();
 // TODO: `SimplePostsCache` will cost too much memory someday
 // TODO: use redis or whatever
 const SimplePostsCache = {};
-function getPostContent(fileName){
+function getPostContent(fileName) {
   return new Promise((resolve, reject) => {
-    if(SimplePostsCache[fileName]){
+    if (SimplePostsCache[fileName]) {
       resolve(SimplePostsCache[fileName]);
       return;
     }
-    fs.readFile(path.join(prefix, 'posts', fileName+'.md'), {encoding: 'utf8'}, (err, data) => {
-      if(err){
+
+    fs.readFile(path.join(prefix, 'dist/posts', fileName + '.html'), {encoding: 'utf8'}, (err, data) => {
+      if (err) {
         reject(err);
-        return ;
+        return;
       }
+
       SimplePostsCache[fileName] = data;
       resolve(data);
     });
   });
 }
 
-function transformPostsData(data){
+function transformPostsData(data) {
   const hash = {};
 
-  for(let item of data){
+  for (let item of data) {
     hash[item.fileName] = item;
   }
+
   return hash;
 }
 
 const templateString = fs.readFileSync('./template/page.html', {encoding: 'utf8'});
 const postsDataHash = transformPostsData(PostsData);
 
-function pageRender(req, res){
+function pageRender(req, res) {
   const fileName = req.url.slice(req.url.lastIndexOf('/') + 1);
   const postData = postsDataHash[fileName];
 
-  if(!postData){
+  if (!postData) {
     res.status(404).send('404');
     return;
   }
 
   getPostContent(fileName).then(content => {
+    // try{
+    //   console.log(renderToString(React.createElement(SimplePost, {
+    //     content,
+    //     params: {
+    //       id: fileName,
+    //     },
+    //   })));
+    // }catch(e){
+    //   console.log(e.message);
+    // }
+    // TODO: mock params.id
     res.status(200).send(nunjucks.renderString(templateString, {
       title: postData.title,
       content: renderToString(React.createElement(SimplePost, {
         content,
+        params: {
+          id: fileName,
+        },
       })),
       description: postData.description,
     }));
   }, err => {
+
     res.status(500).send(err.message);
   });
 }

@@ -15,7 +15,7 @@ const trace = curry(function(tag, x) {
 });
 
 const getPostUrl = id => {
-  return '/posts/' + id + '.md'
+  return '/posts/' + id + '.md';
 };
 
 const getPostText = curry((callback, url) => {
@@ -27,60 +27,66 @@ const log = data => {
 };
 
 const setContent = curry((comp, data) => {
-    comp.setState({
-      content: data
+  comp.setState({
+      content: data,
     });
 });
 
-function highlightCode(codeBlockArr){
-  for (var i=0;i<codeBlockArr.length;i++){
+function highlightCode(codeBlockArr) {
+  for (var i = 0; i < codeBlockArr.length; i++) {
     hljs.highlightBlock(codeBlockArr[i]);
   }
 }
 
 let SimplePost = React.createClass({
-  getInitialState(){
-    return{
-      content: this.props.content?this.props.content:'',
-    }
+  getInitialState() {
+    return {
+      content: this.props.content ? this.props.content : '',
+    };
   },
-  initState(comp){
+
+  initState(comp) {
     const postTextHandler = flowRight(setContent(comp), log);
     const initState = flowRight(getPostText(postTextHandler), getPostUrl);
     initState(comp.props.params.id);
   },
-  componentDidMount(){
-    if(!this.state.content){
+
+  componentDidMount() {
+    if (!this.state.content) {
       this.initState(this);
     }
   },
-  render(){
-    return(
-      <div className="blog-simple-post">
+
+  render() {
+    return (
+      <div className='blog-simple-post'>
         <MarkedContent>{this.state.content}</MarkedContent>
         <Disqus initialIdentifier={`article_${this.props.params.id}`}
           initialUrl={`http://blog.oyyd.net/article_${this.props.params.id}`}/>
       </div>
-    )
-  }
+    );
+  },
 });
 
 const MarkedContent = React.createClass({
-  componentDidMount(){
+  componentDidMount() {
     this.highlightCodes();
   },
-  componentDidUpdate(){
+
+  componentDidUpdate() {
     this.highlightCodes();
   },
-  highlightCodes(){
+
+  highlightCodes() {
     let codes = ReactDOM.findDOMNode(this).querySelectorAll('code');
     highlightCode(codes);
   },
+
   render() {
-    return(
+    return (
       <div dangerouslySetInnerHTML={{__html: translate(this.props.children.toString())}} />
     );
-  }
+  },
 });
 
 export default SimplePost;

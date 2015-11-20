@@ -1,7 +1,11 @@
+import path from 'path';
+
 import express from 'express';
 import compression from 'compression';
 
-function applyStatic(app){
+const prefix = process.cwd();
+
+function applyStatic(app) {
   app.use('/dist', compression());
   app.use('/dist', express.static(path.join(prefix, './dist')));
   app.use('/static', compression());

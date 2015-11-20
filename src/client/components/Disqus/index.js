@@ -8,24 +8,29 @@ const Disqus = React.createClass({
   propTypes: {
     initialIdentifier: string,
     initialTitle: string,
-    initialUrl: string
+    initialUrl: string,
   },
-  getDefaultProps(){
+  getDefaultProps() {
     return {
       initialIdentifier: constants.DEFAULT_IDENTIFIER,
       initialTitle: constants.DEFAULT_TITLE,
+
       // initialUrl: location.href
-    }
+    };
   },
-  componentDidMount(){
+
+  componentDidMount() {
     this.requireInit();
+
     // if(window.DISQUS){
     //   this.configInit();
     // }else{
     //   this.requireInit();
     // }
   },
-  requireInit(){
+
+  requireInit() {
+    // jscs:disable
     window.disqus_shortname = constants.SHORT_NAME;
     window.disqus_identifier = this.props.initialIdentifier;
     window.disqus_title = this.props.initialTitle;
@@ -38,7 +43,9 @@ const Disqus = React.createClass({
       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
+    // jscs:enable
   },
+
   // configInit(){
   //   window.DISQUS.reset({
   //     reload: true,
@@ -95,11 +102,11 @@ const Disqus = React.createClass({
   //     }, 1000);
   //   }
   // },
-  render(){
+  render() {
     return (
-      <div className="blog-disqus" id="disqus_thread"></div>
-    )
-  }
+      <div className='blog-disqus' id='disqus_thread'></div>
+    );
+  },
 });
 
 export default Disqus;
