@@ -3,34 +3,15 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
 import {curry, flowRight} from 'lodash';
+import {connect} from 'react-redux';
 
 import Disqus from '../Disqus';
 import translate from './translate';
 
+// TODO: init hljs somewhere else
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
 
-const trace = curry(function(tag, x) {
-  console.log(tag, x);
-  return x;
-});
-
-const getPostUrl = id => {
-  return '/posts/' + id + '.md';
-};
-
-const getPostText = curry((callback, url) => {
-  $.get(url, callback);
-});
-
-const log = data => {
-  return data;
-};
-
-const setContent = curry((comp, data) => {
-  comp.setState({
-      content: data,
-    });
-});
+const {string} = React.PropTypes;
 
 function highlightCode(codeBlockArr) {
   for (var i = 0; i < codeBlockArr.length; i++) {
@@ -38,35 +19,22 @@ function highlightCode(codeBlockArr) {
   }
 }
 
-let SimplePost = React.createClass({
-  getInitialState() {
-    return {
-      content: this.props.content ? this.props.content : '',
-    };
-  },
-
-  initState(comp) {
-    const postTextHandler = flowRight(setContent(comp), log);
-    const initState = flowRight(getPostText(postTextHandler), getPostUrl);
-    initState(comp.props.params.id);
-  },
-
-  componentDidMount() {
-    if (!this.state.content) {
-      this.initState(this);
-    }
-  },
-
+class SimplePost extends React.Component {
   render() {
     return (
       <div className='blog-simple-post'>
         <MarkedContent>{this.state.content}</MarkedContent>
-        <Disqus initialIdentifier={`article_${this.props.params.id}`}
-          initialUrl={`http://blog.oyyd.net/article_${this.props.params.id}`}/>
+        <Disqus initialIdentifier={`article_${this.props.title}`}
+          initialUrl={`http://blog.oyyd.net/article_${this.props.htmlContent}`}/>
       </div>
     );
-  },
-});
+  }
+}
+
+SimplePost.propTypes = {
+  title: string,
+  htmlContent: string,
+};
 
 const MarkedContent = React.createClass({
   componentDidMount() {
@@ -89,4 +57,14 @@ const MarkedContent = React.createClass({
   },
 });
 
-export default SimplePost;
+function select(state) {
+  const {title, htmlContent} = state.post;
+  return {
+    title,
+    htmlContent,
+  };
+}
+
+const ConnectedSimplePost = connect(select)(SimplePost);
+
+export default ConnectedSimplePost;

@@ -1,3 +1,4 @@
+'use strict';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,6 +14,7 @@ const prefix = process.cwd();
 const devPort = 80;
 const proPort = 443;
 const app = express();
+let port = null;
 
 // serve static files
 applyStatic(app);
@@ -20,17 +22,19 @@ applyStatic(app);
 // page router
 app.use('/', router);
 
-const server = null;
+let server = null;
 if (process.argv[2] === 'dev') {
+  port = devPort;
   server = http.createServer(app);
-  server.listen(devPort);
 }else {
   const options = {
     cert: fs.readFileSync(`/etc/cert/${domain}.crt`),
     key: fs.readFileSync(`/etc/private/${domain}.key`),
   };
+  port = proPort;
   server = https.createServer(options, app);
-  server.listen(proPort);
 }
+
+server.listen(port);
 
 console.log(`server running on ${port}`);

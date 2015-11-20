@@ -1,46 +1,46 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
-    'bundle': './lib/client/bootstrap.js',
-    'about-bundle': ['./lib/client/pages/About/index.js']
+    bundle: './lib/client/bootstrap.js',
+    'about-bundle': ['./lib/client/pages/About/index.js'],
   },
   output: {
     path: path.join(__dirname, './dist'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
   resolve: {
     alias: {
-      src: path.join(__dirname, 'src')
-    }
+      src: path.join(__dirname, 'src'),
+    },
   },
   module: {
     loaders: [{
       test: /\.js?$/,
-      loaders: ['babel-loader'] ,
+      loaders: ['babel-loader'],
       include: [
-        path.join(__dirname, 'lib/client')
+        path.join(__dirname, 'lib/client'),
       ],
       exclude: [
-        path.join(__dirname, 'node_modules')
-      ]
-    },{
+        path.join(__dirname, 'node_modules'),
+      ],
+    }, {
       test: /\.less$/,
       include: [
         path.join(__dirname, 'src/client'),
       ],
       exclude: [
-        path.join(__dirname, 'node_modules')
+        path.join(__dirname, 'node_modules'),
       ],
-      loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
-    }]
+      loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader'),
+    },],
   },
   plugins: [
     new ExtractTextPlugin('./style.css', {
-      allChunks: true
-    })
-  ]
+      allChunks: true,
+    }),
+  ],
 };

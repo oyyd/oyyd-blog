@@ -5,13 +5,12 @@ import path from 'path';
 
 import nunjucks from 'nunjucks';
 import React from 'react';
-import {renderToString} from 'react-dom/server';
+import {renderToString, updatePath} from 'react-dom/server';
 
-// TODO: here we skip React Router and use SimplePost directly
-// to pass post content in components, maybe we can use Redux
-// to help us do someting like this
-import SimplePost from '../../client/components/SimplePost';
+import createApp from '../../client/createApp';
+import createStore from '../../client/state/createStore';
 import PostsData from '../../client/posts.data';
+import {match, RoutingContext} from 'react-router';
 
 const prefix = process.cwd();
 
@@ -51,40 +50,50 @@ const templateString = fs.readFileSync('./template/page.html', {encoding: 'utf8'
 const postsDataHash = transformPostsData(PostsData);
 
 function pageRender(req, res) {
-  const fileName = req.url.slice(req.url.lastIndexOf('/') + 1);
-  const postData = postsDataHash[fileName];
+  const store = createStore();
+  const app = createApp(store, 'server');
+  match({routes: app, location: req.url},
+    (error, redirectLocation, renderProps) => {
+      console.log('renderProps', renderProps.components);
 
-  if (!postData) {
-    res.status(404).send('404');
-    return;
-  }
+      // TODO: update app
 
-  getPostContent(fileName).then(content => {
-    // try{
-    //   console.log(renderToString(React.createElement(SimplePost, {
-    //     content,
-    //     params: {
-    //       id: fileName,
-    //     },
-    //   })));
-    // }catch(e){
-    //   console.log(e.message);
-    // }
-    // TODO: mock params.id
-    res.status(200).send(nunjucks.renderString(templateString, {
-      title: postData.title,
-      content: renderToString(React.createElement(SimplePost, {
-        content,
-        params: {
-          id: fileName,
-        },
-      })),
-      description: postData.description,
-    }));
-  }, err => {
+      if (error) {
+        res.status(500).send(error.message);
+      } else if (redirectLocation) {
+        res.redirect(302, redirectLocation.pathname + redirectLocation.search);
+      } else if (renderProps) {
+        res.status(200).send(nunjucks.renderString(templateString, {
+          content: renderToString(app),
+        }));
+      } else {
+        res.status(404).send('Not found');
+      }
+    });
 
-    res.status(500).send(err.message);
-  });
+  // const fileName = req.url.slice(req.url.lastIndexOf('/') + 1);
+  // const postData = postsDataHash[fileName];
+
+  // if (!postData) {
+  //   res.status(404).send('404');
+  //   return;
+  // }
+
+  // getPostContent(fileName).then(content => {
+  //   res.status(200).send(nunjucks.renderString(templateString, {
+  //     title: postData.title,
+  //     content: renderToString(React.createElement(SimplePost, {
+  //       content,
+  //       params: {
+  //         id: fileName,
+  //       },
+  //     })),
+  //     description: postData.description,
+  //   }));
+  // }, err => {
+
+  //   res.status(500).send(err.message);
+  // });
 }
 
 export default pageRender;
