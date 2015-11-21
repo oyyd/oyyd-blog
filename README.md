@@ -43,3 +43,5 @@ node server.js
 * Support both ajax and html loading when rendering a same page
 
 * refactor server side rendering
+
+* refactor building process

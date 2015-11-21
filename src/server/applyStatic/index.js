@@ -6,6 +6,9 @@ import compression from 'compression';
 const prefix = process.cwd();
 
 function applyStatic(app) {
+  // show ownership to google webmaster tools
+  app.get('/google38940b23fa0e04ca.html', express.static(path.join(prefix)));
+
   app.use('/dist', compression());
   app.use('/dist', express.static(path.join(prefix, './dist')));
   app.use('/static', compression());
