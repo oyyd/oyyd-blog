@@ -1,7 +1,8 @@
 import React from 'react';
 
-import constants from './constants';
+import CONSTANTS from '../../CONSTANTS';
 
+const inNode = typeof window === 'undefined';
 const {string} = React.PropTypes;
 
 const Disqus = React.createClass({
@@ -12,10 +13,9 @@ const Disqus = React.createClass({
   },
   getDefaultProps() {
     return {
-      initialIdentifier: constants.DEFAULT_IDENTIFIER,
-      initialTitle: constants.DEFAULT_TITLE,
-
-      // initialUrl: location.href
+      initialIdentifier: CONSTANTS.DISQUS.DEFAULT_IDENTIFIER,
+      initialTitle: CONSTANTS.DISQUS.DEFAULT_TITLE,
+      initialUrl: inNode ? '' : location.href,
     };
   },
 
@@ -30,8 +30,12 @@ const Disqus = React.createClass({
   },
 
   requireInit() {
+    if (inNode) {
+      return;
+    }
+
     // jscs:disable
-    window.disqus_shortname = constants.SHORT_NAME;
+    window.disqus_shortname = CONSTANTS.DISQUS.SHORT_NAME;
     window.disqus_identifier = this.props.initialIdentifier;
     window.disqus_title = this.props.initialTitle;
     window.disqus_url = this.props.initialUrl;
@@ -43,6 +47,7 @@ const Disqus = React.createClass({
       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
+
     // jscs:enable
   },
 

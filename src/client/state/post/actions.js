@@ -1,6 +1,8 @@
-export function updateTitle() {
+export function initPost(title, fileName, htmlContent) {
   return {
-    type: 'UPDATE_TITLE',
-    title: 'updatedTitle',
+    type: 'POST_INIT',
+    title,
+    fileName,
+    htmlContent,
   };
 }

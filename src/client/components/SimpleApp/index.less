@@ -5,12 +5,6 @@
   a{
     line-height: 1.5em;
   }
-  pre{
-    code{
-      overflow-x: scroll;
-      background-color: #f8f8f8;
-    }
-  }
   code{
     background-color: transparent;
     font-family: Tahoma, Arial, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
@@ -78,9 +72,11 @@
     font-size: 1.2rem;
   }
   pre{
-    code{
+    >code{
       width: 55%;
       line-height: 2em;
+      overflow-x: auto;
+      background-color: #f8f8f8;
     }
   }
   code{

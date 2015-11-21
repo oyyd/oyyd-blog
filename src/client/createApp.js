@@ -6,13 +6,6 @@ import generateRoutes from './generateRoutes';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 import createMemoryHistory from 'history/lib/createMemoryHistory';
 
-// routes
-import SimpleApp from './components/SimpleApp';
-import SimplePost from './components/SimplePost';
-import SimpleList from './components/SimpleList';
-import About from './pages/About/index.js';
-import {Router, Route, Link, IndexRoute} from 'react-router';
-
 function getHistory(env) {
   if (env === 'server') {
     return createMemoryHistory();
@@ -27,16 +20,12 @@ function createApp(store = null, env = 'client') {
   }
 
   const history = getHistory(env);
+  const routes = generateRoutes(history);
   syncReduxAndRouter(history, store);
+
   return (
     <Provider store={store}>
-      <Router history={history}>
-        <Route path='/' component={SimpleApp}>
-          <IndexRoute component={SimpleList}/>
-          <Route path='post/:id' component={SimplePost}></Route>
-        </Route>
-        <Route path='/about' component={About}></Route>
-      </Router>
+      {routes}
     </Provider>
   );
 }

@@ -9,8 +9,8 @@
     "build:bundle": "webpack --watch --progress --colors",
     "build:lib": "babel src -w --out-dir lib",
     "start:single": "node lib/server/app.js dev",
-    "start": "pm2 start process.json",
-    "start:dev": "pm2 start process.dev.json"
+    "start": "pm2 restart process.json",
+    "start:dev": "pm2 restart process.dev.json"
   },
   "author": "oyyd",
   "license": "MIT",

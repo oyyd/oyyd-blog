@@ -9,7 +9,7 @@ import https from 'https';
 import applyStatic from './applyStatic';
 import router from './router';
 
-const domain = 'blog.oyy.net';
+const domain = 'blog.oyyd.net';
 const prefix = process.cwd();
 const devPort = 80;
 const proPort = 443;
@@ -28,8 +28,8 @@ if (process.argv[2] === 'dev') {
   server = http.createServer(app);
 }else {
   const options = {
-    cert: fs.readFileSync(`/etc/cert/${domain}.crt`),
-    key: fs.readFileSync(`/etc/private/${domain}.key`),
+    cert: fs.readFileSync(`/etc/ssl/certs/${domain}.crt`),
+    key: fs.readFileSync(`/etc/ssl/private/${domain}.key`),
   };
   port = proPort;
   server = https.createServer(options, app);

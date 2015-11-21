@@ -5,8 +5,10 @@ import $ from 'jquery';
 import {curry, flowRight} from 'lodash';
 import {connect} from 'react-redux';
 
+import CONSTANTS from '../../CONSTANTS';
 import Disqus from '../Disqus';
 import translate from './translate';
+import getPostUrl from '../../utils/getPostUrl';
 
 // TODO: init hljs somewhere else
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
@@ -21,11 +23,13 @@ function highlightCode(codeBlockArr) {
 
 class SimplePost extends React.Component {
   render() {
+    const id = `${CONSTANTS.DISQUS.ARTICLE_ID_PREFIX}${this.props.title}`;
+    const url = getPostUrl(this.props.fileName);
     return (
       <div className='blog-simple-post'>
-        <MarkedContent>{this.state.content}</MarkedContent>
-        <Disqus initialIdentifier={`article_${this.props.title}`}
-          initialUrl={`http://blog.oyyd.net/article_${this.props.htmlContent}`}/>
+        <MarkedContent>{this.props.htmlContent}</MarkedContent>
+        <Disqus initialIdentifier={id}
+          initialTitle={this.props.title} initialUrl={url}/>
       </div>
     );
   }
@@ -33,6 +37,7 @@ class SimplePost extends React.Component {
 
 SimplePost.propTypes = {
   title: string,
+  fileName: string,
   htmlContent: string,
 };
 
@@ -58,9 +63,10 @@ const MarkedContent = React.createClass({
 });
 
 function select(state) {
-  const {title, htmlContent} = state.post;
+  const {title, htmlContent, fileName} = state.post;
   return {
     title,
+    fileName,
     htmlContent,
   };
 }

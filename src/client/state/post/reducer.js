@@ -1,13 +1,17 @@
 const initialPost = {
-  title: 'test-title',
+  title: null,
+  fileName: null,
+  htmlContent: null,
 };
 
 function reducer(state = initialPost, action) {
   switch (action.type){
-    case 'UPDATE_TITLE':
-
-      //TODO:
-      return state;
+    case 'POST_INIT':
+      return {
+        title: action.title,
+        fileName: action.fileName,
+        htmlContent: action.htmlContent,
+      };
     default:
       return state;
   };

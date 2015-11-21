@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{title | default('oyyd blog - 这是亚东的博客（偏技术），你可以在上面看到我的一些想法和实践，欢迎来访。')}}</title>
-    <meta name="description" content="{{description | default('内容偏前端，但不局限于前端，没准你会感兴趣。')}}"/>
+    <title>{{title | default('oyyd blog', true)}}</title>
+    <meta name="description" content="{{description | default('这是亚东的博客，你可以在上面看到我的一些想法和实践，欢迎来访。', true)}}"/>
     <link rel="shortcut icon" href="/static/favicon.ico" />
     <link rel="stylesheet" href="/dist/style.css"/>
   </head>
   <body>
-    <div id="main">{{content | safe}}</div>
+    <div id="main">{{content}}</div>
+    <script>
+      window.__INITIAL_STATE__ = JSON.parse("{{initialState | default('null', true)}}");
+    </script>
     <script src="/dist/bundle.js"></script>
   </body>
 </html>

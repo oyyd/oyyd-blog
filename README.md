@@ -40,6 +40,6 @@ node server.js
 
 ###TODO
 
-* tags
-
 * Support both ajax and html loading when rendering a same page
+
+* refactor server side rendering

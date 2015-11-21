@@ -1,16 +1,18 @@
 import fs from 'fs';
 
+import {Provider} from 'react-redux';
 import {renderToString} from 'react-dom/server';
 import nunjucks from 'nunjucks';
 import React from 'react';
-import createApp from '../../client/createApp';
 import createStore from '../../client/state/createStore';
+import generateRoutes from '../../client/generateRoutes';
 import {match, RoutingContext} from 'react-router';
+import escapeJSONString from '../utils/escapeJSONString';
 
 const templateString = fs.readFileSync('./template/page.html', {encoding: 'utf8'});
-
+const routes = generateRoutes(null);
 function renderPages(req, res) {
-  match({routes: createApp(createStore(), 'server'), location: req.url},
+  match({routes, location: req.url},
     (error, redirectLocation, renderProps) => {
       if (error) {
         res.status(500).send(error.message);
@@ -18,7 +20,10 @@ function renderPages(req, res) {
         res.redirect(302, redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
         res.status(200).send(nunjucks.renderString(templateString, {
-          content: renderToString(<RoutingContext {...renderProps}/>),
+          content: renderToString(
+            <RoutingContext {...renderProps}/>
+          ),
+          initialState: escapeJSONString(JSON.stringify(createStore())),
         }));
       } else {
         res.status(404).send('Not found');
