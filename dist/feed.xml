@@ -4,77 +4,10 @@
         <description><![CDATA[oyyd]]></description>
         <link>http://blog.oyyd.net/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Tue, 17 Nov 2015 12:23:26 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 21 Nov 2015 11:35:22 GMT</lastBuildDate>
         <atom:link href="http://blog.oyyd.net/dist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
-            <title><![CDATA[ Universal(Isomorphic) JavaScript在React上的应用]]></title>
-            <description><![CDATA[<h1 id="universal-isomorphic-javascript-react-">Universal(Isomorphic) JavaScript在React上的应用</h1>
-<p>2015年11月4日</p>
-<h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
-<p>Universal Javascript又称Isomorphic JavaScript<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">名称来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
-<p>Universal Javascript的原理实际上非常简单，比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
-<pre><code class="lang-js">if (Meteor.isServer) {
-  // This code only runs on the server
-}
-
-if (Meteor.isClient) {
-  // This code only runs on the client
-}
-</code></pre>
-<p>只要通过<code>Meteor.isServer</code>和<code>Meteor.isClient</code>，我们就能够控制代码在不同环境下要执行的部分，从而使得这份代码可以同时在客户端和服务器上执行，并根据环境返回对应的结果。</p>
-<h2 id="universal-javascript-react-">Universal JavaScript可以给React应用带来什么？</h2>
-<p>那么对于React来讲，Universal Javascript又有什么用呢?我们知道，html标签加载了一部分就会显示一部分； 而React是通过javascript来渲染html内容的，而这也就意味着应用完成加载并运行脚本之前，React应用的html内容是不会出现在页面上的。</p>
-<p>像是blog.oyyd.net是用React + React Router写的，一开始的页面内容是这样的：</p>
-<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt;oyyd blog - 这是亚东的博客（偏技术），你可以在上面看到我的一些想法和实践，欢迎来访。&lt;/title&gt;
-    &lt;meta charset=&quot;utf-8&quot;/&gt;
-    &lt;meta name=&quot;description=&quot; content=&quot;内容偏前端，但不局限于前端，没准你会感兴趣。&quot;/&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/dist/style.css&quot;/&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div id=&quot;main&quot;&gt;&lt;/div&gt;
-    &lt;script src=&quot;/dist/bundle.js&quot;&gt;&lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>上面的内容基本没有有效的html标签，这就会产生<strong>一些问题</strong>：</p>
-<ol>
-<li><p>用户在脚本加载运行之前是不会看到React部分的内容，从体验上来讲好像等待了更多的时间（特别是在网速差的时候）。</p>
-</li>
-<li><p>搜索引擎无法有效地爬取页面内容<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">对于google而言有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a></span> ，难以进行SEO。</p>
-</li>
-</ol>
-<p>对于这些问题，我们可以利用Universal JavaScript来在服务器上渲染React应用中的内容，从而解决这些问题。</p>
-<h2 id="-">实现</h2>
-<p>这个网站的<a href="http://blog.oyyd.net/about">About</a>页面的实现便是一个非常简洁的例子，其实现的思路大致如下：</p>
-<ol>
-<li><p>生成初始状态下的React应用的html字符串。</p>
-</li>
-<li><p>配合模板引擎ejs生成完整的html内容。</p>
-</li>
-<li><p>在前端启动React应用。</p>
-</li>
-</ol>
-<p>如果你在找更适合用在生产环境上的做法，可以查看下面StrongLoop的教程。</p>
-<h2 id="react-universal-javascript-">React + Universal JavaScript还有更多潜力</h2>
-<p>好处：</p>
-<ol>
-<li><p>替代模板引擎。</p>
-</li>
-<li><p>减少ajax请求（需要redux配合？）。</p>
-</li>
-</ol>
-<h2 id="-">相关链接</h2>
-<p>StrongLoop: <a href="https://strongloop.com/strongblog/node-js-react-isomorphic-javascript-why-it-matters/">How to Implement Node + React Isomorphic JavaScript &amp; Why it Matters</a></p>
-]]></description>
-            <link>http://blog.oyyd.net//post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
-            <guid isPermaLink="false">4a736e05cbc84599b1fa7d72335115da</guid>
-            <pubDate>Tue, 03 Nov 2015 16:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>
+            <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>
             <description><![CDATA[<h1 id="javascript-immutable-">Javascript中的不可变（immutable）数据结构</h1>
 <p>2015年10月6日</p>
 <p><strong>前言</strong></p>
@@ -177,7 +110,7 @@ if (state !== newState){
 <p>同上文所述，如果我们能够快速有效的判断数据是否发生了变化，从而避免不必要的渲染，那我们
 的App就会有更好的性能。并且像是immutablejs这样的库
 一般在实现细节上都会更加优秀，以让变动数据的操作本身有更好的性能
-<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
+<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
 <blockquote>
 <p>...it implements fully persistent data structures from scratch using advanced things like tries to implement structural sharing. All updates return new values, but internally structures are shared to drastically reduce memory usage （and GC thrashing).</p>
 </blockquote>
@@ -212,7 +145,7 @@ if (state !== newState){
             <pubDate>Mon, 05 Oct 2015 16:00:00 GMT</pubDate>
         </item>
         <item>
-            <title><![CDATA[ 为什么我选择了React来重构我们的前端]]></title>
+            <title><![CDATA[ 为什么我选择了React来重构我们的前端]]></title>
             <description><![CDATA[<h1 id="-react-">为什么我选择了React来重构我们的前端</h1>
 <p>2015年8月28日</p>
 <p><strong>前言：</strong></p>
@@ -259,7 +192,7 @@ if (state !== newState){
 而我们修改目标DOM的目的实际上是要维护维护DOM树和javascript
 状态的一致。</p>
 <p>维护这两者一致的工作本身是不可避免的，但问题是在代码量变大、代码变复杂的情况下，
-人工维护的代价可能要比我们想象的要复杂的多<label for="5" class="margin-toggle sidenote-number"></label><input type="checkbox" id="5" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
+人工维护的代价可能要比我们想象的要复杂的多<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
 是确定的，但当前DOM树的状态却可能是多种多样的（不确定的）。理论上要把DOM树改变成目标状态的话，
 你的代码就需要考虑当前DOM树各种可能的状态。不仅如此，你的代码还需要包含改变DOM树状态
 的一步步的操作。</p>
@@ -305,7 +238,7 @@ componentDidUpdate等等的方法中（当然你不一定需要全都用到）�
 这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。</p>
 <p>说这是个问题，是因为我觉得适合生产环境上的框架应该单靠框架本身就能使团队中的每个人都对某一个功能的开发抱有相近的想法。
 这样代码就更容易预测。</p>
-<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="6" class="margin-toggle sidenote-number"></label><input type="checkbox" id="6" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
+<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
 <p>我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。</p>
 <p>比如Angular的Controller和Directive可以分别被认为是MVC（或MVVM）中的Model和View。
 这就意味着你可以将一个component拆分开来，分别实现这两个部分，也让更小粒度的代码复用成为了可能。</p>
@@ -323,7 +256,7 @@ Angular给我们提供了一套强大的工具，但你仍要去学习、实践�
 <h3 id="3-">3. 学习曲线很重要</h3>
 <p>并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。
 虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。</p>
-<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="7" class="margin-toggle sidenote-number"></label><input type="checkbox" id="7" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
+<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
 <p>除了Facebook和Instagram以外，看看<a href="https://github.com/facebook/react/wiki/Sites-Using-React">这里</a>，你会发现
 Amazon, AirBnb, Uber,
 支付宝，淘宝等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React

@@ -20,26 +20,26 @@ var FEED_URL = SITE_URL + 'dist/feed.xml';
 var validFields = {
   fileName: true,
   title: true,
-  publicDate: true
+  publicDate: true,
 };
 
-function getPostUrl(fileName){
+function getPostUrl(fileName) {
   return SITE_URL + '/post/' + fileName;
 }
 
-function getPostContent(fileName){
+function getPostContent(fileName) {
   const filePath = path.join(cwd, 'posts', fileName);
   return fs.readFileSync(filePath, {encoding: 'utf8'});
 }
 
-function writeFeedFile(posts, callback){
+function writeFeedFile(posts, callback) {
   const feed = new RSS({
     title: AUTHOR,
     feed_url: FEED_URL,
-    site_url: SITE_URL
+    site_url: SITE_URL,
   });
 
-  posts.slice(0, 5).map(function(item){
+  posts.slice(0, 5).map(function(item) {
     const content = getPostContent(item.fileName + '.md');
     const htmlContent = translate(content);
     fs.writeFileSync(path.join(cwd, `./dist/posts/${item.fileName}.html`), htmlContent);
@@ -51,20 +51,20 @@ function writeFeedFile(posts, callback){
       description: htmlContent,
       url: getPostUrl(item.fileName),
       guid: guid,
-      date: moment(item.publicDate, 'YYYY年MM月DD日')
-    }
-  }).forEach(function(feedItem){
+      date: moment(item.publicDate, 'YYYY年MM月DD日'),
+    };
+  }).forEach(function(feedItem) {
     feed.item(feedItem);
   });
 
   var xml = feed.xml(true);
 
-  fs.writeFile(path.join(cwd, 'dist/feed.xml'), xml, function(err){
+  fs.writeFile(path.join(cwd, 'dist/feed.xml'), xml, function(err) {
     callback(err);
   });
 }
 
-gulp.task('gen-list', function(taskCallback){
+gulp.task('gen-list', function(taskCallback) {
   var prefix = path.join(cwd, '/posts');
   writeFeedFile(metaData, taskCallback);
 });
