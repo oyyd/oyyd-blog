@@ -27,6 +27,12 @@ if (process.argv[2] === 'dev') {
   port = devPort;
   server = http.createServer(app);
 }else {
+  const proxyUpgradeServer = express();
+  proxyUpgradeServer.use('/', (req, res) => {
+    res.redirect(301, `https://${domain}`);
+  });
+  proxyUpgradeServer.listen(80);
+
   const options = {
     cert: fs.readFileSync(`/etc/ssl/certs/${domain}.crt`),
     key: fs.readFileSync(`/etc/ssl/private/${domain}.key`),

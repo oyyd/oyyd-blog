@@ -9,7 +9,9 @@ var less = require('gulp-less');
 var minifyCSS = require('gulp-minify-css');
 var webpack = require('webpack');
 
-require('./tasks/gen-list');
+require('./lib/tasks/gen-list');
+require('./lib/tasks/gen-lib');
+require('./lib/tasks/gen-sitemap');
 
 gulp.task('minifyJs', ['webpack'], function(callback) {
   return gulp.src(path.join(__dirname, 'dist/*.js'))
@@ -35,4 +37,4 @@ gulp.task('webpack', ['gen-list'], function(callback) {
   });
 });
 
-gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'minifyCss']);
+gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'gen-lib', 'gen-sitemap', 'minifyCss']);

@@ -4,7 +4,7 @@
         <description><![CDATA[oyyd]]></description>
         <link>http://blog.oyyd.net/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sat, 21 Nov 2015 11:35:22 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 22 Nov 2015 05:01:09 GMT</lastBuildDate>
         <atom:link href="http://blog.oyyd.net/dist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>

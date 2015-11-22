@@ -17,6 +17,8 @@ var AUTHOR = 'oyyd';
 var SITE_URL = 'http://blog.oyyd.net/';
 var FEED_URL = SITE_URL + 'dist/feed.xml';
 
+require('./gen-lib');
+
 var validFields = {
   fileName: true,
   title: true,
@@ -35,8 +37,11 @@ function getPostContent(fileName) {
 function writeFeedFile(posts, callback) {
   const feed = new RSS({
     title: AUTHOR,
+
+    // jscs:disable
     feed_url: FEED_URL,
     site_url: SITE_URL,
+    // jscs:enable
   });
 
   posts.slice(0, 5).map(function(item) {
@@ -64,7 +69,7 @@ function writeFeedFile(posts, callback) {
   });
 }
 
-gulp.task('gen-list', function(taskCallback) {
+gulp.task('gen-list', ['gen-lib'], function(taskCallback) {
   var prefix = path.join(cwd, '/posts');
   writeFeedFile(metaData, taskCallback);
 });

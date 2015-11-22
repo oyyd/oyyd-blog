@@ -6,8 +6,10 @@
   "scripts": {
     "release": "gulp release",
     "build:list": "gulp gen-list",
-    "build:bundle": "webpack --watch --progress --colors",
-    "build:lib": "babel src -w --out-dir lib",
+    "build:lib": "gulp gen-lib",
+    "build:sitemap": "gulp gen-sitemap",
+    "watch:bundle": "webpack --watch --progress --colors",
+    "watch:lib": "babel src -w --out-dir lib",
     "start:single": "node lib/server/app.js dev",
     "start": "pm2 start process.json",
     "start:dev": "pm2 start process.dev.json"
@@ -47,6 +49,7 @@
     "redux": "^3.0.4",
     "redux-simple-router": "0.0.8",
     "rss": "^1.1.1",
+    "sitemap": "^1.4.1",
     "style-loader": "^0.12.3",
     "webpack": "^1.10.5"
   },
