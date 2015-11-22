@@ -2,10 +2,10 @@
     <channel>
         <title><![CDATA[oyyd]]></title>
         <description><![CDATA[oyyd]]></description>
-        <link>http://blog.oyyd.net/</link>
+        <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 22 Nov 2015 05:30:11 GMT</lastBuildDate>
-        <atom:link href="http://blog.oyyd.net/dist/feed.xml" rel="self" type="application/rss+xml"/>
+        <lastBuildDate>Sun, 22 Nov 2015 05:52:18 GMT</lastBuildDate>
+        <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>
             <description><![CDATA[<h1 id="javascript-immutable-">Javascript中的不可变（immutable）数据结构</h1>
@@ -140,7 +140,7 @@ if (state !== newState){
 <p>immutable可以简化数据操作上的一些问题，提高应用的性能。但我们更需要根据实际情况来考虑
 其带来的副作用，根据情况做出选择。</p>
 ]]></description>
-            <link>http://blog.oyyd.net//post/immutable_data_structure_in_javascript</link>
+            <link>https://blog.oyyd.net/post/immutable_data_structure_in_javascript</link>
             <guid isPermaLink="false">fd6bc6dad2cf0e938d67908a4f3fd2af</guid>
             <pubDate>Mon, 05 Oct 2015 16:00:00 GMT</pubDate>
         </item>
@@ -306,7 +306,7 @@ Amazon, AirBnb, Uber,
 <p>2015/8/30 TODO：补充示例和图片，每一点讲的更详细一些。</p>
 </blockquote>
 ]]></description>
-            <link>http://blog.oyyd.net//post/why_i_choose_react_rather_than_angular_in_our_company</link>
+            <link>https://blog.oyyd.net/post/why_i_choose_react_rather_than_angular_in_our_company</link>
             <guid isPermaLink="false">46302d6994a8636ebb23f88ab4f1519b</guid>
             <pubDate>Thu, 27 Aug 2015 16:00:00 GMT</pubDate>
         </item>
