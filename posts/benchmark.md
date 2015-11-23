@@ -1,3 +1,9 @@
+Windows 8.1
+
+Intel(R) Core(TM) i5-4210M CPU @ 2.60GHz 2.59GHz
+
+RAM: 8.00GB
+
 ```html
 <div>
   <label>数值:<%=count%></label>
