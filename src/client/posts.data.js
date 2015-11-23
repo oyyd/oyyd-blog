@@ -1,9 +1,9 @@
 export default [{
-  //   fileName:'introduce_universal_javascript_and_its_implementation_in_static_pages',
-  //   title:' Universal(Isomorphic) JavaScript在React上的应用',
-  //   publicDate:'2015年11月4日',
-  //   description: 'test',
-  // }, {
+  fileName:'introduce_universal_javascript_and_its_implementation_in_static_pages',
+  title:' Universal(Isomorphic) JavaScript在React上的应用',
+  publicDate:'2015年11月4日',
+  description: 'React中的renderToString方法允许我们在服务器上渲染React部件，这在扩展了React的使用方式的同时，还可以帮助我们解决会出现在单页应用上一些缺点...',
+}, {
   fileName:'immutable_data_structure_in_javascript',
   title:' Javascript中的不可变（immutable）数据结构',
   publicDate:'2015年10月6日',
