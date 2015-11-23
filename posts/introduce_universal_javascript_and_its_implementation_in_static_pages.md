@@ -2,7 +2,7 @@
 $publicdate(2015年11月4日)
 
 // TODO:
-React中的renderToString方法允许我们在服务器上渲染React部件，这在扩展了React的使用方式的同时，还可以帮助我们解决会出现在单页应用上一些缺点。
+React中的renderToString方法允许我们在服务器上渲染React部件，这不仅允许我们将React用作模板引擎（template engine），还可以帮助我们解决会出现在单页应用(SPA)上一些问题。下文还附带一个简单的benchmark来衡量React render server的性能...
 
 ## 什么是Universal Javascript？
 
@@ -162,15 +162,106 @@ React.render(
 
 如果你回想一下这一过程，你可能会注意到这一流程中React承担起了在服务器上本应由模板引擎处理的(template engine)大部分工作。
 
-// TODO: 图来解释这一流程
-
 如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。我想其原因在于：使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。
 
-事实上如果你只希望把React作为服务器上的模板引擎的话，现在已经有[express-react-views](https://github.com/reactjs/express-react-views)这样的库来实现这一目的。但如果你的目的是Universal JavaScript应用的话，到这个时间点恐怕还没有。举个例子，到目前为止，redux
+或者更确切的说，浏览器上js所需要的模板和服务器上渲染的模板原本就应该是同一份模板，因为服务器上的模板本身就是为了我们浏览器上的应用而渲染的，那么为了。
+
+// TODO: 图来解释这一流程
+
+事实上如果你只希望把React作为服务器上的模板引擎的话，现在已经有[express-react-views](https://github.com/reactjs/express-react-views)这样的库来实现这一目的。
+
+但如果你的目的是Universal JavaScript应用的话，到这个时间点恐怕还没有。举个例子，到目前为止，redux
 
 ### 2. 减少不必要的请求（需要redux配合？）。
 
 ## 一个简单的benchmark
+
+React不是纯粹的模板引擎，那么与node上其他的模板引擎相比，它的server render的性能会不会差很多呢？这里我们将前面的计数器代码做一下改动，通过一个小范围的、非常简单的benchmark来对比React和ejs之间性能的量级：
+
+设备：Windows 8.1 Intel(R) Core(TM) i5-4210M CPU @ 2.60GHz 2.59GHz  8.00GB
+版本：React 14.0.2，ejs 2.3.4
+
+ejs使用的模板文件：
+
+```html
+<div>
+  <label>数值:<%=count%></label>
+  <button>+1</button>
+</div>
+```
+
+React Counter(es6中类的形式)$sidenote(下面的代码都使用了babel进行转换，可能对结果会产生一些影响)：
+
+```js
+import React from 'react';
+
+class Counter extends React.Component{
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>
+        <label>数值:{this.props.count}</label>
+        <button>+1</button>
+      </div>
+    );
+  }
+}
+
+export default Counter;
+```
+
+React Counter(传统方式)：
+
+```js
+import React from 'react';
+
+const Counter = React.createClass({
+  render() {
+    return (
+      <div>
+        <label>数值:{this.props.count}</label>
+        <button>+1</button>
+      </div>
+    );
+  },
+});
+
+export default Counter;
+```
+测试时的渲染语句：
+
+```
+// React
+renderToString(<Counter count={10}/>);
+
+// ejs
+ejs.render(template, {
+  count: 10,
+});
+```
+
+设置node环境为`production`，避免React做一些用于开发环境的工作，并开始渲染：
+```
+NODE_ENV=production node lib/index.js
+```
+
+结果如下：
+
+数值单位是ope/sec（每秒渲染数）越高越好
+
+|模板|1|2|3|4|5|
+|----|-----------------|--|--|--|--|
+|React ES6 class|7981|9043|11718|8165|8034|
+|React classic|7172|6904|7421|7592|8030|
+|ejs|17905|17743|16763|19261|17437|
+
+
+然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：[Node Template Engine Benchmarks](http://paularmstrong.github.io/node-templates/benchmarks.html)$sidenote(如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然这里还是要说一句，在做技术选择时不应过于纠结于性能。)
+
+如果这个结果对于其他情况也是有效的话，我个人认为React server render的性能已经足够优秀了。况且React远不止是模板引擎。
 
 ## 其他web前端框架中server render
 
