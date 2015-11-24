@@ -4,8 +4,260 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 22 Nov 2015 05:52:18 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 24 Nov 2015 13:45:19 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[ Universal(Isomorphic) JavaScript在React上的应用]]></title>
+            <description><![CDATA[<h1 id="universal-isomorphic-javascript-react-">Universal(Isomorphic) JavaScript在React上的应用</h1>
+<p>2015年11月4日</p>
+<p>React中的renderToString方法允许我们在服务器上渲染React部件，这不仅允许我们将React用作模板引擎（template engine），还可以帮助我们解决会出现在单页应用(SPA)上一些问题。下文还附带一个简单的benchmark来衡量其性能...</p>
+<h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
+<p>Universal Javascript又称Isomorphic JavaScript<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">名称来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
+<p>实现Universal Javascript的原理并不复杂，我们只需要在代码中获取当前环境（是在浏览器还是服务器上运行？），并根据环境作出不同响应即可。比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
+<pre><code class="lang-js">if (Meteor.isServer) {
+  // This code only runs on the server
+}
+
+if (Meteor.isClient) {
+  // This code only runs on the client
+}
+</code></pre>
+<p>只要通过<code>Meteor.isServer</code>和<code>Meteor.isClient</code>，我们就能够控制代码在不同环境下要执行的部分，从而使得这份代码可以同时在客户端和服务器上执行，并根据环境返回对应的结果。</p>
+<h2 id="universal-javascript-react-">Universal JavaScript可以给React应用带来什么？</h2>
+<p>那么对于React来讲，Universal Javascript又有什么用呢?我们知道，html标签加载了一部分就会显示一部分； 而React是通过javascript来渲染html内容的，而这也就意味着应用完成加载并运行脚本之前，React应用的html内容是不会出现在页面上的。</p>
+<p>像是原来的blog.oyyd.net是用React + React Router写的SPA(单页)应用，一开始的页面内容是这样的：</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;oyyd blog - 这是亚东的博客（偏技术），你可以在上面看到我的一些想法和实践，欢迎来访。&lt;/title&gt;
+    &lt;meta charset=&quot;utf-8&quot;/&gt;
+    &lt;meta name=&quot;description=&quot; content=&quot;内容偏前端，但不局限于前端，没准你会感兴趣。&quot;/&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/dist/style.css&quot;/&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;main&quot;&gt;&lt;/div&gt;
+    &lt;script src=&quot;/dist/bundle.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>上面的内容基本没有有效的html标签，这就会产生一些<strong>问题</strong>：</p>
+<ol>
+<li><p>用户在脚本加载运行之前是不会看到React部分的内容，从体验上来讲好像等待了更多的时间（特别是在网速差的时候）。</p>
+</li>
+<li><p>如果javascrript加载失败或是运行时产生错误的话（或是浏览器直接禁用了javascript的话），用户看不到任何内容。</p>
+</li>
+<li><p>搜索引擎无法有效地爬取页面内容<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">对于google而言有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a></span> ，难以进行SEO。</p>
+</li>
+</ol>
+<p>对于这些问题，我们可以利用Universal JavaScript来在服务器上渲染React应用中的内容，从而解决这些问题。</p>
+<h2 id="-">实现</h2>
+<p>现在的blog.oyyd.net就充分利用了React中的<code>renderToString</code>。你可以在浏览器中查看源码来查看这个网站现在的状况。下面还是让我们通过一个更加简洁的例子来直击问题的重点：</p>
+<blockquote>
+<p>注意：下面的代码并不完备，由于构建过程相对繁杂多样，所以这些代码只是为了让我们能更好地关注这一流程中的重点步骤。</p>
+</blockquote>
+<p>假设我们要实现一个简单的计数器，注意这里重要的一点是我们会在服务器端设置计数器的初始值。</p>
+<p>其实现的思路大致如下：</p>
+<ol>
+<li><p>请求到来，服务器初始化React应用，并将其渲染成字符串。</p>
+</li>
+<li><p>把React生成的字符串放到模板中，生成完整的HTML内容返回给浏览器。</p>
+</li>
+<li><p>在浏览器初始化React应用。</p>
+</li>
+</ol>
+<p>我们的React计数器代码如下：</p>
+<pre><code class="lang-js">// Counter.js
+import React from &#39;react&#39;;
+
+class Counter extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      count: props.initialCount,
+    };
+  }
+  countPlusOne(){
+    this.setState({
+      count: this.state.count + 1,
+    });
+  }
+  render(){
+    return (
+      &lt;div&gt;
+        &lt;label&gt;数值: {this.state.count}&lt;/label&gt;
+        &lt;button onClick={this.countPlusOne.bind(this)}&gt;+1&lt;/button&gt;
+      &lt;/div&gt;
+    )
+  }
+}
+
+export default Counter;
+</code></pre>
+<p>当请求来临时，express根据参数设置初始状态生成一个Counter的ReactElement,并将其渲染成字符串：</p>
+<pre><code class="lang-js">// server.js
+import fs from &#39;fs&#39;;
+import express from &#39;express&#39;;
+import React from &#39;react&#39;;
+import {renderToString} from &#39;react-dom/server&#39;;
+
+import Counter from &#39;./components/Counter&#39;;
+
+const app = express();
+app.get(&#39;/:initialCount&#39;, (req, res) =&gt; {
+  const {initialCount} = req.params;
+
+  // 生成Counter实例的字符串
+  const counterString = renderToString(
+    &lt;Counter initialCount={initialCount}/&gt;
+  );
+
+  // 注意下面不仅将Counter的字符串放入了html内容中，并且
+  // 还将参数保存在了全局浏览器上的全局变量`__INITIAL_COUNT__`
+  req.send(
+    \`&lt;html&gt;
+      &lt;head&gt;&lt;/head&gt;
+      &lt;body&gt;
+        &lt;div id=&quot;main&quot;&gt;${counterString}&lt;/div&gt;
+        &lt;script src=&quot;/bundle.js&quot;&gt;&lt;/script&gt;
+        &lt;script&gt;
+          window.\__INITIAL_COUNT\__ = ${initialCount};
+        &lt;/script&gt;
+        &lt;script src=&quot;/bootstrap.js&quot;&gt;&lt;/script&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;\`
+  );
+});
+
+app.listen(8080);
+</code></pre>
+<p>当浏览器上的请求从服务器上返回时，bootstrap.js脚本被加载运行，在浏览器上初始化完整的React应用：</p>
+<p>// TODO:确认“需要传状态给浏览器”。</p>
+<pre><code class="lang-js">// bootstrap.js
+React.render(
+  &lt;Counter initialCount={window.\__INITIAL_COUNT\__}/&gt;,
+  document.getElementById(&#39;main&#39;)
+);
+</code></pre>
+<p>到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。</p>
+<p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.\__INITIAL_COUNT\__</code>）也一并传过去，用于初始化。</p>
+<h2 id="-react-">事实上，我们在用React替代服务器端的模板引擎</h2>
+<p>如果你回想一下这一过程，你可能会注意到这一流程中React承担起了在服务器上本应由模板引擎处理的(template engine)大部分工作<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote">现在的React是无法生成<code>html</code>, <code>script</code>等标签的</span> 。</p>
+<p>如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。</p>
+<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="5" class="margin-toggle sidenote-number"></label><input type="checkbox" id="5" class="margin-toggle"/><span class="sidenote">它是由React的核心贡献者维护的</span> 。</p>
+<p>那么让一门前端框架作为模板引擎是不是多余之举呢？</p>
+<p>我认为完全相反。浏览器上js所需要的模板和服务器上渲染的模板原本就应该是同一份模板，它们同属于我们浏览器上的应用。只不过由于种种原因，我们一直不得不将其拆分成两部分。那么现在如果服务器的这份模板由本身就主要用于浏览器上的React来生成的话，我觉得是再合理不过的了。</p>
+<p>// TODO: 图来解释这一流程</p>
+<p>并且这样做，我们可以充分利用同一份代码，技术栈也会变得更加简单。想象一下，没有html、template、ejs、jade等文件，你的js文件就是你的模板文件，你可以直接利用js上的模块等特性，这能够省多少事！</p>
+<h2 id="-benchmark">一个简单的benchmark</h2>
+<p>但React不是纯粹的模板引擎，那么与node上其他的模板引擎相比，它的server render的性能会不会差很多呢？这里我们将前面的计数器代码做一下改动，通过一个小范围的、非常简单的benchmark来对比React和ejs之间性能的量级：</p>
+<p>设备：Windows 8.1 Intel(R) Core(TM) i5-4210M CPU @ 2.60GHz 2.59GHz  8.00GB</p>
+<p>版本：React 14.0.2，ejs 2.3.4</p>
+<p>ejs使用的模板文件：</p>
+<pre><code class="lang-html">&lt;div&gt;
+  &lt;label&gt;数值:&lt;%=count%&gt;&lt;/label&gt;
+  &lt;button&gt;+1&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<p>React Counter(es6中类的形式)<label for="6" class="margin-toggle sidenote-number"></label><input type="checkbox" id="6" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
+<pre><code class="lang-js">import React from &#39;react&#39;;
+
+class Counter extends React.Component{
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;label&gt;数值:{this.props.count}&lt;/label&gt;
+        &lt;button&gt;+1&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+
+export default Counter;
+</code></pre>
+<p>React Counter(传统方式)：</p>
+<pre><code class="lang-js">import React from &#39;react&#39;;
+
+const Counter = React.createClass({
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;label&gt;数值:{this.props.count}&lt;/label&gt;
+        &lt;button&gt;+1&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  },
+});
+
+export default Counter;
+</code></pre>
+<p>测试时的渲染语句：</p>
+<pre><code>// React
+renderToString(&lt;Counter count={10}/&gt;);
+
+// ejs
+ejs.render(template, {
+  count: 10,
+});
+</code></pre><p>设置node环境为<code>production</code>，避免React做一些用于开发环境的工作，并开始渲染：</p>
+<pre><code>NODE_ENV=production node lib/index.js
+</code></pre><p>结果如下：</p>
+<p>数值单位是ope/sec（每秒渲染数）越高越好</p>
+<table>
+<thead>
+<tr>
+<th>模板</th>
+<th>第1次</th>
+<th>第2次</th>
+<th>第3次</th>
+<th>第4次</th>
+<th>第5次</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React ES6 class</td>
+<td>7981</td>
+<td>9043</td>
+<td>11718</td>
+<td>8165</td>
+<td>8034</td>
+</tr>
+<tr>
+<td>React classic</td>
+<td>7172</td>
+<td>6904</td>
+<td>7421</td>
+<td>7592</td>
+<td>8030</td>
+</tr>
+<tr>
+<td>ejs</td>
+<td>17905</td>
+<td>17743</td>
+<td>16763</td>
+<td>19261</td>
+<td>17437</td>
+</tr>
+</tbody>
+</table>
+<p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="7" class="margin-toggle sidenote-number"></label><input type="checkbox" id="7" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然这里还是要说一句，在做技术选择时不应过于纠结于性能。</span> </p>
+<p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经足够优秀了。况且React远不止是模板引擎。</p>
+<h2 id="-universla">如果你在认真考虑Universla</h2>
+<p>但如果你的目的是Universal JavaScript应用的话，到这个时间点恐怕还没有。举个例子，到目前为止，redux</p>
+<h2 id="-">结论</h2>
+<p>其他web前端框架中server render</p>
+<h2 id="-">相关链接</h2>
+<p>StrongLoop的教程: <a href="https://strongloop.com/strongblog/node-js-react-isomorphic-javascript-why-it-matters/">How to Implement Node + React Isomorphic JavaScript &amp; Why it Matters</a></p>
+<p><a href="https://github.com/erikras/react-redux-universal-hot-example">React Redux Universal Hot Example</a></p>
+]]></description>
+            <link>https://blog.oyyd.net/post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
+            <guid isPermaLink="false">4a736e05cbc84599b1fa7d72335115da</guid>
+            <pubDate>Tue, 03 Nov 2015 16:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>
             <description><![CDATA[<h1 id="javascript-immutable-">Javascript中的不可变（immutable）数据结构</h1>
@@ -110,7 +362,7 @@ if (state !== newState){
 <p>同上文所述，如果我们能够快速有效的判断数据是否发生了变化，从而避免不必要的渲染，那我们
 的App就会有更好的性能。并且像是immutablejs这样的库
 一般在实现细节上都会更加优秀，以让变动数据的操作本身有更好的性能
-<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
+<label for="8" class="margin-toggle sidenote-number"></label><input type="checkbox" id="8" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
 <blockquote>
 <p>...it implements fully persistent data structures from scratch using advanced things like tries to implement structural sharing. All updates return new values, but internally structures are shared to drastically reduce memory usage （and GC thrashing).</p>
 </blockquote>
@@ -192,7 +444,7 @@ if (state !== newState){
 而我们修改目标DOM的目的实际上是要维护维护DOM树和javascript
 状态的一致。</p>
 <p>维护这两者一致的工作本身是不可避免的，但问题是在代码量变大、代码变复杂的情况下，
-人工维护的代价可能要比我们想象的要复杂的多<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
+人工维护的代价可能要比我们想象的要复杂的多<label for="9" class="margin-toggle sidenote-number"></label><input type="checkbox" id="9" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
 是确定的，但当前DOM树的状态却可能是多种多样的（不确定的）。理论上要把DOM树改变成目标状态的话，
 你的代码就需要考虑当前DOM树各种可能的状态。不仅如此，你的代码还需要包含改变DOM树状态
 的一步步的操作。</p>
@@ -238,7 +490,7 @@ componentDidUpdate等等的方法中（当然你不一定需要全都用到）�
 这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。</p>
 <p>说这是个问题，是因为我觉得适合生产环境上的框架应该单靠框架本身就能使团队中的每个人都对某一个功能的开发抱有相近的想法。
 这样代码就更容易预测。</p>
-<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
+<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="10" class="margin-toggle sidenote-number"></label><input type="checkbox" id="10" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
 <p>我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。</p>
 <p>比如Angular的Controller和Directive可以分别被认为是MVC（或MVVM）中的Model和View。
 这就意味着你可以将一个component拆分开来，分别实现这两个部分，也让更小粒度的代码复用成为了可能。</p>
@@ -256,7 +508,7 @@ Angular给我们提供了一套强大的工具，但你仍要去学习、实践�
 <h3 id="3-">3. 学习曲线很重要</h3>
 <p>并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。
 虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。</p>
-<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
+<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="11" class="margin-toggle sidenote-number"></label><input type="checkbox" id="11" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
 <p>除了Facebook和Instagram以外，看看<a href="https://github.com/facebook/react/wiki/Sites-Using-React">这里</a>，你会发现
 Amazon, AirBnb, Uber,
 支付宝，淘宝等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React

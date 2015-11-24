@@ -70,6 +70,5 @@ function writeFeedFile(posts, callback) {
 }
 
 gulp.task('gen-list', ['gen-lib'], function(taskCallback) {
-  var prefix = path.join(cwd, '/posts');
   writeFeedFile(metaData, taskCallback);
 });

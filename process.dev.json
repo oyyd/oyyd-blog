@@ -2,7 +2,7 @@
   "apps": [{
       "name": "oyyd-blog",
       "script": "lib/server/app.js",
-      "watch": "./lib",
+      "watch": ["./lib", "./posts"],
       "args": ["dev"],
     }]
 }
