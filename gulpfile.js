@@ -3,15 +3,16 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 
 var gulp = require('gulp');
-var watch = require('gulp-watch');
 var uglify = require('gulp-uglify');
 var less = require('gulp-less');
 var minifyCSS = require('gulp-minify-css');
 var webpack = require('webpack');
 
+require('./lib/tasks/gen-posts');
 require('./lib/tasks/gen-list');
 require('./lib/tasks/gen-lib');
 require('./lib/tasks/gen-sitemap');
+require('./lib/tasks/watch-post');
 
 gulp.task('minifyJs', ['webpack'], function(callback) {
   return gulp.src(path.join(__dirname, 'dist/*.js'))
@@ -37,4 +38,4 @@ gulp.task('webpack', ['gen-list'], function(callback) {
   });
 });
 
-gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'gen-lib', 'gen-sitemap', 'minifyCss']);
+gulp.task('release', ['webpack', 'minifyJs', 'gen-list', 'gen-lib', 'gen-sitemap', 'minifyCss', 'gen-posts']);

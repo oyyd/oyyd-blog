@@ -4,7 +4,7 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Tue, 24 Nov 2015 13:45:19 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 25 Nov 2015 12:44:25 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[ Universal(Isomorphic) JavaScript在React上的应用]]></title>
@@ -131,7 +131,6 @@ app.get(&#39;/:initialCount&#39;, (req, res) =&gt; {
 app.listen(8080);
 </code></pre>
 <p>当浏览器上的请求从服务器上返回时，bootstrap.js脚本被加载运行，在浏览器上初始化完整的React应用：</p>
-<p>// TODO:确认“需要传状态给浏览器”。</p>
 <pre><code class="lang-js">// bootstrap.js
 React.render(
   &lt;Counter initialCount={window.\__INITIAL_COUNT\__}/&gt;,
@@ -246,7 +245,7 @@ ejs.render(template, {
 </table>
 <p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="7" class="margin-toggle sidenote-number"></label><input type="checkbox" id="7" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然这里还是要说一句，在做技术选择时不应过于纠结于性能。</span> </p>
 <p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经足够优秀了。况且React远不止是模板引擎。</p>
-<h2 id="-universla">如果你在认真考虑Universla</h2>
+<h2 id="-universal">如果你在认真考虑Universal</h2>
 <p>但如果你的目的是Universal JavaScript应用的话，到这个时间点恐怕还没有。举个例子，到目前为止，redux</p>
 <h2 id="-">结论</h2>
 <p>其他web前端框架中server render</p>

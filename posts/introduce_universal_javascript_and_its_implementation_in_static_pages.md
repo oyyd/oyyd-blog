@@ -62,11 +62,11 @@ if (Meteor.isClient) {
 
 其实现的思路大致如下：
 
-1. 请求到来，服务器初始化React应用，并将其渲染成字符串。
+1. 请求到来，服务器初始化React应用，并将其渲染成字符串。（这里第一次生成一个ReactElement）
 
 2. 把React生成的字符串放到模板中，生成完整的HTML内容返回给浏览器。
 
-3. 在浏览器初始化React应用。
+3. 在浏览器初始化React应用。（这里第二次生成ReactElement）
 
 我们的React计数器代码如下：
 
@@ -141,8 +141,6 @@ app.listen(8080);
 
 当浏览器上的请求从服务器上返回时，bootstrap.js脚本被加载运行，在浏览器上初始化完整的React应用：
 
-// TODO:确认“需要传状态给浏览器”。
-
 ```js
 // bootstrap.js
 React.render(
@@ -169,7 +167,13 @@ React.render(
 
 // TODO: 图来解释这一流程
 
+当然因为React无法生成所有常用的标签，所以你可能还是需要模板引擎来帮你处理这部分工作。
+
 并且这样做，我们可以充分利用同一份代码，技术栈也会变得更加简单。想象一下，没有html、template、ejs、jade等文件，你的js文件就是你的模板文件，你可以直接利用js上的模块等特性，这能够省多少事！
+
+但是如果你把之前用于浏览器上的React部件直接拿来服务器渲染的话，可能得不到你想要的结果，举个例子：你很可能在会直接使用全局变量window，但在node上这会抛出错误。你需要在写他们的时候就考虑清楚一个部件在服务器上渲染时可能会遇到的问题。
+
+而你的React部件拥有state的话，你是没办法直接控制他们的状态的。但如果你使用[Redux](https://github.com/rackt/redux)来将部件中的state移动到外部的话，你就可以通过Redux来控制你部件的状态。
 
 ## 一个简单的benchmark
 
@@ -261,13 +265,9 @@ NODE_ENV=production node lib/index.js
 
 如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经足够优秀了。况且React远不止是模板引擎。
 
-## 如果你在认真考虑Universal
-
-但如果你的目的是Universal JavaScript应用的话，到这个时间点恐怕还没有。举个例子，到目前为止，redux
-
 ## 结论
 
-其他web前端框架中server render
+
 
 ## 相关链接
 
