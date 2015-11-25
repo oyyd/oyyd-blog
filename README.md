@@ -45,3 +45,5 @@ node server.js
 * refactor server side rendering
 
 * refactor building process
+
+* Use md content instead of the html as Initial state of the post when server rendering
