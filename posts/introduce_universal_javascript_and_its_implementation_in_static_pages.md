@@ -1,5 +1,5 @@
 # Universal(Isomorphic) JavaScript在React上的应用
-$publicdate(2015年11月4日)
+$publicdate(2015年11月26日)
 
 React中的renderToString方法允许我们在服务器上渲染React部件，这点不仅可以帮助我们解决一些会出现在单页应用(SPA)上的问题，它甚至还允许我们将React用作模板引擎（template engine）来使用。下文还将附带一个简单的benchmark来对比React与传统模板引擎之间性能。
 
