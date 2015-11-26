@@ -155,7 +155,7 @@ React.render(
 
 ## 事实上，我们在用React替代服务器端的模板引擎
 
-如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作$sidenote(现在的React是无法生成`html`, `script`等标签的)。
+如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作$sidenote(~~现在的React是无法生成`html`, `script`等标签的~~很惭愧，事实上是可以的。)。
 
 如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。
 
@@ -167,7 +167,7 @@ React.render(
 
 ![React as Template Engine](/static/posts/react-server-render/react-as-template-engine.png)
 
-当然因为React无法生成所有常用的标签，所以你可能还是需要模板引擎来帮你处理React应用之外的工作。
+~~当然因为React无法生成所有常用的标签，所以你可能还是需要模板引擎来帮你处理React应用之外的工作。~~一般我们用在浏览器上的React应用不会用到诸如：html，script，body这样的标签，但我们可以在服务器渲染时使用他们来生成完整的内容。
 
 并且这样做，我们可以充分利用同一份代码，技术栈也会变得更加简单。想象一下，没有html、template、ejs、jade等文件，你的js文件就是你的模板文件，你可以直接利用js上的模块等特性，这能够省多少事！
 
