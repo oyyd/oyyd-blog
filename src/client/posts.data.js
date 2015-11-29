@@ -1,4 +1,9 @@
 export default [{
+  fileName:'how_does_react_hot_loader_works',
+  title: 'react-hot-loader是如何工作的？',
+  publicDate:'2015年11月29日',
+  description: 'TODO',
+}, {
   fileName:'introduce_universal_javascript_and_its_implementation_in_static_pages',
   title:' Universal(Isomorphic) JavaScript在React上的应用',
   publicDate:'2015年11月26日',

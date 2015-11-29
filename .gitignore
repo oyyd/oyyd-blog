@@ -1,4 +1,4 @@
-node_modules/**
+**/node_modules/
 build/**
 log/**
 test/**
@@ -6,3 +6,4 @@ config.json
 npm-debug.log
 logs/**
 examples/**
+research/dist

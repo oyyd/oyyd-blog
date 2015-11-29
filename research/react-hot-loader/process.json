@@ -1,0 +1,7 @@
+{
+  "apps": [{
+      "name": "test HMR",
+      "script": "./server.js",
+      "watch": true,
+    }]
+}
