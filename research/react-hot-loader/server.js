@@ -11,4 +11,5 @@ const server = new WebpackDevServer(compiler, {
   publicPath: '/assets/',
 });
 
-server.listen(8080);
+server.listen(3000);
+

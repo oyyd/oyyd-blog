@@ -7,8 +7,8 @@ module.exports = {
   entry: {
     app: [
       './entry.js',
-      'webpack-dev-server/client?http://localhost:8080', // `http://localhost:8080` specify the socket for browser
-      'webpack/hot/dev-server' // enable browser hot reload (bundle this only won't enable hot reload)
+      'webpack-dev-server/client?http://localhost:3000', // `http://localhost:3000` specify the socket for browser
+      'webpack/hot/dev-server', // enable browser hot reload (bundle this only won't enable hot reload)
     ],
   },
   output: {
@@ -25,9 +25,10 @@ module.exports = {
       query: {
         presets: ['react', 'es2015'],
       },
-    }],
+    },
+    ],
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
-  ]
+    new webpack.HotModuleReplacementPlugin(),
+  ],
 };
