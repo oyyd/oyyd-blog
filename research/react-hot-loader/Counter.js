@@ -24,6 +24,4 @@ class Counter extends React.Component{
   }
 }
 
-Counter.diffName = 123;
-
 export default Counter;
