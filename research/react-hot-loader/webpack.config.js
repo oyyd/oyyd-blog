@@ -6,7 +6,10 @@ const path = require('path');
 module.exports = {
   entry: {
     app: [
+
+      // './sayHelloEntry.js',
       './entry.js',
+      
       'webpack-dev-server/client?http://localhost:3000', // `http://localhost:3000` specify the socket for browser
       'webpack/hot/dev-server', // enable browser hot reload (bundle this only won't enable hot reload)
     ],

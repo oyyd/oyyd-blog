@@ -12,4 +12,3 @@ const server = new WebpackDevServer(compiler, {
 });
 
 server.listen(3000);
-

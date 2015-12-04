@@ -1,5 +1,5 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
+import React from 'react';
 import Router from 'react-router';
 import createApp from './createApp';
 import createStore from './state/createStore';

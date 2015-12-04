@@ -10,15 +10,16 @@ class Counter extends React.Component{
 
   plusOne() {
     this.setState({
-      count: this.state.count + this.props.valueAddEachClick,
+      count: this.state.count + this.props.valueAddEachClick * 2,
     });
   }
 
   render() {
+    const valueAddEachClick = this.props.valueAddEachClick * 2;
     return (
       <div>
         <label>Value: {this.state.count}</label>
-        <button onClick={this.plusOne.bind(this)}>+{this.props.valueAddEachClick}</button>
+        <button onClick={this.plusOne.bind(this)}>+{valueAddEachClick}</button>
       </div>
     );
   }
