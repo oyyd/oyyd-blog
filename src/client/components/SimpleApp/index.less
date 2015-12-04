@@ -77,9 +77,34 @@
   p, ol, ul{
     font-size: 1.2rem;
   }
+  @media (max-width: 760px) {
+    .contentWidth(){
+      width: 90%;
+    }
+    .CodeMirror{
+      .contentWidth();
+    }
+    pre {
+      >code {
+        .contentWidth();
+      }
+    }
+  }
+  @media (min-width: 760px) {
+    .contentWidth(){
+      width: 55%;
+    }
+    .CodeMirror{
+      .contentWidth();
+    }
+    pre {
+      >code {
+        .contentWidth();
+      }
+    }
+  }
   pre{
     >code{
-      width: 55%;
       line-height: 2em;
       overflow-x: auto;
       background-color: #f8f8f8;

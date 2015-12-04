@@ -15,6 +15,8 @@ function applyStatic(app) {
   app.use('/static', express.static(path.join(prefix, './static')));
   app.use('/posts', compression());
   app.use('/posts', express.static(path.join(prefix, './posts')));
+  app.use('/static-lib', compression());
+  app.use('/static-lib', express.static(path.join(prefix, './static-lib')));
 }
 
 export default applyStatic;

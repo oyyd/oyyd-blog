@@ -1,8 +1,8 @@
 import React from 'react';
 
 import CONSTANTS from '../../CONSTANTS';
+import isBrowser from '../../utils/isBrowser';
 
-const inNode = typeof window === 'undefined';
 const {string} = React.PropTypes;
 
 const Disqus = React.createClass({
@@ -15,7 +15,7 @@ const Disqus = React.createClass({
     return {
       initialIdentifier: CONSTANTS.DISQUS.DEFAULT_IDENTIFIER,
       initialTitle: CONSTANTS.DISQUS.DEFAULT_TITLE,
-      initialUrl: inNode ? '' : location.href,
+      initialUrl: !isBrowser() ? '' : location.href,
     };
   },
 
@@ -30,7 +30,7 @@ const Disqus = React.createClass({
   },
 
   requireInit() {
-    if (inNode) {
+    if (!isBrowser()) {
       return;
     }
 

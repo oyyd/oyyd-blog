@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import hljs from 'highlight.js/lib/highlight.js';
+// TODO: remove if not used
+// import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
 import {curry, flowRight} from 'lodash';
 import {connect} from 'react-redux';
@@ -9,16 +10,36 @@ import CONSTANTS from '../../CONSTANTS';
 import Disqus from '../Disqus';
 import translate from './translate';
 import getPostUrl from '../../utils/getPostUrl';
+import isBrowser from '../../utils/isBrowser';
+
+const forEach = [].forEach;
 
 // TODO: init hljs somewhere else
-hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
+// hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
 
 const {string} = React.PropTypes;
 
+// TODO: avoid double highlight
 function highlightCode(codeBlockArr) {
-  for (var i = 0; i < codeBlockArr.length; i++) {
-    hljs.highlightBlock(codeBlockArr[i]);
+  if (!isBrowser() || codeBlockArr.length === 0) {
+    return;
   }
+
+  forEach.call(codeBlockArr, codeDOM => {
+    new CodeMirror((elt) => {
+      codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
+    }, {
+
+      value: codeDOM.innerHTML,
+      mode: 'javascript',
+      readOnly: true,
+    });
+  });
+
+  // TODO:
+  // for (var i = 0; i < codeBlockArr.length; i++) {
+  //   hljs.highlightBlock(codeBlockArr[i]);
+  // }
 }
 
 class SimplePost extends React.Component {
@@ -51,7 +72,7 @@ const MarkedContent = React.createClass({
   },
 
   highlightCodes() {
-    let codes = ReactDOM.findDOMNode(this).querySelectorAll('code');
+    let codes = ReactDOM.findDOMNode(this).querySelectorAll('pre code');
     highlightCode(codes);
   },
 
