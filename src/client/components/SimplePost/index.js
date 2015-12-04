@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// TODO: remove if not used
-// import hljs from 'highlight.js/lib/highlight.js';
 import $ from 'jquery';
 import {curry, flowRight} from 'lodash';
 import {connect} from 'react-redux';
@@ -14,10 +12,32 @@ import isBrowser from '../../utils/isBrowser';
 
 const forEach = [].forEach;
 
-// TODO: init hljs somewhere else
-// hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
-
 const {string} = React.PropTypes;
+
+function getModeFromNode(codeDOMNode) {
+  let lang = codeDOMNode.getAttribute('class');
+  if (!lang) {
+    return '';
+  }
+
+  lang = lang.slice(lang.indexOf('lang-') + 5);
+  switch (lang.toLowerCase()) {
+    case 'js':
+    case 'javascript':
+      return 'javascript';
+    case 'html':
+    case 'xml':
+      return 'xml';
+    default:
+      return '';
+  }
+}
+
+function htmlDecode(input) {
+  var e = document.createElement('div');
+  e.innerHTML = input;
+  return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
+}
 
 // TODO: avoid double highlight
 function highlightCode(codeBlockArr) {
@@ -30,16 +50,15 @@ function highlightCode(codeBlockArr) {
       codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
     }, {
 
-      value: codeDOM.innerHTML,
-      mode: 'javascript',
+      value: htmlDecode(codeDOM.innerHTML),
+      mode: getModeFromNode(codeDOM),
+      htmlMode: true,
       readOnly: true,
+      lineNumbers: true,
+      lineWrapping: true,
+      theme: 'monokai-sublime',
     });
   });
-
-  // TODO:
-  // for (var i = 0; i < codeBlockArr.length; i++) {
-  //   hljs.highlightBlock(codeBlockArr[i]);
-  // }
 }
 
 class SimplePost extends React.Component {

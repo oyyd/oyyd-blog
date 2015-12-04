@@ -1,7 +1,9 @@
 @quoteBorderColor: #eee;
 @quoteColor: #999;
 .oyyd-blog{
-  font-family: ETBembo, Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  @defaultFontFamily: ETBembo, Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  @codeFontFamily: Inconsolata, Monaco, Consolas, 'Courier New', Courier, Tahoma, Arial, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  font-family: @defaultFontFamily;
   table{
     width: 55%;
   }
@@ -10,7 +12,7 @@
   }
   code{
     background-color: transparent;
-    font-family: Tahoma, Arial, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+    font-family: @codeFontFamily;
   }
   blockquote{
     color: @quoteColor;
@@ -102,6 +104,10 @@
         .contentWidth();
       }
     }
+  }
+  .CodeMirror{
+    height: auto;
+    font-family: @codeFontFamily;
   }
   pre{
     >code{
