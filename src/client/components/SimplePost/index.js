@@ -14,6 +14,15 @@ const forEach = [].forEach;
 
 const {string} = React.PropTypes;
 
+const CODEMIRROR_DEFAULT_CONFIG = {
+  htmlMode: true,
+  readOnly: true,
+  lineNumbers: true,
+  lineWrapping: true,
+  theme: 'monokai-sublime',
+  tabSize: 2,
+};
+
 function getModeFromNode(codeDOMNode) {
   let lang = codeDOMNode.getAttribute('class');
   if (!lang) {
@@ -46,18 +55,14 @@ function highlightCode(codeBlockArr) {
   }
 
   forEach.call(codeBlockArr, codeDOM => {
-    new CodeMirror((elt) => {
-      codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
-    }, {
-
+    const config = Object.assign({}, CODEMIRROR_DEFAULT_CONFIG, {
       value: htmlDecode(codeDOM.innerHTML),
       mode: getModeFromNode(codeDOM),
-      htmlMode: true,
-      readOnly: true,
-      lineNumbers: true,
-      lineWrapping: true,
-      theme: 'monokai-sublime',
     });
+
+    new CodeMirror((elt) => {
+      codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
+    }, config);
   });
 }
 
@@ -97,7 +102,7 @@ const MarkedContent = React.createClass({
 
   render() {
     return (
-      <div dangerouslySetInnerHTML={{__html: translate(this.props.children.toString())}} />
+      <div dangerouslySetInnerHTML={{__html: this.props.children.toString()}} />
     );
   },
 });

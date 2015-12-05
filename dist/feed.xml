@@ -4,7 +4,7 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 04 Dec 2015 13:40:11 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 05 Dec 2015 08:27:36 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[探究Webpack中的HMR(hot module replacement)]]></title>
@@ -268,17 +268,17 @@ app.get(&#39;/:initialCount&#39;, (req, res) =&gt; {
   // 注意下面不仅将Counter的字符串放入了html内容中，并且
   // 还将参数保存在了全局浏览器上的全局变量`__INITIAL_COUNT__`
   req.send(
-    \`&lt;html&gt;
+    `&lt;html&gt;
       &lt;head&gt;&lt;/head&gt;
       &lt;body&gt;
         &lt;div id=&quot;main&quot;&gt;${counterString}&lt;/div&gt;
         &lt;script src=&quot;/bundle.js&quot;&gt;&lt;/script&gt;
         &lt;script&gt;
-          window.\__INITIAL_COUNT\__ = ${initialCount};
+          window.__INITIAL_COUNT__ = ${initialCount};
         &lt;/script&gt;
         &lt;script src=&quot;/bootstrap.js&quot;&gt;&lt;/script&gt;
       &lt;/body&gt;
-    &lt;/html&gt;\`
+    &lt;/html&gt;`
   );
 });
 
@@ -287,12 +287,12 @@ app.listen(8080);
 <p>当浏览器上的请求从服务器上返回时，bootstrap.js脚本被加载运行，在浏览器上初始化完整的React应用：</p>
 <pre><code class="lang-js">// bootstrap.js
 React.render(
-  &lt;Counter initialCount={window.\__INITIAL_COUNT\__}/&gt;,
+  &lt;Counter initialCount={window.__INITIAL_COUNT__}/&gt;,
   document.getElementById(&#39;main&#39;)
 );
 </code></pre>
 <p>到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。</p>
-<p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.\__INITIAL_COUNT\__</code>）也一并传过去，用于初始化。</p>
+<p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.__INITIAL_COUNT__</code>）也一并传过去，用于初始化。</p>
 <h2 id="-react-">事实上，我们在用React替代服务器端的模板引擎</h2>
 <p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
 <p>如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。</p>
@@ -354,14 +354,15 @@ const Counter = React.createClass({
 export default Counter;
 </code></pre>
 <p>测试时的渲染语句：</p>
-<pre><code>// React
+<pre><code class="lang-js">// React
 renderToString(&lt;Counter count={10}/&gt;);
 
 // ejs
 ejs.render(template, {
   count: 10,
 });
-</code></pre><p>设置node环境为<code>production</code>，避免React做一些用于开发环境的工作，并开始渲染：</p>
+</code></pre>
+<p>设置node环境为<code>production</code>，避免React做一些用于开发环境的工作，并开始渲染：</p>
 <pre><code>NODE_ENV=production node lib/index.js
 </code></pre><p>结果如下：</p>
 <p>数值单位是ope/sec（每秒渲染数）越高越好</p>

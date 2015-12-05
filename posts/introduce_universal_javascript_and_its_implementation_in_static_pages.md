@@ -122,17 +122,17 @@ app.get('/:initialCount', (req, res) => {
   // 注意下面不仅将Counter的字符串放入了html内容中，并且
   // 还将参数保存在了全局浏览器上的全局变量`__INITIAL_COUNT__`
   req.send(
-    \`<html>
+    `<html>
       <head></head>
       <body>
         <div id="main">${counterString}</div>
         <script src="/bundle.js"></script>
         <script>
-          window.\__INITIAL_COUNT\__ = ${initialCount};
+          window.__INITIAL_COUNT__ = ${initialCount};
         </script>
         <script src="/bootstrap.js"></script>
       </body>
-    </html>\`
+    </html>`
   );
 });
 
@@ -144,14 +144,14 @@ app.listen(8080);
 ```js
 // bootstrap.js
 React.render(
-  <Counter initialCount={window.\__INITIAL_COUNT\__}/>,
+  <Counter initialCount={window.__INITIAL_COUNT__}/>,
   document.getElementById('main')
 );
 ```
 
 到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。
 
-这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的`window.\__INITIAL_COUNT\__`）也一并传过去，用于初始化。
+这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的`window.__INITIAL_COUNT__`）也一并传过去，用于初始化。
 
 ## 事实上，我们在用React替代服务器端的模板引擎
 
@@ -237,7 +237,7 @@ export default Counter;
 ```
 测试时的渲染语句：
 
-```
+```js
 // React
 renderToString(<Counter count={10}/>);
 

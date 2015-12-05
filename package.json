@@ -4,10 +4,12 @@
   "description": "oyyd blog",
   "main": "index.html",
   "scripts": {
+    "init": "babel src --out-dir lib",
     "release": "gulp release",
     "build:list": "gulp gen-list",
     "build:lib": "gulp gen-lib",
     "build:sitemap": "gulp gen-sitemap",
+    "watch": "gulp watch",
     "watch:bundle": "webpack --watch --progress --colors",
     "watch:lib": "babel src -w --out-dir lib",
     "watch:post": "gulp watch-post",

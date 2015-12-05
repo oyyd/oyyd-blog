@@ -13,6 +13,7 @@ require('./lib/tasks/gen-list');
 require('./lib/tasks/gen-lib');
 require('./lib/tasks/gen-sitemap');
 require('./lib/tasks/watch-post');
+require('./lib/tasks/watch');
 
 gulp.task('minifyJs', ['webpack'], function(callback) {
   return gulp.src(path.join(__dirname, 'dist/*.js'))
