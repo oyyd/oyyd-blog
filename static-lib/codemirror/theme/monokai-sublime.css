@@ -61,3 +61,13 @@
 .cm-s-monokai-sublime .CodeMirror-linenumber {
 	color: #75715E;
 }
+
+.cm-s-monokai-sublime .cm-attribute {
+	color: #66D9EF;
+}
+.cm-s-monokai-sublime .cm-meta {
+	color: #75715E;
+}
+.cm-s-monokai-sublime .cm-tag {
+	color: #F92672;
+}
