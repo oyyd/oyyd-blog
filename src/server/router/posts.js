@@ -3,7 +3,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import nunjucks from 'nunjucks';
 import React from 'react';
 import {renderToString, updatePath} from 'react-dom/server';
 
@@ -15,16 +14,10 @@ import PostsData from '../../client/posts.data';
 import {initPost} from '../../client/state/post/actions';
 import {match, RoutingContext} from 'react-router';
 import escapeJSONString from '../utils/escapeJSONString';
+import createPage from '../../template/page';
 
 // TODO: a better 404 response
 const NOT_FOUND_CONTENT = 'not found';
-
-// Note: the `safe` filter in Nunjucks seems continuing to
-// escape quotes.
-nunjucks.configure({
-  autoescape: false,
-});
-
 const prefix = process.cwd();
 
 function transformPostsData(data) {
@@ -37,7 +30,6 @@ function transformPostsData(data) {
   return hash;
 }
 
-const templateString = fs.readFileSync('./template/page.html', {encoding: 'utf8'});
 const postsDataHash = transformPostsData(PostsData);
 
 function updatePostStore(store, postData) {
@@ -75,7 +67,7 @@ function pageRender(req, res) {
         }
 
         updatePostStore(store, postData).then(() => {
-          res.status(200).send(nunjucks.renderString(templateString, {
+          res.status(200).send(createPage({
             title: postData.title,
             content: renderToString(
               <Provider store={store}>

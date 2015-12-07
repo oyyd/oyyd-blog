@@ -55,7 +55,6 @@
   },
   "dependencies": {
     "compression": "^1.6.0",
-    "express": "^4.13.3",
-    "nunjucks": "^2.1.0"
+    "express": "^4.13.3"
   }
 }

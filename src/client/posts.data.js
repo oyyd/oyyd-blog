@@ -1,4 +1,9 @@
 export default [{
+  fileName: 'best_template_engine_in_node_js',
+  title: 'node上“最好”的模板引擎',
+  publicDate: '2015年12月7日',
+  description: 'test',
+}, {
   fileName:'how_does_react_hot_loader_works',
   title: '探究Webpack中的HMR(hot module replacement)',
   publicDate:'2015年12月04日',
