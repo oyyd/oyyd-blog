@@ -8,7 +8,7 @@ import generateRoutes from '../../client/generateRoutes';
 import {match, RoutingContext} from 'react-router';
 import escapeJSONString from '../utils/escapeJSONString';
 
-import createPage from '../../template/page';
+import createPage from '../../template/createPage';
 
 const routes = generateRoutes(null);
 function renderPages(req, res) {

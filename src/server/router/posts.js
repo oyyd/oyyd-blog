@@ -14,7 +14,7 @@ import PostsData from '../../client/posts.data';
 import {initPost} from '../../client/state/post/actions';
 import {match, RoutingContext} from 'react-router';
 import escapeJSONString from '../utils/escapeJSONString';
-import createPage from '../../template/page';
+import createPage from '../../template/createPage';
 
 // TODO: a better 404 response
 const NOT_FOUND_CONTENT = 'not found';
