@@ -4,8 +4,240 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sat, 05 Dec 2015 08:27:36 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 16 Dec 2015 12:05:41 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[探究用ES6 template strings替代前后端模板引擎]]></title>
+            <description><![CDATA[<h1 id="-es6-template-strings-">探究用ES6 template strings替代前后端模板引擎</h1>
+<p><strong>前言：</strong></p>
+<p>JavaScript上有很多的模板引擎，不管是用于前端的、后端的、两者兼顾的，或是特性丰富的，或是在模板中尽可能减少逻辑的，选择十分丰富。如果你也曾在一个或大或小的项目中考虑如何选择模板引擎的话，那你肯定也和我一样犹豫过要怎么选择。</p>
+<p>另一方面，在我大量使用React的工作时间中，我越发认可React中jsx的设计$sidenote(<a href="http://blog.vjeux.com/2013/javascript/jsx-e4x-the-good-parts.html">JSX: E4X The Good Parts</a>
+)。而当我从React jsx的角度考虑一个好的模板引擎应该具有什么样的特性时，我意识到，对于比较简单的情形，使用ES6中的<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings">template strings</a>外加一些约定就已经足矣。你甚至不需要模板引擎就能够很好地处理绝大多数你以前需要用模板引擎来处理的工作。</p>
+<p>那么下面就让我们来简单地探讨一下用ES6 template strings替代模板引擎的可行性及其优劣。</p>
+<h2 id="-">一个简单的实例</h2>
+<p>像是我的这个博客的一部分模板工作是直接利用template strings完成的（剩下的是React renderToString完成的）：</p>
+<p>head标签的模板:</p>
+<pre><code class="lang-js">// createHead.js
+function createHead(ctx) {
+  let {title, description} = ctx;
+
+  return (
+    `&lt;head&gt;
+      &lt;title&gt;${title}&lt;/title&gt;
+      &lt;meta name=&quot;description&quot; content=&quot;${description}&quot;/&gt;
+      &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
+      &lt;link rel=&quot;shortcut icon&quot; href=&quot;/static/favicon.ico&quot; /&gt;
+      &lt;link rel=&quot;stylesheet&quot; href=&quot;/static-lib/codemirror/codemirror.css&quot;/&gt;
+      &lt;link rel=&quot;stylesheet&quot; href=&quot;/static-lib/codemirror/theme/monokai-sublime.css&quot;/&gt;
+      &lt;link rel=&quot;stylesheet&quot; href=&quot;/dist/style.css&quot;/&gt;
+    &lt;/head&gt;`
+  );
+}
+
+export default createHead;
+</code></pre>
+<p>使用head标签模板，并引入每个页面的具体内容：</p>
+<pre><code class="lang-js">// createPage.js
+import createHead from &#39;./createHead&#39;;
+
+function createPage(ctx) {
+  let {title, description, content, initialState} = ctx;
+
+  title = title || &#39;oyyd blog&#39;;
+  description = description || &#39;这是亚东的博客，你可以在上面看到我的一些想法和实践，欢迎来访。&#39;;
+  initialState = initialState || &#39;null&#39;;
+
+  return (
+    `&lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+      ${createHead({title, description})}
+      &lt;body&gt;
+        &lt;div id=&quot;main&quot;&gt;${content}&lt;/div&gt;
+        &lt;script&gt;
+          window.__INITIAL_STATE__ = JSON.parse(&quot;${initialState}&quot;);
+        &lt;/script&gt;
+        &lt;script src=&quot;/static-lib/codemirror/codemirror.js&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;/static-lib/codemirror/mode/javascript/javascript.js&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;/static-lib/codemirror/mode/xml/xml.js&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;/dist/bundle.js&quot;&gt;&lt;/script&gt;
+        &lt;script&gt;
+          (function(i,s,o,g,r,a,m){i[&#39;GoogleAnalyticsObject&#39;]=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,&#39;script&#39;,&#39;//www.google-analytics.com/analytics.js&#39;,&#39;ga&#39;);
+
+          ga(&#39;create&#39;, &#39;UA-70462946-1&#39;, &#39;auto&#39;);
+          ga(&#39;send&#39;, &#39;pageview&#39;);
+        &lt;/script&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;`
+  );
+}
+
+export default createPage;
+</code></pre>
+<p>这样，我们就在没有引入模板引擎的情况下，完成了这些简单的工作。</p>
+<h2 id="-api-">对比实现其他模板引擎中的一些API与特性</h2>
+<p>为了进一步探讨用template strings替代模板引擎的可行性，我们将对比实现其他模板引擎中的一些特性。</p>
+<p>这里我们挑选的是<a href="http://mozilla.github.io/nunjucks/templating.html">nunjucks</a>中的一些特性，因其特性相对强大，更容易帮助我们说明template strings的特点及局限性。</p>
+<p>另外，如果有些什么是template strings没有，而其他模板引擎做得到的话，你可以考虑用其他javascript的方式来实现，毕竟 <strong>你可以直接使用javascript这一强大的语言环境，通常再写一个函数/模板都能解决你的问题</strong>。并且相比于评价其好坏，你可能更需要去思考一下你是否真的需要这一特性。</p>
+<h3 id="-">表达式</h3>
+<p>nunjucks:</p>
+<pre><code class="lang-html">{{ numItems*2 }}
+</code></pre>
+<p>template strings本身接受的就是表达式：</p>
+<pre><code class="lang-js">`
+${ numItems * 2 }
+`
+</code></pre>
+<h3 id="if-else">if else</h3>
+<p>nunjucks中的条件语句十分灵活：</p>
+<pre><code class="lang-html">{% if hungry %}
+  I am hungry
+{% elif tired %}
+  I am tired
+{% else %}
+  I am good!
+{% endif %}
+</code></pre>
+<p>因为template strings只接受表达式的值，所以你最多只能用boolean-exp：</p>
+<pre><code class="lang-js">`
+${ hungry ? (
+  I am hungry
+) : (
+  I am not hungry
+) }
+`
+</code></pre>
+<h3 id="for">for</h3>
+<p>假设我们有：</p>
+<pre><code class="lang-js">var points = [[0, 1, 2], [5, 6, 7], [12, 13, 14]];
+</code></pre>
+<p>在nunjucks中的：</p>
+<pre><code class="lang-html">{% for x, y, z in points %}
+  Point: {{ x }}, {{ y }}, {{ z }}
+{% endfor %}
+</code></pre>
+<p>虽然template strings只接受表达式，但还是可以这样完成实现:</p>
+<pre><code class="lang-js">`${points.map(point =&gt; (
+  `Point: ${x}, ${y}, ${z}`
+)).join(&#39;&#39;)}`
+</code></pre>
+<h3 id="-asynceach-asyncall">异步操作asyncEach与asyncAll</h3>
+<p>nunjucks支持一些异步操作：</p>
+<pre><code class="lang-html">&lt;h1&gt;Posts&lt;/h1&gt;
+&lt;ul&gt;
+{% asyncAll item in items %}
+  &lt;li&gt;{{ item.id | lookup }}&lt;/li&gt;
+{% endall %}
+&lt;/ul&gt;
+</code></pre>
+<p>我们没办法直接在template strings中做这件事。但如果只是进行简单的异步操作的话，我们可以在外部进行处理，并且这和其他用javascript处理异步操作的情况一致：</p>
+<pre><code class="lang-js">function renderPosts(posts) {
+  return new Promise((resolve, reject) =&gt; {
+    let content = &#39;&#39;;
+
+    // 写些异步操作来修改content
+    // ...
+
+    resolve(`
+      &lt;h1&gt;Posts&lt;/h1&gt;
+      &lt;ul&gt;
+        ${content}
+      &lt;/ul&gt;
+    `);
+  });
+}
+</code></pre>
+<p>但如果想要我们的模板整体支持异步的话，我们就需要写一些额外的代码来做这件事。而避免在你的模板中使用异步操作也是个选择。</p>
+<h3 id="autoescaping">Autoescaping</h3>
+<p>在nunjucks中，当<code>autoescape</code>选项被设置为<code>true</code>时，nunjucks会默认地转义变量的值，以防止可能来自用户的攻击。在使用template strings时，我们不难转义单个变量的值：</p>
+<pre><code class="lang-js">var username = &#39;&lt;script&gt;&lt;/script&gt;&#39;;
+
+function escapeHTML(str) {
+  // 具体实现，或是直接使用lodash.escape等
+}
+
+return `&lt;div&gt;{ escapeHTML(username) }&lt;/div&gt;`;
+// &lt;div&gt;&amp;lt;script&amp;gt;&amp;lt;&amp;#x2F;script&amp;gt;&lt;/div&gt;
+</code></pre>
+<p>而如果我们不想每次都手动调用转义函数，而是想要默认转义所有变量的值的话，我们可以利用<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings#Tagged_template_strings">Tagged template strings</a>这一特性：</p>
+<pre><code class="lang-js">function escapeHTML(str) {
+  // 具体实现，或是直接使用lodash.escape等
+}
+
+function escape(strings, ...values) {
+  return strings.map((str, index) =&gt; (
+    index === 0 ? `${str}` : `${str}${escapeHTML(values[index - 1])}`
+  )).join(&#39;&#39;);
+}
+
+return escape`&lt;div&gt;{ uesrname }&lt;/div&gt;`;
+// &lt;div&gt;&amp;lt;script&amp;gt;&amp;lt;&amp;#x2F;script&amp;gt;&lt;/div&gt;
+</code></pre>
+<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="18" class="margin-toggle sidenote-number"></label><input type="checkbox" id="18" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
+<h3 id="comments">comments</h3>
+<p>在nunjucks中我们可以写注释：</p>
+<pre><code class="lang-html">{# Loop through all the users #}
+{% for user in users %}...{% endfor %}
+</code></pre>
+<p>并且模板中的注释在生成的字符串中会被自动截掉。如果我们想在template strings中写注释的话，我们就需要直接写成HTML的注释：</p>
+<pre><code class="lang-js">`
+&lt;!-- Loop through all the users --&gt;
+`
+</code></pre>
+<p>那么我们能否在模板生成的字符串中自动截取掉这些注释呢？那我们还是要利用tagged template strings：</p>
+<pre><code class="lang-js">function trimComments(str) {
+  return str.replace(/&lt;!--.*?--&gt;/g, &#39;&#39;);
+}
+
+function escape(strings, ...values) {
+  return strings.map((str, index) =&gt; (
+    index === 0 ? `${trimComments(str)}` : `${trimComments(str)}${trimComments(values[index - 1])}`
+  )).join(&#39;&#39;);
+}
+
+return escape`
+  &lt;!-- Loop through all the users --&gt;
+`;
+</code></pre>
+<h3 id="-">动态生成模板</h3>
+<p>大部分模板引擎都可以动态生成模板，因为生成模板的过程实际上是在js上进行的一次编译过程，比如在nunjucks中：</p>
+<pre><code class="lang-js">var username = &#39;James&#39;;
+var template = &#39;Hello {{ username }}&#39;;
+var res = nunjucks.renderString(template, { username: username });
+</code></pre>
+<p>我们可以通过eval方法来动态生成模板：</p>
+<pre><code class="lang-js">var username = &#39;James&#39;;
+var template = &#39;`Hello ${ username }`&#39;;
+// 你应该需要更稳健的写法
+var res = eval(template);
+</code></pre>
+<h2 id="-template-strings-">用template strings替代模板引擎的优点和缺点</h2>
+<p>到目前位置，我们主要讨论了用template strings来替代模板引擎的可行性，下面我们会讨论这样做的优点和缺点。</p>
+<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="19" class="margin-toggle sidenote-number"></label><input type="checkbox" id="19" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
+<p>由于各种原因，通常模板引擎在处理很多问题时，通常会有自己的一套方法，比如说在一个模板中引入另一个模板你可能需要用import/require/partials语句，这实际上和JavaScript本身的import解决的是相似的问题。所以在使用template strings时，面对这些情况，我们就可以直接利用JavaScript中的特性来实现，而不需要像那样用一套新的东西来解决相似的问题。</p>
+<p>这样很自然地，使用template strings替代模板引擎最主要的优点在于：</p>
+<ol>
+<li><p>贴近原生JavaScript，学习曲线更低。</p>
+</li>
+<li><p>你可以充分利用已有的JavaScript代码和特性，任何新的需求都可以通过你熟悉的JavaScript进行拓展。</p>
+</li>
+<li><p>你的模板部分的内容天然就是Universal JavaScript，你天然地就可以同时在浏览器上和服务器上使用模板相关的代码。</p>
+</li>
+</ol>
+<p>但模板引擎毕竟是专门为处理模板而生的，有些用JavaScript实现比较麻烦的场景，用模板引擎的语法可能可以轻松地解决。实际上这里的讨论更像是在讨论使用DSL的优缺点。但使用template strings的理由在于 <strong>很多模板引擎上的很多特性都和JavaScript（ES6+）本身的特性重合了，我们没必要用一套新东西解决同样的问题</strong>。当然在ES6之前，JavaScript本身也没有模块，更别说考虑直接使用JavaScript中的特性来解决模板上的问题。</p>
+<p>而另一个推荐使用template strings的原因在于Universal JavaScript。如果模板本身就是JavaScript代码的话，那么在前后端同时使用一份代码会变得容易得多。</p>
+<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="20" class="margin-toggle sidenote-number"></label><input type="checkbox" id="20" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
+<h2 id="-">生产环境上的应用</h2>
+<p>在生产环境上单单使用template strings没办法解决我们的所有需求，而截止至本文时点我也没有看见过任何类似的实现。所以如果你觉得这是个好主意，你需要充分利用tagged template strings这一特性来组织起模板层。万幸的是这一过程不需要涉及编译，所以这会远比重新写一个模板引擎要简单得多。之后我也会尝试写一个帮助实现这一目的的库。</p>
+<h2 id="-">其他相关链接</h2>
+<p><a href="http://www.2ality.com/2015/01/template-strings-html.html">HTML templating with ES6 template strings</a></p>
+]]></description>
+            <link>https://blog.oyyd.net/post/best_template_engine_in_node_js</link>
+            <guid isPermaLink="false">e376e1b601f9fe30966dd8f5ca201e23</guid>
+            <pubDate>Tue, 15 Dec 2015 16:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[探究Webpack中的HMR(hot module replacement)]]></title>
             <description><![CDATA[<h1 id="-webpack-hmr-hot-module-replacement-">探究Webpack中的HMR(hot module replacement)</h1>
@@ -16,7 +248,7 @@
 <p>（<a href="https://github.com/oyyd/oyyd-blog/tree/master/research/react-hot-loader">从这里查看下文中的部分代码</a>）</p>
 <h2 id="-webpack-dev-server-">从webpack-dev-server开始</h2>
 <p>webpack不仅能够起到打包的作用，它还“附带了”一个专门用于开发的、由express构建的迷你服务器，即webpack-dev-server。webpack-dev-server的基本作用是处理我们的打包任务，并且它还会作为一个静态文件服务器提供我们最新打包成的静态文件供本地开发使用。webpack-dev-server与我们平时开发用的静态文件服务器的不同之处在于，它知道新的文件在何时被打包了出来，以及究竟是哪个文件发生了改变。</p>
-<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="15" class="margin-toggle sidenote-number"></label><input type="checkbox" id="15" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
+<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
 <p><img src="/static/posts/webpack-hmr/hot-reload.gif" alt="complete-version"></p>
 <p>对的，到这里webpack实际上已经实现了<a href="http://livereload.com/">livereload</a>的功能。</p>
 <h2 id="-hmr-api">使用HMR的相关api</h2>
@@ -70,7 +302,7 @@ if (module.hot) {
 <p>在浏览器上加载这个页面后，我们就可以尝试修改sayHelloEntry.js模块中的<code>name</code>的值或是SayHello.js模块中的内容来查看结果：</p>
 <p><img src="/static/posts/webpack-hmr/simple-version.gif" alt="complete-version"></p>
 <p>虽然这个例子非常简单，但它也足以说明在webpack中的HMR的基本原理了。而你也应该很快注意到了，虽然在开发过程中，所有模块都有可能发生改变，但我们并不需要为每个模块写HMR代码。</p>
-<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="16" class="margin-toggle sidenote-number"></label><input type="checkbox" id="16" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
+<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="22" class="margin-toggle sidenote-number"></label><input type="checkbox" id="22" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
 <p><img src="/static/posts/webpack-hmr/bubble-up.png" alt="bubble-up"></p>
 <p>当一个模块C发生改变，而模块内又没有HMR代码来处理这一消息时，那这一消息就会被传递到依赖模块C的其他模块上；如果消息在新模块上没有被捕获的话就会再次进行传递；如果所有的消息都被捕获了的话，那我们的应用就应该已经按照代码进行了更新；反之如果有消息冒泡到了入口(entry)文件还没有被捕获的话，那就说明我们的代码中没有处理这类变更方法，那webpack就会刷新浏览器页面，即从HMR回退到LiveReload。</p>
 <h2 id="-react-hmr">在React上实现HMR</h2>
@@ -108,7 +340,7 @@ class Counter extends React.Component{
 export default Counter;
 </code></pre>
 <p>虽然HMR依然有效，但每次模块更新后，你会发现Counter的当前计数又会回到初始状态。因为在这一过程中，React组件中的state丢失了。</p>
-<p>state丢失的原因和React的diff算法<label for="17" class="margin-toggle sidenote-number"></label><input type="checkbox" id="17" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
+<p>state丢失的原因和React的diff算法<label for="23" class="margin-toggle sidenote-number"></label><input type="checkbox" id="23" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
 <p>像我们在HMR的过程中更新了Counter.js模块，会重新生成新的Counter，实际上新的Counter和旧的Counter不是同一个Counter，即它们是不全等的。</p>
 <p>所以在当前React没有提供任何相关api的状况下，如果我们仍想要保留原来的state的话，那我们就不能用新的组件直接替换旧的组件，即我们要保留原来组件的外壳，并更新其上的所有方法（利用mutable data）。同时因为数据没有发生变化，所以我们还需要某种方式来强制命令React更新应用的状态。</p>
 <p>而这事实上就是react-proxy和react-deep-force-update的作用了。这两个库同样也是react-hot-loader和react-transform的依赖。由于这两个库的实现本身相对复杂费解，同时跟React内部的一些机制紧密相连，所以这里便不再深入了。</p>
@@ -166,7 +398,7 @@ if (module.hot) {
 <p>2015年11月26日</p>
 <p>React中的renderToString方法允许我们在服务器上渲染React部件，这点不仅可以帮助我们解决一些会出现在单页应用(SPA)上的问题，它甚至还允许我们将React用作模板引擎（template engine）来使用。下文还将附带一个简单的benchmark来对比React与传统模板引擎之间性能。</p>
 <h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
-<p>Universal Javascript又称Isomorphic JavaScript<label for="18" class="margin-toggle sidenote-number"></label><input type="checkbox" id="18" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="19" class="margin-toggle sidenote-number"></label><input type="checkbox" id="19" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
+<p>Universal Javascript又称Isomorphic JavaScript<label for="24" class="margin-toggle sidenote-number"></label><input type="checkbox" id="24" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="25" class="margin-toggle sidenote-number"></label><input type="checkbox" id="25" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
 <p>实现Universal Javascript的原理并不复杂，我们只需要在代码中获取当前运行环境（浏览器还是服务器？），并根据环境作出不同响应即可。比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
 <pre><code class="lang-js">if (Meteor.isServer) {
   // This code only runs on the server
@@ -200,7 +432,7 @@ if (Meteor.isClient) {
 </li>
 <li><p>如果javascrript加载失败或是运行时产生错误的话（或是浏览器直接禁用了javascript的话），用户看不到任何内容。</p>
 </li>
-<li><p>搜索引擎无法有效地爬取页面内容<label for="20" class="margin-toggle sidenote-number"></label><input type="checkbox" id="20" class="margin-toggle"/><span class="sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
+<li><p>搜索引擎无法有效地爬取页面内容<label for="26" class="margin-toggle sidenote-number"></label><input type="checkbox" id="26" class="margin-toggle"/><span class="sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
 </li>
 </ol>
 <p>对于这些问题，我们可以利用Universal JavaScript，也即React中的<code>renderToString</code>方法，在服务器上就渲染出React应用中的部分内容返回给浏览器，从而解决这些问题。</p>
@@ -294,9 +526,9 @@ React.render(
 <p>到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。</p>
 <p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.__INITIAL_COUNT__</code>）也一并传过去，用于初始化。</p>
 <h2 id="-react-">事实上，我们在用React替代服务器端的模板引擎</h2>
-<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
+<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="27" class="margin-toggle sidenote-number"></label><input type="checkbox" id="27" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
 <p>如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。</p>
-<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="22" class="margin-toggle sidenote-number"></label><input type="checkbox" id="22" class="margin-toggle"/><span class="sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
+<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="28" class="margin-toggle sidenote-number"></label><input type="checkbox" id="28" class="margin-toggle"/><span class="sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
 <p>那么让一门前端框架作为模板引擎是不是多余之举呢？</p>
 <p>事实可能完全相反。因为浏览器上js所使用的模板和服务器上渲染的模板原本就应该是同一份模板，它们同属于我们浏览器上的应用。只不过由于种种原因，我们一直不得不将其拆分成两部分。那么现在如果服务器的这份模板由本身就主要用于浏览器上的React来生成的话，我觉得是再合理不过的了。</p>
 <p><img src="/static/posts/react-server-render/react-as-template-engine.png" alt="React as Template Engine"></p>
@@ -317,7 +549,7 @@ React.render(
   &lt;button&gt;+1&lt;/button&gt;
 &lt;/div&gt;
 </code></pre>
-<p>React Counter(es6中类的形式)<label for="23" class="margin-toggle sidenote-number"></label><input type="checkbox" id="23" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
+<p>React Counter(es6中类的形式)<label for="29" class="margin-toggle sidenote-number"></label><input type="checkbox" id="29" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
 <pre><code class="lang-js">import React from &#39;react&#39;;
 
 class Counter extends React.Component{
@@ -404,7 +636,7 @@ ejs.render(template, {
 </tr>
 </tbody>
 </table>
-<p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="24" class="margin-toggle sidenote-number"></label><input type="checkbox" id="24" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
+<p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="30" class="margin-toggle sidenote-number"></label><input type="checkbox" id="30" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
 <p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经够用了，甚至该说是足够优秀了。况且React远不止是模板引擎。</p>
 <h2 id="-">结论</h2>
 <p>相对于其他语言来说，Universal JavaScript恐怕是Node在web上所具有的最独特的特性，也是最值得去挖掘的。我们这里讨论了一些React在服务器上的使用及其潜力，也一笔带过了实际应用中存在的一些问题。更深入的内容就留待以后吧。</p>
@@ -521,7 +753,7 @@ if (state !== newState){
 <p>同上文所述，如果我们能够快速有效的判断数据是否发生了变化，从而避免不必要的渲染，那我们
 的App就会有更好的性能。并且像是immutablejs这样的库
 一般在实现细节上都会更加优秀，以让变动数据的操作本身有更好的性能
-<label for="25" class="margin-toggle sidenote-number"></label><input type="checkbox" id="25" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
+<label for="31" class="margin-toggle sidenote-number"></label><input type="checkbox" id="31" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
 <blockquote>
 <p>...it implements fully persistent data structures from scratch using advanced things like tries to implement structural sharing. All updates return new values, but internally structures are shared to drastically reduce memory usage （and GC thrashing).</p>
 </blockquote>
@@ -603,7 +835,7 @@ if (state !== newState){
 而我们修改目标DOM的目的实际上是要维护维护DOM树和javascript
 状态的一致。</p>
 <p>维护这两者一致的工作本身是不可避免的，但问题是在代码量变大、代码变复杂的情况下，
-人工维护的代价可能要比我们想象的要复杂的多<label for="26" class="margin-toggle sidenote-number"></label><input type="checkbox" id="26" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
+人工维护的代价可能要比我们想象的要复杂的多<label for="32" class="margin-toggle sidenote-number"></label><input type="checkbox" id="32" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
 是确定的，但当前DOM树的状态却可能是多种多样的（不确定的）。理论上要把DOM树改变成目标状态的话，
 你的代码就需要考虑当前DOM树各种可能的状态。不仅如此，你的代码还需要包含改变DOM树状态
 的一步步的操作。</p>
@@ -649,7 +881,7 @@ componentDidUpdate等等的方法中（当然你不一定需要全都用到）�
 这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。</p>
 <p>说这是个问题，是因为我觉得适合生产环境上的框架应该单靠框架本身就能使团队中的每个人都对某一个功能的开发抱有相近的想法。
 这样代码就更容易预测。</p>
-<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="27" class="margin-toggle sidenote-number"></label><input type="checkbox" id="27" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
+<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="33" class="margin-toggle sidenote-number"></label><input type="checkbox" id="33" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
 <p>我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。</p>
 <p>比如Angular的Controller和Directive可以分别被认为是MVC（或MVVM）中的Model和View。
 这就意味着你可以将一个component拆分开来，分别实现这两个部分，也让更小粒度的代码复用成为了可能。</p>
@@ -667,7 +899,7 @@ Angular给我们提供了一套强大的工具，但你仍要去学习、实践�
 <h3 id="3-">3. 学习曲线很重要</h3>
 <p>并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。
 虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。</p>
-<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="28" class="margin-toggle sidenote-number"></label><input type="checkbox" id="28" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
+<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="34" class="margin-toggle sidenote-number"></label><input type="checkbox" id="34" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
 <p>除了Facebook和Instagram以外，看看<a href="https://github.com/facebook/react/wiki/Sites-Using-React">这里</a>，你会发现
 Amazon, AirBnb, Uber,
 支付宝，淘宝等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React

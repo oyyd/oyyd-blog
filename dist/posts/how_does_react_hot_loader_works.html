@@ -6,7 +6,7 @@
 <p>（<a href="https://github.com/oyyd/oyyd-blog/tree/master/research/react-hot-loader">从这里查看下文中的部分代码</a>）</p>
 <h2 id="-webpack-dev-server-">从webpack-dev-server开始</h2>
 <p>webpack不仅能够起到打包的作用，它还“附带了”一个专门用于开发的、由express构建的迷你服务器，即webpack-dev-server。webpack-dev-server的基本作用是处理我们的打包任务，并且它还会作为一个静态文件服务器提供我们最新打包成的静态文件供本地开发使用。webpack-dev-server与我们平时开发用的静态文件服务器的不同之处在于，它知道新的文件在何时被打包了出来，以及究竟是哪个文件发生了改变。</p>
-<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
+<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
 <p><img src="/static/posts/webpack-hmr/hot-reload.gif" alt="complete-version"></p>
 <p>对的，到这里webpack实际上已经实现了<a href="http://livereload.com/">livereload</a>的功能。</p>
 <h2 id="-hmr-api">使用HMR的相关api</h2>
@@ -60,7 +60,7 @@ if (module.hot) {
 <p>在浏览器上加载这个页面后，我们就可以尝试修改sayHelloEntry.js模块中的<code>name</code>的值或是SayHello.js模块中的内容来查看结果：</p>
 <p><img src="/static/posts/webpack-hmr/simple-version.gif" alt="complete-version"></p>
 <p>虽然这个例子非常简单，但它也足以说明在webpack中的HMR的基本原理了。而你也应该很快注意到了，虽然在开发过程中，所有模块都有可能发生改变，但我们并不需要为每个模块写HMR代码。</p>
-<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
+<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="5" class="margin-toggle sidenote-number"></label><input type="checkbox" id="5" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
 <p><img src="/static/posts/webpack-hmr/bubble-up.png" alt="bubble-up"></p>
 <p>当一个模块C发生改变，而模块内又没有HMR代码来处理这一消息时，那这一消息就会被传递到依赖模块C的其他模块上；如果消息在新模块上没有被捕获的话就会再次进行传递；如果所有的消息都被捕获了的话，那我们的应用就应该已经按照代码进行了更新；反之如果有消息冒泡到了入口(entry)文件还没有被捕获的话，那就说明我们的代码中没有处理这类变更方法，那webpack就会刷新浏览器页面，即从HMR回退到LiveReload。</p>
 <h2 id="-react-hmr">在React上实现HMR</h2>
@@ -98,7 +98,7 @@ class Counter extends React.Component{
 export default Counter;
 </code></pre>
 <p>虽然HMR依然有效，但每次模块更新后，你会发现Counter的当前计数又会回到初始状态。因为在这一过程中，React组件中的state丢失了。</p>
-<p>state丢失的原因和React的diff算法<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
+<p>state丢失的原因和React的diff算法<label for="6" class="margin-toggle sidenote-number"></label><input type="checkbox" id="6" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
 <p>像我们在HMR的过程中更新了Counter.js模块，会重新生成新的Counter，实际上新的Counter和旧的Counter不是同一个Counter，即它们是不全等的。</p>
 <p>所以在当前React没有提供任何相关api的状况下，如果我们仍想要保留原来的state的话，那我们就不能用新的组件直接替换旧的组件，即我们要保留原来组件的外壳，并更新其上的所有方法（利用mutable data）。同时因为数据没有发生变化，所以我们还需要某种方式来强制命令React更新应用的状态。</p>
 <p>而这事实上就是react-proxy和react-deep-force-update的作用了。这两个库同样也是react-hot-loader和react-transform的依赖。由于这两个库的实现本身相对复杂费解，同时跟React内部的一些机制紧密相连，所以这里便不再深入了。</p>

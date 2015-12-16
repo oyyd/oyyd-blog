@@ -34,4 +34,4 @@ function createPage(ctx) {
   );
 }
 
-export default page;
+export default createPage;

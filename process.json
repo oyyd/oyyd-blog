@@ -4,6 +4,7 @@
       "script": "lib/server/app.js",
       "args": [],
       "out_file": "./logs/common.log",
-      "error_file": "./logs/error.log"
+      "error_file": "./logs/error.log",
+      "max_restarts": 1,
     }]
 }

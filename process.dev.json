@@ -4,5 +4,6 @@
       "script": "lib/server/app.js",
       "watch": ["./lib", "./posts", "./template"],
       "args": ["dev"],
+      "max_restarts": 1,
     }]
 }
