@@ -8,7 +8,7 @@ let SimpleList = React.createClass({
   render() {
     return (
       <div className='blog-simple-list'>
-        <h2>Posts</h2>
+        <h2>文章列表</h2>
         {posts.map((item, index)=>(
           <h3 className='post-item' key={item.title + item.publicDate}>
             <span className='public-date'>{item.publicDate}</span>

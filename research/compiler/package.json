@@ -1,0 +1,12 @@
+{
+  "name": "compiler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch:lib": "babel src --out-dir lib -w",
+    "start": "node lib/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

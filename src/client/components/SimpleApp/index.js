@@ -1,7 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
-let SimpleApp = React.createClass({
+const SimpleApp = React.createClass({
   render() {
     return (
       <div className='oyyd-blog'>
@@ -18,7 +17,7 @@ let SimpleApp = React.createClass({
     return (
       <div className='header'>
         <h1>
-          <a href='/' className='site-name' title='返回列表'>oyyd blog</a>
+          <a href='/' className='site-name' title='返回列表'>亚东博客</a>
           <a className='header-icon github-link' href='https://github.com/oyyd' title='github'>
             <span className='icon-github'/>
           </a>
