@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import {curry, flowRight} from 'lodash';
-import {connect} from 'react-redux';
+import { curry, flowRight} from 'lodash';
+import { connect, } from 'react-redux';
+import { renderCharts, } from 'marked-chartjs-binding';
 
 import CONSTANTS from '../../CONSTANTS';
 import Disqus from '../Disqus';
-import translate from './translate';
 import getPostUrl from '../../utils/getPostUrl';
 import isBrowser from '../../utils/isBrowser';
 
@@ -89,10 +89,12 @@ SimplePost.propTypes = {
 const MarkedContent = React.createClass({
   componentDidMount() {
     this.highlightCodes();
+    renderCharts();
   },
 
   componentDidUpdate() {
     this.highlightCodes();
+    renderCharts();
   },
 
   highlightCodes() {

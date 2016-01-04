@@ -1,6 +1,7 @@
-import marked from 'marked';
+import { marked, } from 'marked-chartjs-binding';
 
 let commands = [];
+
 commands.push({
   reg: /\$sidenote\((.*?)\)/,
   handler: (() => {

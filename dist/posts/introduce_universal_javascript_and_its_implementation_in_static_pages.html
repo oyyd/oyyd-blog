@@ -202,45 +202,41 @@ ejs.render(template, {
 <pre><code>NODE_ENV=production node lib/index.js
 </code></pre><p>结果如下：</p>
 <p>数值单位是ope/sec（每秒渲染数）越高越好</p>
-<table>
-<thead>
-<tr>
-<th>模板</th>
-<th>第1次</th>
-<th>第2次</th>
-<th>第3次</th>
-<th>第4次</th>
-<th>第5次</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>React ES6 class</td>
-<td>7981</td>
-<td>9043</td>
-<td>11718</td>
-<td>8165</td>
-<td>8034</td>
-</tr>
-<tr>
-<td>React classic</td>
-<td>7172</td>
-<td>6904</td>
-<td>7421</td>
-<td>7592</td>
-<td>8030</td>
-</tr>
-<tr>
-<td>ejs</td>
-<td>17905</td>
-<td>17743</td>
-<td>16763</td>
-<td>19261</td>
-<td>17437</td>
-</tr>
-</tbody>
-</table>
-<p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="13" class="margin-toggle sidenote-number"></label><input type="checkbox" id="13" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
+<script type="text/chartdata" data-chartname="Bar" style="display:none;">{
+  "options": {
+    "multiTooltipTemplate": "<%= datasetLabel %>:<%= value %>"
+  },
+  "data": {
+      "labels": ["第1次", "第2次", "第3次", "第4次", "第5次"],
+      "datasets": [
+          {
+              "label": "React ES6 class",
+              "fillColor": "rgba(220,220,220,0.5)",
+              "strokeColor": "rgba(220,220,220,0.8)",
+              "highlightFill": "rgba(220,220,220,0.75)",
+              "highlightStroke": "rgba(220,220,220,1)",
+              "data": [7981, 9043, 11718, 8165, 8034]
+          },
+          {
+              "label": "React classic",
+              "fillColor": "rgba(151,187,205,0.5)",
+              "strokeColor": "rgba(151,187,205,0.8)",
+              "highlightFill": "rgba(151,187,205,0.75)",
+              "highlightStroke": "rgba(151,187,205,1)",
+              "data": [7172, 6904, 7421, 7592, 8030]
+          },
+          {
+              "label": "ejs",
+              "fillColor": "rgba(227,169,150,0.5)",
+              "strokeColor": "rgba(227,169,150,0.8)",
+              "highlightFill": "rgba(227,169,150,0.75)",
+              "highlightStroke": "rgba(227,169,150,1)",
+              "data": [17905, 17743, 16763, 19261, 17437]
+          }
+      ]
+  }
+}
+</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="13" class="margin-toggle sidenote-number"></label><input type="checkbox" id="13" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
 <p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经够用了，甚至该说是足够优秀了。况且React远不止是模板引擎。</p>
 <h2 id="-">结论</h2>
 <p>相对于其他语言来说，Universal JavaScript恐怕是Node在web上所具有的最独特的特性，也是最值得去挖掘的。我们这里讨论了一些React在服务器上的使用及其潜力，也一笔带过了实际应用中存在的一些问题。更深入的内容就留待以后吧。</p>

@@ -109,7 +109,7 @@ ${ hungry ? (
 {% endfor %}
 </code></pre>
 <p>虽然template strings只接受表达式，但还是可以这样完成实现:</p>
-<pre><code class="lang-js">`${points.map(point =&gt; (
+<pre><code class="lang-js">`${points.map(({x, y, z}) =&gt; (
   `Point: ${x}, ${y}, ${z}`
 )).join(&#39;&#39;)}`
 </code></pre>

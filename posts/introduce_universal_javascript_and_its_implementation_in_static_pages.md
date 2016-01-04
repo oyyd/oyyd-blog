@@ -256,12 +256,42 @@ NODE_ENV=production node lib/index.js
 
 数值单位是ope/sec（每秒渲染数）越高越好
 
-|模板|第1次|第2次|第3次|第4次|第5次|
-|----|-----------------|--|--|--|--|
-|React ES6 class|7981|9043|11718|8165|8034|
-|React classic|7172|6904|7421|7592|8030|
-|ejs|17905|17743|16763|19261|17437|
-
+graph.Bar
+{
+  "options": {
+    "multiTooltipTemplate": "<%= datasetLabel %>:<%= value %>"
+  },
+  "data": {
+      "labels": ["第1次", "第2次", "第3次", "第4次", "第5次"],
+      "datasets": [
+          {
+              "label": "React ES6 class",
+              "fillColor": "rgba(220,220,220,0.5)",
+              "strokeColor": "rgba(220,220,220,0.8)",
+              "highlightFill": "rgba(220,220,220,0.75)",
+              "highlightStroke": "rgba(220,220,220,1)",
+              "data": [7981, 9043, 11718, 8165, 8034]
+          },
+          {
+              "label": "React classic",
+              "fillColor": "rgba(151,187,205,0.5)",
+              "strokeColor": "rgba(151,187,205,0.8)",
+              "highlightFill": "rgba(151,187,205,0.75)",
+              "highlightStroke": "rgba(151,187,205,1)",
+              "data": [7172, 6904, 7421, 7592, 8030]
+          },
+          {
+              "label": "ejs",
+              "fillColor": "rgba(227,169,150,0.5)",
+              "strokeColor": "rgba(227,169,150,0.8)",
+              "highlightFill": "rgba(227,169,150,0.75)",
+              "highlightStroke": "rgba(227,169,150,1)",
+              "data": [17905, 17743, 16763, 19261, 17437]
+          }
+      ]
+  }
+}
+endgraph
 
 然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：[Node Template Engine Benchmarks](http://paularmstrong.github.io/node-templates/benchmarks.html)$sidenote(如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。)。
 

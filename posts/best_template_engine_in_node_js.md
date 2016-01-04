@@ -149,7 +149,7 @@ var points = [[0, 1, 2], [5, 6, 7], [12, 13, 14]];
 虽然template strings只接受表达式，但还是可以这样完成实现:
 
 ```js
-`${points.map(point => (
+`${points.map(({x, y, z}) => (
   `Point: ${x}, ${y}, ${z}`
 )).join('')}`
 ```

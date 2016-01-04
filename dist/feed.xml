@@ -4,8 +4,105 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 30 Dec 2015 14:02:54 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 04 Jan 2016 08:23:02 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[探究JavaScript上的编译器 —— marked]]></title>
+            <description><![CDATA[<h1 id="-javascript-marked">探究JavaScript上的编译器 —— marked</h1>
+<p><strong>前言：</strong></p>
+<p>如果你也用google去搜过编译相关的话题的话，会发现很难找到适合入门的内容。但与之相对的是，很多的库和特性的实现都离不开编译这一流程，我们去看一些开源的JavaScript代码时也经常会看到Lexer，Parser，Compiler，AST等东西。如果没有相关知识，那看这些代码时经常会一头雾水。</p>
+<p>实际上在学习这部分内容时，可能阅读书籍(<a href="http://www.amazon.com/dp/0321486811/?tag=stackoverfl08-20">编译原理</a>)是最合适的。因为编译的原理基本相近，也没有随时间推移而发生大的改变，经典的书籍依旧非常适用，但这里将尝试通过一些开源项目的代码来学习编译。虽然这种学习方式可能不够详尽，容易遗漏内容，但它也更有利于我们学习到开发实践中常用的编译（它们的代码结构通常会更加简单），以及了解不同环境下的编译过程的设计。</p>
+<p>但这个话题本身涉及的范围较广，内容较深，所以对这些内容的学习将通三个项目的源码进行，它们分别是：<a href="https://github.com/chjj/marked">marked</a> —— 它将markdown文本转换成可供浏览器使用的HTML标签, <a href="https://github.com/mozilla/nunjucks/">nunjucks</a> —— 模板引擎和<a href="http://zaach.github.io/jison/">Jison</a> —— 一个通用的parser生成器，三部分进行。</p>
+<p>那这次让我们从marked开始。</p>
+<h2 id="-">基础理论：一个编译器的结构</h2>
+<p>首先还是让我们通过来粗略了解一下编译器的通用结构（摘自编译原理）：</p>
+<ol>
+<li><p>Lexical Analysis/Scanning（词法分析），在marked中由Lexer实现。</p>
+</li>
+<li><p>Syntax Analysis/Parsing（语法分析），在marked中由Parser实现。</p>
+</li>
+<li><p>Semantic Analysis（语义分析），代码优化，在marked中没有实现。</p>
+</li>
+<li><p>代码生成，在marked中由Parser和Renderer实现。</p>
+</li>
+</ol>
+<h2 id="marked-">marked中的代码结构</h2>
+<p>marked的目的是根据输入的markdown文本来输出可供浏览器解析的HTML内容，藉由：</p>
+<pre><code class="lang-markdown"># 探究JavaScript上的编译器 —— marked
+
+编译这个话题在JavaScript上很少出现...
+</code></pre>
+<p>生成类似这样的代码：</p>
+<pre><code class="lang-html">&lt;h1&gt;探究JavaScript上的编译器 —— marked&lt;/h1&gt;
+&lt;p&gt;
+  编译这个话题在JavaScript上很少出现...
+&lt;/p&gt;
+</code></pre>
+<p>编译目标的不同会直接使得我们代码结构大相径庭。所以对任何编译相关的代码，时刻明确我们的设计的目的可以很好地帮助我们理解代码。</p>
+<p>marked由四部分组成，分别是: Lexer、InlineLexer、Parser、Renderer。</p>
+<p><img src="/static/posts/javascript-compiler/marked_composition.png" alt="marked-composition"></p>
+<p>其中Lexer会处理最原始的文本，它将文本处理、抽象，提供tokens供Parser使用；Renderer提供一组api供Parser和InlineLexer调用，以生成HTML；而Parser将对Lexer提供的tokens进行进一步处理，并据此调用Renderer中的api生成最终的HTML字符串。</p>
+<h3 id="lexer">Lexer</h3>
+<p>Lexer用来将源码转换成tokens供Parser使用，其表现如下：</p>
+<pre><code class="lang-js">const tokens = marked.Lexer.lex(&#39;# title&#39;);
+
+// tokens:  
+// [ { type: &#39;heading&#39;, depth: 1, text: &#39;title&#39; } ]
+</code></pre>
+<p>Lexer生成的tokens事实上只是对源码的抽象和描述。通常tokens都会有一个属性来描述其“类型”（上面生成的tokens中的“type”属性），并有可能有一个或多个“值”属性来描述具体信息（上面tokens中的“title”和“title”属性）。</p>
+<h3 id="inlinelexer">InlineLexer</h3>
+<p>marked中还有InlineLexer，从名称上看我们可以猜测它的整体作用和Lexer相近。但InlineLexer是有两点不同：一是InlineLexer只用于处理诸如：<code>__strong__</code>、<code>~~line-through~~</code>这样的内联文本；二是InlineLexer不返回tokens给Parser使用，它会直接利用Renderer将源码转换成HTML内容。</p>
+<pre><code class="lang-js">const output = marked.InlineLexer.output(&#39;__strong content__&#39;, {}, {});
+// output: &#39;&lt;strong&gt;strong content&lt;/strong&gt;&#39;
+</code></pre>
+<p>所以Parser在处理内联文本时，是直接使用InlineLexer生成结果，而不是像Lexer一样依据tokens用Renderers生成HTML。</p>
+<h3 id="renderer">Renderer</h3>
+<p>在Parser之前，我们先来看看Renderer的表现。我们可以直接使用Renderer生成HTML:</p>
+<pre><code class="lang-js">const options = {
+  headerPrefix: &#39;header-id&#39;,
+};
+const renderer = new marked.Renderer(options);
+const output = renderer.heading(&#39;hello world&#39;, 2, &#39;&#39;);
+
+// output: &#39;&lt;h2 id=&quot;header-id&quot;&gt;hello world&lt;/h2&gt;&#39;
+</code></pre>
+<p>我们可以看到在marked中，Renderer上的方法生成的内容就是我们所期望的HTML内容了。</p>
+<h3 id="parser">Parser</h3>
+<pre><code class="lang-js">const tokens = marked.Lexer.lex(&#39;# hello world&#39;);
+const output = marked.Parser.parse(tokens);
+// output: &lt;h1 id=&quot;hello-world&quot;&gt;hello world&lt;/h1&gt;
+</code></pre>
+<p>因为markdown的语法规则不像编程语言一样复杂，所以marked中的Parser相对简单，基本上就是按顺序将tokens转换成转换成HTML内容。</p>
+<h2 id="-marked">实践：扩展marked</h2>
+<p>为了验证对marked的理解是否正确，我试着fork并修改了marked的代码（<a href="https://github.com/oyyd/marked-chartjs-binding">github地址</a>），绑定了chartjs，令我们可以在markdown中调用渲染图表。</p>
+<p>你可以在这篇关于<a href="https://blog.oyyd.net/post/introduce_universal_javascript_and_its_implementation_in_static_pages">Universal React</a>的文章底部的benchmark部分看到柱状图。</p>
+<p>在修改中，我加入了如下的语法：</p>
+<pre><code class="lang-md">graph.chartName
+// JSON data here which will be used by
+endgraph
+</code></pre>
+<p>其中chartName将被用作chartjs的图表名，如：graph.Bar将使用chartjs中的Bar表。其对应的token形如：</p>
+<pre><code class="lang-js">{
+  type: &#39;graph&#39;,
+  name: &#39;chartName&#39;, // chartn
+  data: &#39;...&#39; // expecting JSON string containing `data` and `options` as the parameters of Chart
+}
+</code></pre>
+<p>而在<code>graph.chartName</code>和<code>endgraph</code>之间的内容将作为图表的参数。修改过后的marked最终渲染出如下的内容：</p>
+<pre><code class="lang-html">&lt;script type=&quot;text/chartdata&quot; data-chartname=&quot;chartName&quot;
+  style=&quot;display:none;&quot;&gt;
+// ...json string here
+&lt;/script&gt;
+</code></pre>
+<p>事实上我们只是渲染了一个script标签来保留图表信息，修改过后的marked并不能让我们在浏览器上直接看到图表。这是由于浏览器的限制，涉及到script的内容在处理时会遇到各种问题，所以在我的处理里，我使用<code>renderCharts()</code>方法去文档中搜索这样的标签，从而真正地渲染图表。</p>
+<h2 id="-">相关链接</h2>
+<p><a href="http://programmers.stackexchange.com/questions/165543/how-to-write-a-very-basic-compiler">How to write a very basic compiler</a></p>
+<p><a href="http://stackoverflow.com/questions/2842809/lexers-vs-parsers">lexers vs parsers</a></p>
+]]></description>
+            <link>https://blog.oyyd.net/post/javascript_compiler_marked</link>
+            <guid isPermaLink="false">d1d5084ec80418fd578b0a8d67e82bcc</guid>
+            <pubDate>Sun, 03 Jan 2016 16:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[探究用ES6 template strings替代前后端模板引擎]]></title>
             <description><![CDATA[<h1 id="-es6-template-strings-">探究用ES6 template strings替代前后端模板引擎</h1>
@@ -119,7 +216,7 @@ ${ hungry ? (
 {% endfor %}
 </code></pre>
 <p>虽然template strings只接受表达式，但还是可以这样完成实现:</p>
-<pre><code class="lang-js">`${points.map(point =&gt; (
+<pre><code class="lang-js">`${points.map(({x, y, z}) =&gt; (
   `Point: ${x}, ${y}, ${z}`
 )).join(&#39;&#39;)}`
 </code></pre>
@@ -598,45 +695,41 @@ ejs.render(template, {
 <pre><code>NODE_ENV=production node lib/index.js
 </code></pre><p>结果如下：</p>
 <p>数值单位是ope/sec（每秒渲染数）越高越好</p>
-<table>
-<thead>
-<tr>
-<th>模板</th>
-<th>第1次</th>
-<th>第2次</th>
-<th>第3次</th>
-<th>第4次</th>
-<th>第5次</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>React ES6 class</td>
-<td>7981</td>
-<td>9043</td>
-<td>11718</td>
-<td>8165</td>
-<td>8034</td>
-</tr>
-<tr>
-<td>React classic</td>
-<td>7172</td>
-<td>6904</td>
-<td>7421</td>
-<td>7592</td>
-<td>8030</td>
-</tr>
-<tr>
-<td>ejs</td>
-<td>17905</td>
-<td>17743</td>
-<td>16763</td>
-<td>19261</td>
-<td>17437</td>
-</tr>
-</tbody>
-</table>
-<p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="30" class="margin-toggle sidenote-number"></label><input type="checkbox" id="30" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
+<script type="text/chartdata" data-chartname="Bar" style="display:none;">{
+  "options": {
+    "multiTooltipTemplate": "<%= datasetLabel %>:<%= value %>"
+  },
+  "data": {
+      "labels": ["第1次", "第2次", "第3次", "第4次", "第5次"],
+      "datasets": [
+          {
+              "label": "React ES6 class",
+              "fillColor": "rgba(220,220,220,0.5)",
+              "strokeColor": "rgba(220,220,220,0.8)",
+              "highlightFill": "rgba(220,220,220,0.75)",
+              "highlightStroke": "rgba(220,220,220,1)",
+              "data": [7981, 9043, 11718, 8165, 8034]
+          },
+          {
+              "label": "React classic",
+              "fillColor": "rgba(151,187,205,0.5)",
+              "strokeColor": "rgba(151,187,205,0.8)",
+              "highlightFill": "rgba(151,187,205,0.75)",
+              "highlightStroke": "rgba(151,187,205,1)",
+              "data": [7172, 6904, 7421, 7592, 8030]
+          },
+          {
+              "label": "ejs",
+              "fillColor": "rgba(227,169,150,0.5)",
+              "strokeColor": "rgba(227,169,150,0.8)",
+              "highlightFill": "rgba(227,169,150,0.75)",
+              "highlightStroke": "rgba(227,169,150,1)",
+              "data": [17905, 17743, 16763, 19261, 17437]
+          }
+      ]
+  }
+}
+</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="30" class="margin-toggle sidenote-number"></label><input type="checkbox" id="30" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
 <p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经够用了，甚至该说是足够优秀了。况且React远不止是模板引擎。</p>
 <h2 id="-">结论</h2>
 <p>相对于其他语言来说，Universal JavaScript恐怕是Node在web上所具有的最独特的特性，也是最值得去挖掘的。我们这里讨论了一些React在服务器上的使用及其潜力，也一笔带过了实际应用中存在的一些问题。更深入的内容就留待以后吧。</p>
@@ -786,172 +879,6 @@ if (state !== newState){
             <link>https://blog.oyyd.net/post/immutable_data_structure_in_javascript</link>
             <guid isPermaLink="false">fd6bc6dad2cf0e938d67908a4f3fd2af</guid>
             <pubDate>Mon, 05 Oct 2015 16:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[ 为什么我选择了React来重构我们的前端]]></title>
-            <description><![CDATA[<h1 id="-react-">为什么我选择了React来重构我们的前端</h1>
-<p>2015年8月28日</p>
-<p><strong>前言：</strong></p>
-<p>很早以前，我曾经写过自己对React的看法，但那时候自己基本是囫囵吞枣，
-只是去看了React最明显的那些特性，完全没有去尝试深入理解其中的设计思想。
-其结果便是我完全没有理解到React的优点。直到最近，我们公司和其他大多数初创
-公司一样，需要真正地正视前端开发中的问题，并开始进行重构。这时我不得不
-从我熟悉的Angular和另一个不少大牛极力推荐的框架——React中作出选择。
-于是在仔细思考我们开发中的问题，并结合了他人的看法之后，我选择了React。</p>
-<p>这里特别推荐<a href="http://jlongster.com/Removing-User-Interface-Complexity,-or-Why-React-is-Awesome">James Long的这篇关于React的文章</a>。</p>
-<p>当然首先让我们从稍远一点的话题开始。</p>
-<h2 id="-jquery-">只用原生（或jQuery）开发时遇到的问题</h2>
-<h3 id="-">原生开发缺少统一的抽象方法</h3>
-<p>当一个项目刚刚开始时，用原生js进行开发一般不会遇到特别严重的问题。但当
-项目进行了一段时间以后，我们多半会发现我们需要想办法来帮我们管理一团糟
-的代码。</p>
-<p>我们可以看看当我们尝试去修改一个功能或修复一个bug时的一般性做法：</p>
-<ol>
-<li><p>寻找DOM（在浏览器审查元素）</p>
-</li>
-<li><p>看一下这个DOM上比较像钩子的属性（<code>id</code>, <code>class</code>, <code>role</code>, <code>data-xxx</code>）</p>
-</li>
-<li><p>搜索代码中用了这个钩子的地方（基本上通过文本搜索找<code>$()</code>）</p>
-</li>
-<li><p>若命中则进入下一个地方，否则从1, 2, 3中的某一步重新开始，直到命中。</p>
-</li>
-</ol>
-<p>而即便你找到了要修改代码，如果你没有遍历上述流程中每一种可能的情况的话，你就很难保证你没有
-遗漏其他情况。特别是在修改他人的代码时，你很难保证自己做出的修改是完整的、没有副作
-用的。</p>
-<p>产生这一问题的原因，我认为是我们的代码缺少有效的抽象方法。原生（和jQuery）中的api
-都是用来完成某种特定的功能，但并不能帮助我们写出更容易预测，更容易维护、扩展的代码。
-<strong>这就导致了在阅读、维护较为复杂的代码时，虽然能很明确每一个小操作的作用，但自顶至底来看，
-却很难明确每一个操作的目的。</strong> 你很难看懂别人的代码或是自己以前的代码。</p>
-<p>虽然我们平时也会用某些方式（面向对象，jQuery plugin，或一些更简单细碎的方式）
-来帮助我们实现目的，但这大多都是我们为我们当前面临的问题临时想出来的办法。
-这样的抽象是混乱的、不统一的，对于别人来说也不一定能够理解。</p>
-<p>除了缺少抽象导致的代码难以理解、修改以外，另一个不良后果便是很难确定代码的作用范围，
-很难复用代码。而ES5及以前的javascript缺少原生模块机制也是造成这一后果的重要原因。</p>
-<h3 id="-dom-dom-">需要人工DOM操作来维护DOM树的状态</h3>
-<p>看一眼我们的jQuery代码（或原生），不难发现我们绝大多数时候都是在“query DOM”（$(),或是getElement...）。
-因为我们需要找出目标DOM，然后改变目标DOM。</p>
-<p>这是因为在应用中DOM树的状态和javascript（中的数据）的状态是分离的，
-而我们修改目标DOM的目的实际上是要维护维护DOM树和javascript
-状态的一致。</p>
-<p>维护这两者一致的工作本身是不可避免的，但问题是在代码量变大、代码变复杂的情况下，
-人工维护的代价可能要比我们想象的要复杂的多<label for="32" class="margin-toggle sidenote-number"></label><input type="checkbox" id="32" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
-是确定的，但当前DOM树的状态却可能是多种多样的（不确定的）。理论上要把DOM树改变成目标状态的话，
-你的代码就需要考虑当前DOM树各种可能的状态。不仅如此，你的代码还需要包含改变DOM树状态
-的一步步的操作。</p>
-<h2 id="-react-">对于这些问题，React做了什么？</h2>
-<h3 id="-">树状结构的应用与声明式的代码</h3>
-<p>React要求每一个ReactClass的渲染方法中，都有且只有一个最外层的Virtual DOM，但它内部
-（children属性）可以包含多个Virtual DOM。所以用React写的应用的结构是树状的。
-React应用的树状结构使得任何一个ReactClass都只和它的外层ReactClass以及
-子ReactClass进行直接交互，也即我们很容易弄清楚我们某一部分代码的作用范围。
-不仅如此你只要从<code>render</code>方法中就可以得知你代码使用到的其他部件所用到的当前部件的
-属性、方法，这就使得我们在修改React的代码时会格外轻松。</p>
-<p>实际上这一点对于涉及到UI的代码来说是十分重要的，
-因为我个人觉得通常在产品需求变化时，UI的变化经常会需要你不断地考虑是否要对代码做
-抽象，分离出一部分公用的内容。而React会让你的每一部分代码都为复用做好准备。</p>
-<h3 id="-virtual-dom-dom-">直接生成Virtual DOM来取代DOM操作</h3>
-<p>我们写的React代码并不直接操作DOM，而是根据当前的数据组织出一个Virtual DOM，然后由
-Virtual DOM完成对DOM树的调节。</p>
-<p>由于新生成的Virtual DOM会和上一次的Virtual DOM进行比对，
-然后根据Virtual DOM之间的差别对DOM树进行最小的、必要的调节，所以这一做法在大多数
-情况下都能够保证性能。</p>
-<p>而组织Virtual DOM来操作DOM的更大好处在于：你不需要
-考虑将DOM树从当前的状态A变成目标状态B所需要进行的每一个DOM操作，而只要根据当前数据的
-状态去组织一个目标状态B的Virtual DOM即可，所以这种做法节省了我们的很多工作。并且你的
-应用越是复杂，Virtual DOM这种做法的优势便越是明显。</p>
-<p>另外值得一提的是，组织Virtual DOM的过程完全可以被当成是模板引擎的一种实现。
-并且与其他模板做对比时，我发现Virtual DOM + jsx异常灵活。</p>
-<h3 id="-">容易确定的数据流</h3>
-<p>大多数情况下，我们都可以通过改变应用中的数据来改变React应用的状态。很多时候我们在追踪
-应用的状态时，实际上都是在追踪数据的变化。所以掌握数据的状态在维护及扩展时是非常重要的。
-得益于前面所述的树状结构以及数据和视图的紧密贴合，React应用的数据流向十分清晰明。</p>
-<p>除了这点，React应用中的每一部分都使用props和states两个属性来储存状态。
-其中props属性是外部传入的，在ReactElement部不（应该）发生改变；
-而state属性产生于ReactElement的内部，可传递到子ReactElement中作为props。
-这两个属性很好地将控制components状态的数据进行了分类，让我们更容易在局部代码中对数据进行朔源。</p>
-<h2 id="-angular-">我没有选择Angular的原因</h2>
-<p>React和Angular之间过于不同，以至于我把这篇文章的初衷都稍作了修改。
-所以这里更多从实践的角度谈谈我的看法，可能充满了个人偏见。</p>
-<h3 id="1-react-">1. React的代码可预测行更强</h3>
-<p>把这个问题放到React，你会发现数据都放在props（外部传入）和state（本身拥有）上，
-部件在每个生命周期上要做的事情都有序地放置在componentWillMount、componentDidMount、
-componentDidUpdate等等的方法中（当然你不一定需要全都用到），涉及Virtual DOM的东西都在Render方法里，
-少量退回到原生（jquery）的DOM操作都可以通过refs属性找到。
-这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。</p>
-<p>说这是个问题，是因为我觉得适合生产环境上的框架应该单靠框架本身就能使团队中的每个人都对某一个功能的开发抱有相近的想法。
-这样代码就更容易预测。</p>
-<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="33" class="margin-toggle sidenote-number"></label><input type="checkbox" id="33" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
-<p>我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。</p>
-<p>比如Angular的Controller和Directive可以分别被认为是MVC（或MVVM）中的Model和View。
-这就意味着你可以将一个component拆分开来，分别实现这两个部分，也让更小粒度的代码复用成为了可能。</p>
-<p>但问题是明确地分割出Model和View可能在涉及复杂UI交互的领域并不是个最好的选择，
-更多的场景可能需要我们根据实际情况和需求进行思考选择。
-而Angular的这一套抽象方法很难适应现实的复杂情况。</p>
-<p>并且你需要考虑如何去组织这些代码，并决定一个Controller或Directive到底要涉及多少功能，才能用的顺手。
-Angular给我们提供了一套强大的工具，但你仍要去学习、实践怎么用好它们。</p>
-<p>对于React来说，由于React并不分割Model和View，并且代码非常容易被修改、扩展，
-所以你完全可以凭直觉来决定一个功能要如何实现，等待问题出现以后在进行修改。
-因为只要你的代码不是真的太糟糕的话，这一过程真的并不痛苦。</p>
-<p>事实上，如果MVC的重点在于Seperation of Concern，
-那么React部件之间的作用范围分明本身就可以认为是这种思想的实践。
-只要能解决问题，是不是MVC又有什么关系呢？</p>
-<h3 id="3-">3. 学习曲线很重要</h3>
-<p>并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。
-虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。</p>
-<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="34" class="margin-toggle sidenote-number"></label><input type="checkbox" id="34" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
-<p>除了Facebook和Instagram以外，看看<a href="https://github.com/facebook/react/wiki/Sites-Using-React">这里</a>，你会发现
-Amazon, AirBnb, Uber,
-支付宝，淘宝等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React
-，至少这些公司对React都持肯定态度。Angular虽然也同样声名远播，但却不至于如此。</p>
-<h2 id="-">结论</h2>
-<p>我们需要框架来帮助我们的开发，其目的还是要解决现有的问题，加快开发效率，增强代码的复用，
-并尽可能让我们可以把精力放在业务上。React虽然在开发效率上的优势不那么明显，但在其他问题
-上发挥的作用是毋庸置疑的。</p>
-<p>而React在拥有Virtual DOM以及不分离View、Model的大胆做法的同时，本身却非常注重工程实践。
-特别是我们在从原生过渡到React的这一过程中更是能深刻地体会到这一点。React是适合用在生产环境上的。</p>
-<h2 id="-react-">附：我们React一些实践结果</h2>
-<p><strong>Virtual DOM的性能问题</strong></p>
-<p>相比于原生js直接修改DOM，Virtual DOM需要多做一次“生成Virtual DOM“和一次”Virtual DOM“的比对，
-所以我在开发过程中一直很关注React的性能问题（这可能同时也是不少反对前端框架开发的工程师的
-论点之一）。碰巧我们应用的某个页面中，有可能会出现数百张
-卡片同时出现在页面中的情况。在我按照这之前的方式把这个页面从原生改为React以后，我发现一旦
-数百张卡片出现，每次改变应用的状态（state）都会有2秒左右的卡顿。</p>
-<p>于是我按照<a href="https://facebook.github.io/react/docs/advanced-performance.html">React doc</a>的教程来
-来尝试优化这个页面。这个教程上优化的要点实际上只有两点：</p>
-<ol>
-<li><p>使用<code>PureRenderMixin</code>，或是<code>componentShouldUpdate</code>阶段在不必要的情况下返回false。</p>
-</li>
-<li><p>在第一点的基础上，使用<a href="https://facebook.github.io/immutable-js/">Immutablejs</a>，来使得在数据结构比较复杂的情况下（Array, Object），
-我们可以只比较reference的变化就判断component是否应该重新渲染。相当于减轻了比对过程的消耗，
-同时也避免了一些本不必要的视图更新。</p>
-</li>
-</ol>
-<p>这两个方法中我采用了前一个，我没有使用Immutablejs，但我用了React自带的
-<a href="http://facebook.github.io/react/docs/update.html">Immutable Helper</a>来
-达到相似的效果。</p>
-<p>其结果是，问题并没有得到很好的改善。因为即便我避免了额外的Virtual DOM的生成、比对过程，但我们
-的应用在状态发生改变时，仍会同时进行数百次对”是否要生成Virtual DOM并进行比对“的判断。</p>
-<p>那么这个问题是否无法解决了呢？答案是否定的。我最后跳过了比对过程，直接利用<code>refs</code>和卡片中
-事先定义好的方法来直接改变目标卡片的状态。这实际上就是退回到了原生实现。结果令人我满意。</p>
-<p>所以我现在对React性能的看法是：<strong>绝大多数情况下没有问题，有问题的话也可以退回原生</strong>。</p>
-<p><strong>代码量的变化</strong></p>
-<p>代码越少，问题越少。在刚开始写Angular代码时，我印象深刻的一点是，你觉得自己的代码刚写
-到一半，就突然发现你的功能已经基本完成了。我觉得。</p>
-<p>那么对比原生，React的代码量会有什么变化呢？在我们的应用中，我正好有大量的机会来将原声代码
-该写成React代码。根据我的观察，我们应用的React版本和原生的版本代码量（行数）差别不大。
-有时React甚至会稍多一些。</p>
-<p><strong>能否从原生（jquery）平滑迁移到React？</strong>
-可以，我们正在做。你可能需要看看文档，结合实际情况多思考一下怎么做比较合适。</p>
-<p><strong>在用React进行了一段时间的实践以后我最大的主观感受</strong>
-我不再那么害怕我以前的代码和我同事的代码了。</p>
-<blockquote>
-<p>2015/8/30 TODO：补充示例和图片，每一点讲的更详细一些。</p>
-</blockquote>
-]]></description>
-            <link>https://blog.oyyd.net/post/why_i_choose_react_rather_than_angular_in_our_company</link>
-            <guid isPermaLink="false">46302d6994a8636ebb23f88ab4f1519b</guid>
-            <pubDate>Thu, 27 Aug 2015 16:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>

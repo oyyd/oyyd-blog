@@ -3,7 +3,7 @@ import fs from 'fs';
 
 import gulp from 'gulp';
 import postsData from '../client/posts.data';
-import translate from '../client/components/SimplePost/translate.es5';
+import translate from '../client/components/SimplePost/translate';
 
 const PREFIX = path.join(process.cwd(), 'posts');
 const DIST_PREFIX = path.join(process.cwd(), 'dist/posts');
