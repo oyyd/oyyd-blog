@@ -1,33 +1,31 @@
 # 探究JavaScript上的编译器 —— nunjucks
 
-2016年01月04日
+2016年01月11日
 
 ## 写在前面的实践结果
 
-在前面[marked的学习过程](TODO)中，我简单地hack了marked来绑定了chartjs。而nunjucks
+在前面[marked的学习过程](https://blog.oyyd.net/post/javascript_compiler_marked)中，我简单地hack了marked来绑定了chartjs。但[nunjucks](https://github.com/mozilla/nunjucks)的内容，我没有想到比较好的实践方式。所以这次我将帮助修复nunjucks上的一些bug作为这次实践。
 
-## Lexer
+到目前为止，已修复的问题有：[#332](https://github.com/mozilla/nunjucks/pull/632), [#595](https://github.com/mozilla/nunjucks/pull/631), [#612](https://github.com/mozilla/nunjucks/pull/628), [#317](https://github.com/mozilla/nunjucks/pull/339)
 
-Tokenizer == Scanner
+## nunjucks的代码结构
 
-```
-in_code ?
-  TOKEN_STRING
-  TOKEN_WHITESPACE
-  TOKEN_BLOCK_END
-  TOKEN_VARIABLE_END
-  TOKEN_REGEX
-  ...
-:
-  TOKEN_BLOCK_START
-  TOKEN_VARIABLE_START
-  TOKEN_COMMENT
-  TOKEN_DATA
-```
+nunjucks的整体代码结构如下：
+
+// TODO: graph
+
+接下来再让我们看看每一部分的作用。
+
+### Lexer
+
+Lexer中最主要的类被命名为Tokenizer，这听起来与Scanner异曲同工。
+
+模板引擎的模板代码可以很容易地被分为成两部分，一部分将直接用于输出（即Lexer生成的TOKEN\_DATA），另一部分则可能有复杂的逻辑于其中。nunjucks在Lexer中会储存一个in\_code变量用于确认当前的解析状态，并依次进行两套不同的解析规则。
 
 ```js
 nunjucks.renderString('<h1> Hello, {{ me }}! </h1>', { me: 'oyyd' })
 
+// 生成的tokens:
 // { type: 'data', value: '<h1> Hello, ', lineno: 0, colno: 0 }
 // { type: 'variable-start', value: '{{', lineno: 0, colno: 12 }
 // { type: 'whitespace', value: ' ', lineno: 0, colno: 12 }
@@ -35,12 +33,17 @@ nunjucks.renderString('<h1> Hello, {{ me }}! </h1>', { me: 'oyyd' })
 // { type: 'whitespace', value: ' ', lineno: 0, colno: 15 }
 // { type: 'variable-end', value: '}}', lineno: 0, colno: 16 }
 // { type: 'data', value: '! </h1>', lineno: 0, colno: 16 }
-// <h1> Hello, oyyd! </h1>
 ```
 
-在Lexer中，Tokenizer只是将源码转换成tokens供其它代码使用。Tokenizer碰到什么字符就会试着把它转换成token，它不会参与任何高层次的逻辑，比如要检查“{{”和“}}”是否配对出现是在Parser中进行的，而不是Lexer。
+Tokenizer只是将源码转换成tokens供其它代码使用。Tokenizer碰到什么字符就会试着把它转换成token，它不会参与任何高层次的逻辑。比如Lexer不会检查“{{”和“}}”是否配对，这一检查实际上是在Parser中进行的。
 
-## Parser
+### Parser
+
+Parser实际上是对tokens进行处理，以保证代码的语法规则合法，并据此生成由node组成的AST。
+
+比如当出现“{{”时（TOKEN\_BLOCK\_START），Parser就会尝试在剩余的tokens中寻找“}}”（TOKEN\_BLOCK\_END）。如果没有找到则Parser会认为代码不符合语法规则，从而抛出异常。
+
+Parser生成三种
 
 TOKEN_DATA ->
 
@@ -68,18 +71,21 @@ a or b and c = a or ( b and c )
 
 首先尝试寻找低优先级的nodes，因为？
 
-Parser生成AST：
+Parser生成AST的例子如下：
 
 // TODO maybe graph here?
 
-```js
-`<p>
+```html
+<p>
   Hi, I'm
   {%if name and isNameValid or forceShowName%}
     <span>{{name}}</span>
   {%endif%}
-</p>`
+</p>
 
+```
+
+```js
 // { parent: undefined,
 //   lineno: 0,
 //   colno: 0,
@@ -127,11 +133,11 @@ Parser生成AST：
 //      [length]: 3 ] }
 ```
 
-## transformer
+### transformer
 
 async filters
 
-## Compiler
+### Compiler
 
 Compiler使用AST生成中间代码:
 
@@ -172,6 +178,16 @@ var props = new Function(
 );
 ```
 
-并且这是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js$sidenote(现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB)）。这就是nunjucks中的precompile特性，也是nunjucks高性能的关键// TODO
+并且这是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js$sidenote(现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB)）。这就是nunjucks中的precompile特性，也是nunjucks高性能的关键// TO
 
-## Environment && Template
+### Context && Environment && Template
+
+到目前为止，有了中间代码以后，我们只要传入参数就可以生成目标代码了。而从外部传入的参数分为两种，上下文环境（渲染过程中直接使用到的变量等）储存在Context中，而配置等参数将被储存在Environment中。而Template最主要的目的则是组合使用Environment，其作用可以简单地理解为：
+
+```js
+return root( // root为中间代码生成的函数
+  ctx, // 上下文环境
+  env // 配置等
+);
+
+```
