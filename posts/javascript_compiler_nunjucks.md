@@ -1,12 +1,12 @@
 # 探究JavaScript上的编译器 —— nunjucks
 
-2016年01月11日
+2016年01月12日
 
 ## 写在前面的实践结果
 
 在前面[marked的学习过程](https://blog.oyyd.net/post/javascript_compiler_marked)中，我简单地hack了marked来绑定了chartjs。但对于[nunjucks](https://github.com/mozilla/nunjucks)，我没有想到比较好的实践方式。所以这次我将帮助修复nunjucks上的一些bug来作为本次实践。
 
-到目前为止，已修复的问题有：[#571](https://github.com/mozilla/nunjucks/pull/634), [#332](https://github.com/mozilla/nunjucks/pull/632), [#595](https://github.com/mozilla/nunjucks/pull/631), [#612](https://github.com/mozilla/nunjucks/pull/628), [#317](https://github.com/mozilla/nunjucks/pull/339)
+到目前为止，已尝试修复的问题有：[#571](https://github.com/mozilla/nunjucks/pull/634), [#332](https://github.com/mozilla/nunjucks/pull/632), [#595](https://github.com/mozilla/nunjucks/pull/631), [#612](https://github.com/mozilla/nunjucks/pull/628), [#317](https://github.com/mozilla/nunjucks/pull/339)
 
 ## nunjucks的代码结构
 
@@ -218,3 +218,7 @@ return root( // root为中间代码生成的函数
 nunjucks提供给开发者的api和配置的相关代码大多应该可以在这里找到。
 
 至此主要的编译过程也就结束了。
+
+## 其他
+
+事实上nunjucks还有不少高级特性值得探讨，比如async（transformer.js），它会改变parser的结构。这些内容就留待以后再探讨吧。

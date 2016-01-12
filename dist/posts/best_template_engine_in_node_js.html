@@ -165,7 +165,7 @@ function escape(strings, ...values) {
 return escape`&lt;div&gt;{ uesrname }&lt;/div&gt;`;
 // &lt;div&gt;&amp;lt;script&amp;gt;&amp;lt;&amp;#x2F;script&amp;gt;&lt;/div&gt;
 </code></pre>
-<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
+<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
 <h3 id="comments">comments</h3>
 <p>在nunjucks中我们可以写注释：</p>
 <pre><code class="lang-html">{# Loop through all the users #}
@@ -205,7 +205,7 @@ var res = eval(template);
 </code></pre>
 <h2 id="-template-strings-">用template strings替代模板引擎的优点和缺点</h2>
 <p>到目前位置，我们主要讨论了用template strings来替代模板引擎的可行性，下面我们会讨论这样做的优点和缺点。</p>
-<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
+<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
 <p>由于各种原因，通常模板引擎在处理很多问题时，通常会有自己的一套方法，比如说在一个模板中引入另一个模板你可能需要用import/require/partials语句，这实际上和JavaScript本身的import解决的是相似的问题。所以在使用template strings时，面对这些情况，我们就可以直接利用JavaScript中的特性来实现，而不需要像那样用一套新的东西来解决相似的问题。</p>
 <p>这样很自然地，使用template strings替代模板引擎最主要的优点在于：</p>
 <ol>
@@ -218,7 +218,7 @@ var res = eval(template);
 </ol>
 <p>但模板引擎毕竟是专门为处理模板而生的，有些用JavaScript实现比较麻烦的场景，用模板引擎的语法可能可以轻松地解决。实际上这里的讨论更像是在讨论使用DSL的优缺点。但使用template strings的理由在于 <strong>很多模板引擎上的很多特性都和JavaScript（ES6+）本身的特性重合了，我们没必要用一套新东西解决同样的问题</strong>。当然在ES6之前，JavaScript本身也没有模块，更别说考虑直接使用JavaScript中的特性来解决模板上的问题。</p>
 <p>而另一个推荐使用template strings的原因在于Universal JavaScript。如果模板本身就是JavaScript代码的话，那么在前后端同时使用一份代码会变得容易得多。</p>
-<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
+<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
 <h2 id="-">生产环境上的应用</h2>
 <p>在生产环境上单单使用template strings没办法解决我们的所有需求，而截止至本文时点我也没有看见过任何类似的实现。所以如果你觉得这是个好主意，你需要充分利用tagged template strings这一特性来组织起模板层。万幸的是这一过程不需要涉及编译，所以这会远比重新写一个模板引擎要简单得多。之后我也会尝试写一个帮助实现这一目的的库。</p>
 <h2 id="-">其他相关链接</h2>

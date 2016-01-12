@@ -1,0 +1,167 @@
+<h1 id="-javascript-nunjucks">探究JavaScript上的编译器 —— nunjucks</h1>
+<p>2016年01月12日</p>
+<h2 id="-">写在前面的实践结果</h2>
+<p>在前面<a href="https://blog.oyyd.net/post/javascript_compiler_marked">marked的学习过程</a>中，我简单地hack了marked来绑定了chartjs。但对于<a href="https://github.com/mozilla/nunjucks">nunjucks</a>，我没有想到比较好的实践方式。所以这次我将帮助修复nunjucks上的一些bug来作为本次实践。</p>
+<p>到目前为止，已尝试修复的问题有：<a href="https://github.com/mozilla/nunjucks/pull/634">#571</a>, <a href="https://github.com/mozilla/nunjucks/pull/632">#332</a>, <a href="https://github.com/mozilla/nunjucks/pull/631">#595</a>, <a href="https://github.com/mozilla/nunjucks/pull/628">#612</a>, <a href="https://github.com/mozilla/nunjucks/pull/339">#317</a></p>
+<h2 id="nunjucks-">nunjucks的代码结构</h2>
+<p>nunjucks的整体代码结构如下：</p>
+<p><img src="/static/posts/javascript-compiler/nunjucks.png" alt="nunjucks"></p>
+<p>接下来再让我们看看每一部分的作用。</p>
+<h3 id="lexer">Lexer</h3>
+<p>Lexer中最主要的类被命名为Tokenizer，这听起来与Scanner异曲同工。</p>
+<p>模板引擎的模板代码可以很容易地被分为成两种，一种将直接用于输出（即Lexer生成的TOKEN_DATA），另一种则可能有复杂的逻辑于其中。nunjucks在Lexer中有一个in_code属性用于储存当前的解析状态，并依次进行两套不同的解析规则。</p>
+<p>下面展示了一段模板所生成的tokens：</p>
+<pre><code class="lang-js">nunjucks.renderString(&#39;&lt;h1&gt; Hello, {{ me }}! &lt;/h1&gt;&#39;, { me: &#39;oyyd&#39; })
+
+// 生成的tokens:
+// { type: &#39;data&#39;, value: &#39;&lt;h1&gt; Hello, &#39;, lineno: 0, colno: 0 }
+// { type: &#39;variable-start&#39;, value: &#39;{{&#39;, lineno: 0, colno: 12 }
+// { type: &#39;whitespace&#39;, value: &#39; &#39;, lineno: 0, colno: 12 }
+// { type: &#39;symbol&#39;, value: &#39;me&#39;, lineno: 0, colno: 13 }
+// { type: &#39;whitespace&#39;, value: &#39; &#39;, lineno: 0, colno: 15 }
+// { type: &#39;variable-end&#39;, value: &#39;}}&#39;, lineno: 0, colno: 16 }
+// { type: &#39;data&#39;, value: &#39;! &lt;/h1&gt;&#39;, lineno: 0, colno: 16 }
+</code></pre>
+<p>Tokenizer只是将源码转换成tokens供其它代码使用。Tokenizer碰到什么字符就会试着把它转换成token，它不会参与任何高层次的逻辑，比如不会检查“{{”和“}}”是否配对。这一检查实际上是在Parser中进行的。</p>
+<h3 id="parser">Parser</h3>
+<p>Parser实际上是对tokens进行处理，以保证代码的语法规则合法，并据此生成由node组成的AST。</p>
+<p>比如当出现“{{”时（TOKEN_BLOCK_START），Parser就会尝试在剩余的tokens中寻找“}}”（TOKEN_BLOCK_END）。如果没有找到，则Parser会认为代码不符合语法规则，从而抛出异常。</p>
+<p>这里非常值得一提的是AST的生成方式。我们先来看看nunjucks尝试解析<code>or</code>的方法，注意代码中的注释：</p>
+<pre><code class="lang-js">// ...
+parseOr: function() {
+    var node = this.parseAnd(); // 注意这里
+    while(this.skipSymbol(&#39;or&#39;)) {
+        var node2 = this.parseAnd(); // 注意这里
+        node = new nodes.Or(node.lineno,
+                            node.colno,
+                            node,
+                            node2);
+    }
+    return node;
+},
+// ...
+</code></pre>
+<p>我们可以看出在解析<code>or</code>之前，Parser首先会尝试解析<code>and</code>。而尝试解析<code>and</code>的代码如下：</p>
+<pre><code class="lang-js">// ...
+parseAnd: function() {
+    var node = this.parseNot(); // 注意这里
+    while(this.skipSymbol(&#39;and&#39;)) {
+        var node2 = this.parseNot(); // 注意这里
+        node = new nodes.And(node.lineno,
+                             node.colno,
+                             node,
+                             node2);
+    }
+    return node;
+},
+// ...
+</code></pre>
+<p>和而如果你去看Parser尝试解析<code>not</code>的代码则会发现<code>parseNot</code>又会尝试先去解析其他语法。仔细思考一下<code>or</code>、<code>and</code>和<code>not</code>的关系你会发现他们是按照自己在语法中的优先级先后进行的，即Parser会优先尝试寻找高优先级的语法标识。并且对于AST来说，通常高优先级的语法只会是低优先级语法的子孙节点，比如对于：</p>
+<pre><code class="lang-js">a and b or c
+</code></pre>
+<p>它的AST中<code>and</code>会是<code>or</code>的左子节点，即便调换他们的位置:</p>
+<pre><code class="lang-js">a or b and c
+</code></pre>
+<p><code>and</code>仍旧是<code>or</code>的子节点，只不过变成了右子节点。</p>
+<p>通过这样的做法，Parser将所有的tokens整合成了一棵树，而这棵树的根节点是全局只应有一个的<code>Root</code>。</p>
+<p>如果你有兴趣了解得更仔细的话，可以看看下面的这个由Parser生成的AST。下面的模板代码：</p>
+<pre><code class="lang-html">&lt;p&gt;
+  Hi, I&#39;m
+  {%if name and isNameValid or forceShowName%}
+    &lt;span&gt;{{name}}&lt;/span&gt;
+  {%endif%}
+&lt;/p&gt;
+</code></pre>
+<p>生成的AST如下（注释为节点类型）：</p>
+<pre><code class="lang-js">{ parent: undefined, // Root
+  lineno: 0,
+  colno: 0,
+  children:
+   [ { parent: undefined, // Output
+       lineno: 0,
+       colno: 0,
+       children:
+        [ { lineno: 0, colno: 0, value: &#39;&lt;p&gt;\n  Hi, I\&#39;m\n  &#39; }, // TemplateData
+          [length]: 1 ] },
+     { lineno: 2, // If
+       colno: 2,
+       cond:
+        { lineno: 2, // Or
+          colno: 5,
+          left:
+           { lineno: 2, // and
+             colno: 5,
+             left: { lineno: 2, colno: 5, value: &#39;name&#39; }, // Symbol
+             right: { lineno: 2, colno: 14, value: &#39;isNameValid&#39; } }, // Symbol
+          right: { lineno: 2, colno: 29, value: &#39;forceShowName&#39; } }, // Symbol
+       body:
+        { parent: undefined, // NodeList
+          lineno: 0,
+          colno: 0,
+          children:
+           [ { parent: undefined, // Output
+               lineno: 2,
+               colno: 42,
+               children: [ { lineno: 2, colno: 42, value: &#39;\n    &lt;span&gt;&#39; }, [length]: 1 ] }, // TemplateData
+             { parent: undefined, // Output
+               lineno: 3,
+               colno: 10,
+               children: [ { lineno: 3, colno: 10, value: &#39;name&#39; }, [length]: 1] }, // Symbol
+             { parent: undefined, // Output
+               lineno: 3,
+               colno: 14,
+               children: [ { lineno: 3, colno: 14, value: &#39;&lt;/span&gt;\n  &#39; }, [length]: 1 ] }, // TemplateData
+             [length]: 3 ] },
+       else_: null },
+     { parent: undefined, // Output
+       lineno: 4,
+       colno: 7,
+       children: [ { lineno: 4, colno: 7, value: &#39;\n&lt;/p&gt;&#39; }, [length]: 1 ] }, // TemplateData
+     [length]: 3 ] }
+</code></pre>
+<h3 id="compiler">Compiler</h3>
+<p>Compiler使用AST生成中间代码。nunjucks运行在node上，所以nunjucks生成的中间代码自然就是JavaScript代码，这也意味着nunjucks可以运行在浏览器上。</p>
+<p>AST中的nodes会被用来生成JavaScript代码片段，上文Parser中的那段模板代码生成的中间代码如下:</p>
+<pre><code class="lang-js">function root(env, context, frame, runtime, cb) {
+  var lineno = null;
+  var colno = null;
+  var output = &quot;&quot;;
+  try {
+    var parentTemplate = null;
+    output += &quot;&lt;p&gt;\n  Hi, I&#39;m\n  &quot;;
+    if (runtime.contextOrFrameLookup(context, frame, &quot;forceShowName&quot;) || runtime.contextOrFrameLookup(context, frame, &quot;name&quot;) &amp;&amp; runtime.contextOrFrameLookup(context, frame, &quot;isNameValid&quot;)) {
+      output += &quot;\n    &lt;span&gt;&quot;;
+      output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, &quot;name&quot;), env.opts.autoescape);
+      output += &quot;&lt;/span&gt;\n  &quot;;;
+    }
+    output += &quot;\n&lt;/p&gt;&quot;;
+    if (parentTemplate) {
+      parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
+    } else {
+      cb(null, output);
+    };
+  } catch (e) {
+    cb(runtime.handleError(e, lineno, colno));
+  }
+}
+return {
+  root: root
+};
+</code></pre>
+<p>在Environment中，中间代码被作为函数体用来生成一个函数：</p>
+<pre><code class="lang-js">var props = new Function(
+  codeString // 中间代码
+);
+</code></pre>
+<p>并且中间代码生成的函数将是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB</span> ）。这就是nunjucks中的precompile特性，也是提高模板引擎性能的关键。</p>
+<h3 id="context-environment-template">Context &amp;&amp; Environment &amp;&amp; Template</h3>
+<p>到目前为止，有了中间代码以后，我们只要传入参数就可以生成目标代码(HTML)了。而从外部传入的参数分为两种，上下文环境（渲染过程中直接使用到的变量等）储存在Context中，而配置等参数将被储存在Environment中。而Template最主要的目的则是组合使用Environment，其作用可以简单地理解为：</p>
+<pre><code class="lang-js">return root( // root为中间代码生成的函数
+  ctx, // 上下文环境
+  env // 配置等
+);
+</code></pre>
+<p>nunjucks提供给开发者的api和配置的相关代码大多应该可以在这里找到。</p>
+<p>至此主要的编译过程也就结束了。</p>
+<h2 id="-">其他</h2>
+<p>事实上nunjucks还有不少高级特性值得探讨，比如async（transformer.js），它会改变parser的结构。这些内容就留待以后再探讨吧。</p>

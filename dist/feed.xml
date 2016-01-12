@@ -4,8 +4,182 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Mon, 11 Jan 2016 10:37:30 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 12 Jan 2016 05:38:38 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[探究JavaScript上的编译器 —— nunjucks]]></title>
+            <description><![CDATA[<h1 id="-javascript-nunjucks">探究JavaScript上的编译器 —— nunjucks</h1>
+<p>2016年01月12日</p>
+<h2 id="-">写在前面的实践结果</h2>
+<p>在前面<a href="https://blog.oyyd.net/post/javascript_compiler_marked">marked的学习过程</a>中，我简单地hack了marked来绑定了chartjs。但对于<a href="https://github.com/mozilla/nunjucks">nunjucks</a>，我没有想到比较好的实践方式。所以这次我将帮助修复nunjucks上的一些bug来作为本次实践。</p>
+<p>到目前为止，已尝试修复的问题有：<a href="https://github.com/mozilla/nunjucks/pull/634">#571</a>, <a href="https://github.com/mozilla/nunjucks/pull/632">#332</a>, <a href="https://github.com/mozilla/nunjucks/pull/631">#595</a>, <a href="https://github.com/mozilla/nunjucks/pull/628">#612</a>, <a href="https://github.com/mozilla/nunjucks/pull/339">#317</a></p>
+<h2 id="nunjucks-">nunjucks的代码结构</h2>
+<p>nunjucks的整体代码结构如下：</p>
+<p><img src="/static/posts/javascript-compiler/nunjucks.png" alt="nunjucks"></p>
+<p>接下来再让我们看看每一部分的作用。</p>
+<h3 id="lexer">Lexer</h3>
+<p>Lexer中最主要的类被命名为Tokenizer，这听起来与Scanner异曲同工。</p>
+<p>模板引擎的模板代码可以很容易地被分为成两种，一种将直接用于输出（即Lexer生成的TOKEN_DATA），另一种则可能有复杂的逻辑于其中。nunjucks在Lexer中有一个in_code属性用于储存当前的解析状态，并依次进行两套不同的解析规则。</p>
+<p>下面展示了一段模板所生成的tokens：</p>
+<pre><code class="lang-js">nunjucks.renderString(&#39;&lt;h1&gt; Hello, {{ me }}! &lt;/h1&gt;&#39;, { me: &#39;oyyd&#39; })
+
+// 生成的tokens:
+// { type: &#39;data&#39;, value: &#39;&lt;h1&gt; Hello, &#39;, lineno: 0, colno: 0 }
+// { type: &#39;variable-start&#39;, value: &#39;{{&#39;, lineno: 0, colno: 12 }
+// { type: &#39;whitespace&#39;, value: &#39; &#39;, lineno: 0, colno: 12 }
+// { type: &#39;symbol&#39;, value: &#39;me&#39;, lineno: 0, colno: 13 }
+// { type: &#39;whitespace&#39;, value: &#39; &#39;, lineno: 0, colno: 15 }
+// { type: &#39;variable-end&#39;, value: &#39;}}&#39;, lineno: 0, colno: 16 }
+// { type: &#39;data&#39;, value: &#39;! &lt;/h1&gt;&#39;, lineno: 0, colno: 16 }
+</code></pre>
+<p>Tokenizer只是将源码转换成tokens供其它代码使用。Tokenizer碰到什么字符就会试着把它转换成token，它不会参与任何高层次的逻辑，比如不会检查“{{”和“}}”是否配对。这一检查实际上是在Parser中进行的。</p>
+<h3 id="parser">Parser</h3>
+<p>Parser实际上是对tokens进行处理，以保证代码的语法规则合法，并据此生成由node组成的AST。</p>
+<p>比如当出现“{{”时（TOKEN_BLOCK_START），Parser就会尝试在剩余的tokens中寻找“}}”（TOKEN_BLOCK_END）。如果没有找到，则Parser会认为代码不符合语法规则，从而抛出异常。</p>
+<p>这里非常值得一提的是AST的生成方式。我们先来看看nunjucks尝试解析<code>or</code>的方法，注意代码中的注释：</p>
+<pre><code class="lang-js">// ...
+parseOr: function() {
+    var node = this.parseAnd(); // 注意这里
+    while(this.skipSymbol(&#39;or&#39;)) {
+        var node2 = this.parseAnd(); // 注意这里
+        node = new nodes.Or(node.lineno,
+                            node.colno,
+                            node,
+                            node2);
+    }
+    return node;
+},
+// ...
+</code></pre>
+<p>我们可以看出在解析<code>or</code>之前，Parser首先会尝试解析<code>and</code>。而尝试解析<code>and</code>的代码如下：</p>
+<pre><code class="lang-js">// ...
+parseAnd: function() {
+    var node = this.parseNot(); // 注意这里
+    while(this.skipSymbol(&#39;and&#39;)) {
+        var node2 = this.parseNot(); // 注意这里
+        node = new nodes.And(node.lineno,
+                             node.colno,
+                             node,
+                             node2);
+    }
+    return node;
+},
+// ...
+</code></pre>
+<p>和而如果你去看Parser尝试解析<code>not</code>的代码则会发现<code>parseNot</code>又会尝试先去解析其他语法。仔细思考一下<code>or</code>、<code>and</code>和<code>not</code>的关系你会发现他们是按照自己在语法中的优先级先后进行的，即Parser会优先尝试寻找高优先级的语法标识。并且对于AST来说，通常高优先级的语法只会是低优先级语法的子孙节点，比如对于：</p>
+<pre><code class="lang-js">a and b or c
+</code></pre>
+<p>它的AST中<code>and</code>会是<code>or</code>的左子节点，即便调换他们的位置:</p>
+<pre><code class="lang-js">a or b and c
+</code></pre>
+<p><code>and</code>仍旧是<code>or</code>的子节点，只不过变成了右子节点。</p>
+<p>通过这样的做法，Parser将所有的tokens整合成了一棵树，而这棵树的根节点是全局只应有一个的<code>Root</code>。</p>
+<p>如果你有兴趣了解得更仔细的话，可以看看下面的这个由Parser生成的AST。下面的模板代码：</p>
+<pre><code class="lang-html">&lt;p&gt;
+  Hi, I&#39;m
+  {%if name and isNameValid or forceShowName%}
+    &lt;span&gt;{{name}}&lt;/span&gt;
+  {%endif%}
+&lt;/p&gt;
+</code></pre>
+<p>生成的AST如下（注释为节点类型）：</p>
+<pre><code class="lang-js">{ parent: undefined, // Root
+  lineno: 0,
+  colno: 0,
+  children:
+   [ { parent: undefined, // Output
+       lineno: 0,
+       colno: 0,
+       children:
+        [ { lineno: 0, colno: 0, value: &#39;&lt;p&gt;\n  Hi, I\&#39;m\n  &#39; }, // TemplateData
+          [length]: 1 ] },
+     { lineno: 2, // If
+       colno: 2,
+       cond:
+        { lineno: 2, // Or
+          colno: 5,
+          left:
+           { lineno: 2, // and
+             colno: 5,
+             left: { lineno: 2, colno: 5, value: &#39;name&#39; }, // Symbol
+             right: { lineno: 2, colno: 14, value: &#39;isNameValid&#39; } }, // Symbol
+          right: { lineno: 2, colno: 29, value: &#39;forceShowName&#39; } }, // Symbol
+       body:
+        { parent: undefined, // NodeList
+          lineno: 0,
+          colno: 0,
+          children:
+           [ { parent: undefined, // Output
+               lineno: 2,
+               colno: 42,
+               children: [ { lineno: 2, colno: 42, value: &#39;\n    &lt;span&gt;&#39; }, [length]: 1 ] }, // TemplateData
+             { parent: undefined, // Output
+               lineno: 3,
+               colno: 10,
+               children: [ { lineno: 3, colno: 10, value: &#39;name&#39; }, [length]: 1] }, // Symbol
+             { parent: undefined, // Output
+               lineno: 3,
+               colno: 14,
+               children: [ { lineno: 3, colno: 14, value: &#39;&lt;/span&gt;\n  &#39; }, [length]: 1 ] }, // TemplateData
+             [length]: 3 ] },
+       else_: null },
+     { parent: undefined, // Output
+       lineno: 4,
+       colno: 7,
+       children: [ { lineno: 4, colno: 7, value: &#39;\n&lt;/p&gt;&#39; }, [length]: 1 ] }, // TemplateData
+     [length]: 3 ] }
+</code></pre>
+<h3 id="compiler">Compiler</h3>
+<p>Compiler使用AST生成中间代码。nunjucks运行在node上，所以nunjucks生成的中间代码自然就是JavaScript代码，这也意味着nunjucks可以运行在浏览器上。</p>
+<p>AST中的nodes会被用来生成JavaScript代码片段，上文Parser中的那段模板代码生成的中间代码如下:</p>
+<pre><code class="lang-js">function root(env, context, frame, runtime, cb) {
+  var lineno = null;
+  var colno = null;
+  var output = &quot;&quot;;
+  try {
+    var parentTemplate = null;
+    output += &quot;&lt;p&gt;\n  Hi, I&#39;m\n  &quot;;
+    if (runtime.contextOrFrameLookup(context, frame, &quot;forceShowName&quot;) || runtime.contextOrFrameLookup(context, frame, &quot;name&quot;) &amp;&amp; runtime.contextOrFrameLookup(context, frame, &quot;isNameValid&quot;)) {
+      output += &quot;\n    &lt;span&gt;&quot;;
+      output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, &quot;name&quot;), env.opts.autoescape);
+      output += &quot;&lt;/span&gt;\n  &quot;;;
+    }
+    output += &quot;\n&lt;/p&gt;&quot;;
+    if (parentTemplate) {
+      parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
+    } else {
+      cb(null, output);
+    };
+  } catch (e) {
+    cb(runtime.handleError(e, lineno, colno));
+  }
+}
+return {
+  root: root
+};
+</code></pre>
+<p>在Environment中，中间代码被作为函数体用来生成一个函数：</p>
+<pre><code class="lang-js">var props = new Function(
+  codeString // 中间代码
+);
+</code></pre>
+<p>并且中间代码生成的函数将是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js<label for="19" class="margin-toggle sidenote-number"></label><input type="checkbox" id="19" class="margin-toggle"/><span class="sidenote">现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB</span> ）。这就是nunjucks中的precompile特性，也是提高模板引擎性能的关键。</p>
+<h3 id="context-environment-template">Context &amp;&amp; Environment &amp;&amp; Template</h3>
+<p>到目前为止，有了中间代码以后，我们只要传入参数就可以生成目标代码(HTML)了。而从外部传入的参数分为两种，上下文环境（渲染过程中直接使用到的变量等）储存在Context中，而配置等参数将被储存在Environment中。而Template最主要的目的则是组合使用Environment，其作用可以简单地理解为：</p>
+<pre><code class="lang-js">return root( // root为中间代码生成的函数
+  ctx, // 上下文环境
+  env // 配置等
+);
+</code></pre>
+<p>nunjucks提供给开发者的api和配置的相关代码大多应该可以在这里找到。</p>
+<p>至此主要的编译过程也就结束了。</p>
+<h2 id="-">其他</h2>
+<p>事实上nunjucks还有不少高级特性值得探讨，比如async（transformer.js），它会改变parser的结构。这些内容就留待以后再探讨吧。</p>
+]]></description>
+            <link>https://blog.oyyd.net/post/javascript_compiler_nunjucks</link>
+            <guid isPermaLink="false">a2c9ce9544918e833018f3c6ee9f6ab9</guid>
+            <pubDate>Sun, 03 Jan 2016 16:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[探究JavaScript上的编译器 —— marked]]></title>
             <description><![CDATA[<h1 id="-javascript-marked">探究JavaScript上的编译器 —— marked</h1>
@@ -272,7 +446,7 @@ function escape(strings, ...values) {
 return escape`&lt;div&gt;{ uesrname }&lt;/div&gt;`;
 // &lt;div&gt;&amp;lt;script&amp;gt;&amp;lt;&amp;#x2F;script&amp;gt;&lt;/div&gt;
 </code></pre>
-<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="18" class="margin-toggle sidenote-number"></label><input type="checkbox" id="18" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
+<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="20" class="margin-toggle sidenote-number"></label><input type="checkbox" id="20" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
 <h3 id="comments">comments</h3>
 <p>在nunjucks中我们可以写注释：</p>
 <pre><code class="lang-html">{# Loop through all the users #}
@@ -312,7 +486,7 @@ var res = eval(template);
 </code></pre>
 <h2 id="-template-strings-">用template strings替代模板引擎的优点和缺点</h2>
 <p>到目前位置，我们主要讨论了用template strings来替代模板引擎的可行性，下面我们会讨论这样做的优点和缺点。</p>
-<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="19" class="margin-toggle sidenote-number"></label><input type="checkbox" id="19" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
+<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
 <p>由于各种原因，通常模板引擎在处理很多问题时，通常会有自己的一套方法，比如说在一个模板中引入另一个模板你可能需要用import/require/partials语句，这实际上和JavaScript本身的import解决的是相似的问题。所以在使用template strings时，面对这些情况，我们就可以直接利用JavaScript中的特性来实现，而不需要像那样用一套新的东西来解决相似的问题。</p>
 <p>这样很自然地，使用template strings替代模板引擎最主要的优点在于：</p>
 <ol>
@@ -325,7 +499,7 @@ var res = eval(template);
 </ol>
 <p>但模板引擎毕竟是专门为处理模板而生的，有些用JavaScript实现比较麻烦的场景，用模板引擎的语法可能可以轻松地解决。实际上这里的讨论更像是在讨论使用DSL的优缺点。但使用template strings的理由在于 <strong>很多模板引擎上的很多特性都和JavaScript（ES6+）本身的特性重合了，我们没必要用一套新东西解决同样的问题</strong>。当然在ES6之前，JavaScript本身也没有模块，更别说考虑直接使用JavaScript中的特性来解决模板上的问题。</p>
 <p>而另一个推荐使用template strings的原因在于Universal JavaScript。如果模板本身就是JavaScript代码的话，那么在前后端同时使用一份代码会变得容易得多。</p>
-<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="20" class="margin-toggle sidenote-number"></label><input type="checkbox" id="20" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
+<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="22" class="margin-toggle sidenote-number"></label><input type="checkbox" id="22" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
 <h2 id="-">生产环境上的应用</h2>
 <p>在生产环境上单单使用template strings没办法解决我们的所有需求，而截止至本文时点我也没有看见过任何类似的实现。所以如果你觉得这是个好主意，你需要充分利用tagged template strings这一特性来组织起模板层。万幸的是这一过程不需要涉及编译，所以这会远比重新写一个模板引擎要简单得多。之后我也会尝试写一个帮助实现这一目的的库。</p>
 <h2 id="-">其他相关链接</h2>
@@ -345,7 +519,7 @@ var res = eval(template);
 <p>（<a href="https://github.com/oyyd/oyyd-blog/tree/master/research/react-hot-loader">从这里查看下文中的部分代码</a>）</p>
 <h2 id="-webpack-dev-server-">从webpack-dev-server开始</h2>
 <p>webpack不仅能够起到打包的作用，它还“附带了”一个专门用于开发的、由express构建的迷你服务器，即webpack-dev-server。webpack-dev-server的基本作用是处理我们的打包任务，并且它还会作为一个静态文件服务器提供我们最新打包成的静态文件供本地开发使用。webpack-dev-server与我们平时开发用的静态文件服务器的不同之处在于，它知道新的文件在何时被打包了出来，以及究竟是哪个文件发生了改变。</p>
-<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
+<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="23" class="margin-toggle sidenote-number"></label><input type="checkbox" id="23" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
 <p><img src="/static/posts/webpack-hmr/hot-reload.gif" alt="complete-version"></p>
 <p>对的，到这里webpack实际上已经实现了<a href="http://livereload.com/">livereload</a>的功能。</p>
 <h2 id="-hmr-api">使用HMR的相关api</h2>
@@ -399,7 +573,7 @@ if (module.hot) {
 <p>在浏览器上加载这个页面后，我们就可以尝试修改sayHelloEntry.js模块中的<code>name</code>的值或是SayHello.js模块中的内容来查看结果：</p>
 <p><img src="/static/posts/webpack-hmr/simple-version.gif" alt="complete-version"></p>
 <p>虽然这个例子非常简单，但它也足以说明在webpack中的HMR的基本原理了。而你也应该很快注意到了，虽然在开发过程中，所有模块都有可能发生改变，但我们并不需要为每个模块写HMR代码。</p>
-<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="22" class="margin-toggle sidenote-number"></label><input type="checkbox" id="22" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
+<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="24" class="margin-toggle sidenote-number"></label><input type="checkbox" id="24" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
 <p><img src="/static/posts/webpack-hmr/bubble-up.png" alt="bubble-up"></p>
 <p>当一个模块C发生改变，而模块内又没有HMR代码来处理这一消息时，那这一消息就会被传递到依赖模块C的其他模块上；如果消息在新模块上没有被捕获的话就会再次进行传递；如果所有的消息都被捕获了的话，那我们的应用就应该已经按照代码进行了更新；反之如果有消息冒泡到了入口(entry)文件还没有被捕获的话，那就说明我们的代码中没有处理这类变更方法，那webpack就会刷新浏览器页面，即从HMR回退到LiveReload。</p>
 <h2 id="-react-hmr">在React上实现HMR</h2>
@@ -437,7 +611,7 @@ class Counter extends React.Component{
 export default Counter;
 </code></pre>
 <p>虽然HMR依然有效，但每次模块更新后，你会发现Counter的当前计数又会回到初始状态。因为在这一过程中，React组件中的state丢失了。</p>
-<p>state丢失的原因和React的diff算法<label for="23" class="margin-toggle sidenote-number"></label><input type="checkbox" id="23" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
+<p>state丢失的原因和React的diff算法<label for="25" class="margin-toggle sidenote-number"></label><input type="checkbox" id="25" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
 <p>像我们在HMR的过程中更新了Counter.js模块，会重新生成新的Counter，实际上新的Counter和旧的Counter不是同一个Counter，即它们是不全等的。</p>
 <p>所以在当前React没有提供任何相关api的状况下，如果我们仍想要保留原来的state的话，那我们就不能用新的组件直接替换旧的组件，即我们要保留原来组件的外壳，并更新其上的所有方法（利用mutable data）。同时因为数据没有发生变化，所以我们还需要某种方式来强制命令React更新应用的状态。</p>
 <p>而这事实上就是react-proxy和react-deep-force-update的作用了。这两个库同样也是react-hot-loader和react-transform的依赖。由于这两个库的实现本身相对复杂费解，同时跟React内部的一些机制紧密相连，所以这里便不再深入了。</p>
@@ -495,7 +669,7 @@ if (module.hot) {
 <p>2015年11月26日</p>
 <p>React中的renderToString方法允许我们在服务器上渲染React部件，这点不仅可以帮助我们解决一些会出现在单页应用(SPA)上的问题，它甚至还允许我们将React用作模板引擎（template engine）来使用。下文还将附带一个简单的benchmark来对比React与传统模板引擎之间性能。</p>
 <h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
-<p>Universal Javascript又称Isomorphic JavaScript<label for="24" class="margin-toggle sidenote-number"></label><input type="checkbox" id="24" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="25" class="margin-toggle sidenote-number"></label><input type="checkbox" id="25" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
+<p>Universal Javascript又称Isomorphic JavaScript<label for="26" class="margin-toggle sidenote-number"></label><input type="checkbox" id="26" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="27" class="margin-toggle sidenote-number"></label><input type="checkbox" id="27" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
 <p>实现Universal Javascript的原理并不复杂，我们只需要在代码中获取当前运行环境（浏览器还是服务器？），并根据环境作出不同响应即可。比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
 <pre><code class="lang-js">if (Meteor.isServer) {
   // This code only runs on the server
@@ -529,7 +703,7 @@ if (Meteor.isClient) {
 </li>
 <li><p>如果javascrript加载失败或是运行时产生错误的话（或是浏览器直接禁用了javascript的话），用户看不到任何内容。</p>
 </li>
-<li><p>搜索引擎无法有效地爬取页面内容<label for="26" class="margin-toggle sidenote-number"></label><input type="checkbox" id="26" class="margin-toggle"/><span class="sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
+<li><p>搜索引擎无法有效地爬取页面内容<label for="28" class="margin-toggle sidenote-number"></label><input type="checkbox" id="28" class="margin-toggle"/><span class="sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
 </li>
 </ol>
 <p>对于这些问题，我们可以利用Universal JavaScript，也即React中的<code>renderToString</code>方法，在服务器上就渲染出React应用中的部分内容返回给浏览器，从而解决这些问题。</p>
@@ -623,9 +797,9 @@ React.render(
 <p>到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。</p>
 <p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.__INITIAL_COUNT__</code>）也一并传过去，用于初始化。</p>
 <h2 id="-react-">事实上，我们在用React替代服务器端的模板引擎</h2>
-<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="27" class="margin-toggle sidenote-number"></label><input type="checkbox" id="27" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
+<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="29" class="margin-toggle sidenote-number"></label><input type="checkbox" id="29" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
 <p>如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。</p>
-<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="28" class="margin-toggle sidenote-number"></label><input type="checkbox" id="28" class="margin-toggle"/><span class="sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
+<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="30" class="margin-toggle sidenote-number"></label><input type="checkbox" id="30" class="margin-toggle"/><span class="sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
 <p>那么让一门前端框架作为模板引擎是不是多余之举呢？</p>
 <p>事实可能完全相反。因为浏览器上js所使用的模板和服务器上渲染的模板原本就应该是同一份模板，它们同属于我们浏览器上的应用。只不过由于种种原因，我们一直不得不将其拆分成两部分。那么现在如果服务器的这份模板由本身就主要用于浏览器上的React来生成的话，我觉得是再合理不过的了。</p>
 <p><img src="/static/posts/react-server-render/react-as-template-engine.png" alt="React as Template Engine"></p>
@@ -646,7 +820,7 @@ React.render(
   &lt;button&gt;+1&lt;/button&gt;
 &lt;/div&gt;
 </code></pre>
-<p>React Counter(es6中类的形式)<label for="29" class="margin-toggle sidenote-number"></label><input type="checkbox" id="29" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
+<p>React Counter(es6中类的形式)<label for="31" class="margin-toggle sidenote-number"></label><input type="checkbox" id="31" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
 <pre><code class="lang-js">import React from &#39;react&#39;;
 
 class Counter extends React.Component{
@@ -729,7 +903,7 @@ ejs.render(template, {
       ]
   }
 }
-</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="30" class="margin-toggle sidenote-number"></label><input type="checkbox" id="30" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
+</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="32" class="margin-toggle sidenote-number"></label><input type="checkbox" id="32" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
 <p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经够用了，甚至该说是足够优秀了。况且React远不止是模板引擎。</p>
 <h2 id="-">结论</h2>
 <p>相对于其他语言来说，Universal JavaScript恐怕是Node在web上所具有的最独特的特性，也是最值得去挖掘的。我们这里讨论了一些React在服务器上的使用及其潜力，也一笔带过了实际应用中存在的一些问题。更深入的内容就留待以后吧。</p>
@@ -741,144 +915,6 @@ ejs.render(template, {
             <link>https://blog.oyyd.net/post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
             <guid isPermaLink="false">4a736e05cbc84599b1fa7d72335115da</guid>
             <pubDate>Wed, 25 Nov 2015 16:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[ Javascript中的不可变（immutable）数据结构]]></title>
-            <description><![CDATA[<h1 id="javascript-immutable-">Javascript中的不可变（immutable）数据结构</h1>
-<p>2015年10月6日</p>
-<p><strong>前言</strong></p>
-<p><a href="http://jlongster.com/Using-Immutable-Data-Structures-in-JavaScript">James Long</a>
-的这篇文章对在javascript中使用
-不可变数据结构的情况进行了阐述，看完之后我发现里面的不少
-话都说到我的心坎里去了。这里我会阐述一些我对此的一些的想法，
-并尝试总结一下文中的部分想法，做一个简单的
-总结（尽可能在十数分钟的阅读内了解内容并对此留下一个较为深刻印象）。</p>
-<p>下文将“不可变的数据结构”简称为“immutable”，将leebyron写的库immutable称为“immutablejs”。</p>
-<h2 id="-immutable-">什么是immutable?</h2>
-<p>引用immutablejs文档上的话，并夹杂一些我自己的解释，
-即“一旦创建后便不可再发生改变的数据结构”，
-“因为原来的数据一旦创建创建后便不可发生
-改变，<strong>所以当你进行改变数据的操作时，实际上是替换掉原来的整个数据</strong>
-（因为你不能改变原来数据中的某一部分）。并且这种做法会
-带来各种好处”。</p>
-<p>再让我们来看一下immutablejs文档上的例子：</p>
-<pre><code class="lang-js">var Immutable = require(&#39;immutable&#39;);
-// map1是一个Map结构的数据
-var map1 = Immutable.Map({a:1, b:2, c:3});
-// 把map2赋值成一个“改变过的”map1
-var map2 = map1.set(&#39;b&#39;, 50);
-// 结果是map1仍旧是map1，它不会发生改变，
-// 而map2变成了“改变后的map1”
-map1.get(&#39;b&#39;); // 2
-map2.get(&#39;b&#39;); // 50
-// 并且 map1 !== map2。后面的例子也会利用到这一点
-</code></pre>
-<p>代码中的注释更确切地说应该是“map1所引用的数据对象
-不会发生改变”，因为你仍旧可以改变
-map1变量所指向的数据。immutable不同于<code>const</code>。</p>
-<h2 id="-immutable-">为什么需要immutable？</h2>
-<h3 id="1-immutable-">1.Immutable可以简化我们对数据的使用</h3>
-<p>当你在使用React（flux）或是Angular等框架时，你会绑定视图和你的
-数据，好让视图跟随数据发生改变。如果数据没有发生变化，
-那我们也就不需要重新渲染视图，否则会浪费性能。</p>
-<p>一个最清晰的例子便是React的class中的<code>shouldComponentUpdate</code>方法。
-每次尝试改变数据后，React都会带着新数据调用这一方法。只要我们在这个方法中返回false，
-那React就不会重新进行渲染。</p>
-<p>那么问题在于：在我们决定要不要重新渲染数据时，
-我们怎么知道我们的数据到底有没有发生变化？</p>
-<p>如果我们需要比对的数据是Number, String, Boolean这样
-的简单数据类型的话，我们很容易通过全等来判断数据
-是否发生变化：</p>
-<pre><code class="lang-js">var state = true;
-var newState = false;
-if (state !== newState){
-  // 重新渲染视图的代码
-}
-</code></pre>
-<p>但如果你的数据是原生可变的Object（或Array）,
-像下面这样的情况：</p>
-<pre><code class="lang-js">var state = {count: 0};
-var newState = {count: 0};
-if (state !== newState){
-  // 因为`state`和`newState`的引用是不同的，所以
-  // 重新渲染视图的代码一定会执行
-}
-// 或是
-var state = {count: 0};
-var newState = state;
-newState.count = 1;
-if (state !== newState) {
-  // 因为`state`和`newState`的引用是相同的，所以
-  // 重新渲染视图的代码一定不会执行  
-}
-</code></pre>
-<p>你就没办法通过全等来判断数据是否发生了
-改变。你需要遍历这个对象上的属性（或数组中的元素）
-来判断是否发生了改变（注意下面的例子并不完备）：</p>
-<pre><code class="lang-js">var state = {count: 0};
-var newState = {count: 0};
-var isDataChanged = false;
-for(var key in newState){
-  if(newState.hasOwnProperty(key)
-    &amp;&amp; newState[key] !== state[key]){
-      isDataChanged = true;
-      break;
-    }
-}
-
-if (isDataChanged){
-  // 执行重新渲染视图的代码
-}
-</code></pre>
-<p>对于上面这个例子，如果对象的属性（或是数组的
-元素）也是可变的数据类型的话，那你就需要递归地
-检验每一个属性（元素）及其子属性（元素）。
-这一操作的复杂程度和其消耗可想而知。</p>
-<p>但如果你使用了immutablejs中的数据结构，你就可以很轻松的达成这一目的：</p>
-<pre><code class="lang-js">var Immutable = require(&#39;immutable&#39;);
-var state = Immutable.Map({count: 0});
-var newState = state.set(&#39;count&#39;, 1);
-if (state !== newState){
-  // 重新渲染视图
-}
-</code></pre>
-<h3 id="2-immutable-">2.使用immutable性能更好</h3>
-<p>同上文所述，如果我们能够快速有效的判断数据是否发生了变化，从而避免不必要的渲染，那我们
-的App就会有更好的性能。并且像是immutablejs这样的库
-一般在实现细节上都会更加优秀，以让变动数据的操作本身有更好的性能
-<label for="31" class="margin-toggle sidenote-number"></label><input type="checkbox" id="31" class="margin-toggle"/><span class="sidenote">下面这段引用摘自James的原文</span> ：</p>
-<blockquote>
-<p>...it implements fully persistent data structures from scratch using advanced things like tries to implement structural sharing. All updates return new values, but internally structures are shared to drastically reduce memory usage （and GC thrashing).</p>
-</blockquote>
-<h3 id="3-immutable-mutable">3.从函数式编程的角度来讲，immutable优于mutable</h3>
-<p>因为immutable不会背地里改变数据。</p>
-<h2 id="-immutable-">不使用immutable的理由</h2>
-<p>在实现immutabl(或达到相同目的)的库中:</p>
-<p>无疑<a href="https://facebook.github.io/immutable-js/">immutablejs</a>是该类项目中最流行的。</p>
-<p>而<a href="https://github.com/rtfeldman/seamless-immutable">seamless-immutable</a>则轻量得多，
-但它在使用上更接近原生的javascript数据结构。</p>
-<p>使用React的项目则可以直接利用<a href="https://facebook.github.io/react/docs/update.html">immutability-helpers</a>
-来达到类似的效果。</p>
-<p>使用immutable有种种的好处，但至少直到现在为止，它
-在使用javascript的生产环境中，似乎也还没有很流行。<strong>究其原因，一是现在大部分的web app规模相对较小，
-不能很好体现出immutable的优势；再者便是使用像immutablejs这样非轻量级的库会增加程序的复杂程度，
-因为其数据结构及使用方法与javascript中原生的数据结构相差甚远</strong>。</p>
-<p>对于我自己的体会来说，我们在公司里用React+Redux重构了原来的大部分代码，并开发新功能。
-而在这一过程中我们没有加入immutablejs，即便Redux使用全等来判断是否要重新渲染，强制要求使用
-符合immutable特点的数据结构。
-其原因完全同前面所述。单从主观感觉上来讲，引入immutablejs比引入React给程序员带来的负担要更大，
-而且使用immutablejs还要面对绝大多数不使用immutablejs的第三方的问题，你可能要写大量的代码
-来在immutable和mutable类型的数据结构之间进行转换。</p>
-<p>所以我们最后只使用了React自带addons中的immutability-helpers来实现这一目的，虽然这一小工具
-从数据结构本身并不会给我们带来性能提升，但它帮助我们少写了很多代码，而React也能够利用全等来
-简单地判断数据是否发生了改变。</p>
-<h2 id="-">结论</h2>
-<p>immutable可以简化数据操作上的一些问题，提高应用的性能。但我们更需要根据实际情况来考虑
-其带来的副作用，根据情况做出选择。</p>
-]]></description>
-            <link>https://blog.oyyd.net/post/immutable_data_structure_in_javascript</link>
-            <guid isPermaLink="false">fd6bc6dad2cf0e938d67908a4f3fd2af</guid>
-            <pubDate>Mon, 05 Oct 2015 16:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>
