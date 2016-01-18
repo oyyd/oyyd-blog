@@ -1,4 +1,7 @@
-require.ensure(['./vendor.js'], (require) => {
-  const {default: name} = require('./vendor');
-  console.log(`hello ${name}!`);
+require.ensure([], (require) => {
+  var a = false;
+  if (a) {
+    const vendor = require('./vendor');
+    console.log(vendor);
+  }
 });

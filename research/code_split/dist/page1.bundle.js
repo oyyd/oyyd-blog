@@ -98,11 +98,11 @@
 	'use strict';
 
 	__webpack_require__.e/* nsure */(1, function (require) {
-	  var _require = __webpack_require__(1);
-
-	  var name = _require.default;
-
-	  console.log('hello ' + name + '!');
+	  var a = false;
+	  if (a) {
+	    var vendor = __webpack_require__(1);
+	    console.log(vendor);
+	  }
 	});
 
 /***/ }
