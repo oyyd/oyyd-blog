@@ -4,8 +4,107 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Mon, 18 Jan 2016 11:13:38 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 18 Jan 2016 11:16:57 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[使用webpack分割代码]]></title>
+            <description><![CDATA[<h1 id="-webpack-">使用webpack分割代码</h1>
+<p>2016年01月18日</p>
+<p><strong>前言：</strong></p>
+<p>可能你跟我一样最开始只是把webpack作为打包的工具，把所有的东西都打包进一个bundle.js文件供我们的应用使用。这种做法不仅简单、利于缓存，更重要的它可以使得我们的JavaScript代码更像是其他的编程语言那样运作，而不用为模块和加载的问题操心太多。但随着代码的不断增长，需要加载的代码会不断增加，并且当我们期望某些页面在移动设备上（app或浏览器）运行时，非wifi的网络环境会使得资源加载时间显得更加不可接受。</p>
+<p>好在webpack是个非常强大且扩展性极强的工具，它提供了一些强大的特性来帮助我们解决这一问题。</p>
+<h2 id="-">基本原则</h2>
+<p>事实上把所有的js文件打包成一个文件是一种极端做法，而按需加载每一个JavaScript文件则是另一种极端做法。这两种做法并没有绝对的优劣，这里我们需要做的事情是在这两个极端之间找到一个相对可以接受的做法。</p>
+<p>如果你希望了解得更多的话，可以参考链接中的这篇文章。这篇文章很好地讲述了汗学院面对这一困境的思路：
+<a href="http://jamie-wong.com/2014/11/29/the-js-packaging-problem/">The JavaScript Packaging Problem</a></p>
+<p>而从缓存、压缩比、请求次数等角度来看，我认为打包的方式是整体优于按需加载的，即“多加载代码”总是整体优于“按需加载代码”。这也是下文做法的依据。</p>
+<h2 id="-webpack-">在webpack上我们可以利用的工具</h2>
+<p>webpack主要支持两种代码分割方式，一是在应用的代码中设置split points，另一种则是在是在webpack的配置文件中设置代码块。</p>
+<h3 id="split-points">split points</h3>
+<p>split points会告知webpack代码的分割位置，webpack依次设置代码块(chunk)，并在运行环境中由webpack自动加载代码块：</p>
+<pre><code class="lang-js">// 这样的模块会被webpack打包在同一个代码块中，
+// 所以我们总是能保证代码已经存在
+var _ = require(&#39;lodash&#39;)
+
+// 利用ensure和require来动态加载代码
+require.ensure([], function(require) {
+  let contacts = require(&#39;./contacts&#39;)
+})
+</code></pre>
+<p>实际上<code>require.ensure</code>这种方式有些像requirejs或其他浏览器上的模块加载库。webpack可以根据split points来将多个文件自动打包成一个代码块（chunk），并在运行时（比如浏览器上）自动加载依赖的代码块。因为是以代码块为单位，而不像其他库一样是以单个JavaScript文件为单位，所以相比于传统的模块相关的库来说，webpack可以帮我们做很多优化。</p>
+<p>但值得注意的是，<code>require.ensure</code>并不是真正的动态加载，虽然同样是在运行中加载依赖，但webpack会加载所有的依赖<label for="20" class="margin-toggle sidenote-number"></label><input type="checkbox" id="20" class="margin-toggle"/><span class="sidenote">也有特别的情况，比如在<code>if(false</span> {}</code>中的<code>require</code>就不会被执行)，比如在下面的代码中：</p>
+<pre><code class="lang-js">require.ensure([], function(require) {
+  var shouldLoad = false;
+  if (shouldLoad) {
+    // 虽然这块代码不会被真正执行，但webpack还是会事先加载这一模块
+    let contacts = require(&#39;./contacts&#39;)
+  }
+})
+</code></pre>
+<p>虽然这<code>if</code>中的代码不会被真正执行，但webpack还是会事先加载这一模块。</p>
+<p>我个人不喜欢这种做法，因为相比于后面在配置中进行的代码分割的方式来说，它实际上在代码中引入了另一种机制来加载模块，代码及加载状态会变得更加复杂。但这种做法把代码的分割加载工作都交给了webpack，充分利用它能省下不少工作，所以充分利用这一特性也是一种选择。</p>
+<h3 id="-">通过配置文件分割代码</h3>
+<p>另一种方式是在webpack的config文件中配置代码块。单纯配置入口文件的话，webpack会将入口文件所涉及的所有文件都打包到一个文件里面。但这也意味着两个入口文件所生成的代码块之间会有很多重复的部分，并且完全不能利用浏览器的缓存机制。比如你的两个入口文件都用了react，那打包出来的两份文件都会有react，没办法交叉利用。</p>
+<p>为了解决这一问题，webpack提供了插件<code>CommonsChunkPlugin</code>来帮助我们自动抽取出代码块中相同的部分：</p>
+<pre><code class="lang-js">var path = require(&quot;path&quot;);
+var CommonsChunkPlugin = require(&quot;../../lib/optimize/CommonsChunkPlugin&quot;);
+module.exports = {
+    entry: {
+        pageA: &quot;./pageA&quot;,
+        pageB: &quot;./pageB&quot;,
+        pageC: &quot;./pageC&quot;,
+        adminPageA: &quot;./adminPageA&quot;,
+        adminPageB: &quot;./adminPageB&quot;,
+        adminPageC: &quot;./adminPageC&quot;,
+    },
+    output: {
+        path: path.join(__dirname, &quot;js&quot;),
+        filename: &quot;[name].js&quot;
+    },
+    plugins: [
+        //将adminPageA和adminPageB中相同的依赖打包到admin-commons.js文件中
+        new CommonsChunkPlugin(&quot;admin-commons.js&quot;, [&quot;adminPageA&quot;, &quot;adminPageB&quot;]),
+        //将pageA、pageA和admin-commons.js中相同的、并且至少被两个chunk使用的依赖打包到commons.js文件中
+        //注意这里显示出CommonsChunkPlugin生成的chunk也可作为参数传入
+        new CommonsChunkPlugin(&quot;commons.js&quot;, [&quot;pageA&quot;, &quot;pageA&quot;, &quot;admin-commons.js&quot;], 2),
+        //将pageC和adminPageC中相同的依赖打包到c-commons.js文件中
+        new CommonsChunkPlugin(&quot;c-commons.js&quot;, [&quot;pageC&quot;, &quot;adminPageC&quot;]),
+    ]
+}
+</code></pre>
+<p>然后我们只要在HTML文件中依次引入代码块即可：</p>
+<pre><code class="lang-html">&lt;!--pageA.html--&gt;
+&lt;html&gt;
+    &lt;head&gt;&lt;/head&gt;
+    &lt;body&gt;
+        &lt;script src=&quot;js/commons.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;js/pageA.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<pre><code class="lang-html">&lt;!--adminPageA.html--&gt;
+&lt;html&gt;
+    &lt;head&gt;&lt;/head&gt;
+    &lt;body&gt;
+        &lt;script src=&quot;js/commons.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;js/admin-commons.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+        &lt;script src=&quot;js/adminPageA.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>这样，<code>commons.js</code>和<code>admin-commons.js</code>就能够有效地被浏览器缓存了。</p>
+<p>特别值得注意的是，<code>CommonsChunkPlugin</code>甚至提供了<code>minChunks</code>和<code>minSize</code>这两个配置来筛选文件，从而调节入口文件（entry）所打包成的文件和通用代码块（commons chunk）之间的大小配比。<code>minChunks</code>和<code>minSize</code>越小，则commons chunk文件则越大，代码被缓存的几率越大，加载的冗余代码也更多；反之commons chunck文件则越小，代码被缓存的几率越小，但加载的冗余代码也更少。</p>
+<p>通过编写入口文件我们可以将所有可能被用到的文件打包成一个文件，而通过利用<code>CommonsChunkPlugin</code>，我们可以有效地缓存不同入口文件之间重叠的代码，特别是对非单页应用而言，这点非常重要。这种方式分割的代码不会像split points那样会自动加载，我们需要按照依赖依次引入分割而成的文件。</p>
+<h2 id="-">简单的代码分割思路</h2>
+<p>首先把所有页面100%会被使用的文件分割出来，即打包成vendor文件。这类文件主要是外部依赖，比如：React、jQuery这样的framework，或是momentjs等经常会用到的代码库。</p>
+<p>然后再为需要严格控制js文件大小的页面编写独立的入口文件，比如运行在移动设备上的活动页面。独立的入口文件会保证打包出来的文件没有（太多）冗余。</p>
+<p>对于其他没有那么严格的要求的页面来说，我们可以从整体按照某一套规则来分割代码。比如前面链接中的汗学院把代码分割成了：<code>core-package.js</code>，<code>content-package.js</code>，<code>homepage-package.js</code>。</p>
+<p>问题是通过配置打包成的文件需要我们手动管理依赖，即按照依赖关系在页面中依次引入script标签，这种做法在依赖十分复杂的情况下是不可接受的。那这时候通过<code>require.ensure</code>来帮助我们管理依赖或许是个不错的主意。</p>
+]]></description>
+            <link>https://blog.oyyd.net/post/how_to_split_your_code_in_webpack</link>
+            <guid isPermaLink="false">89b1ca0a33a279b425951b43ee4081db</guid>
+            <pubDate>Sun, 17 Jan 2016 16:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[探究JavaScript上的编译器 —— nunjucks]]></title>
             <description><![CDATA[<h1 id="-javascript-nunjucks">探究JavaScript上的编译器 —— nunjucks</h1>
@@ -163,7 +262,7 @@ return {
   codeString // 中间代码
 );
 </code></pre>
-<p>并且中间代码生成的函数将是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js<label for="19" class="margin-toggle sidenote-number"></label><input type="checkbox" id="19" class="margin-toggle"/><span class="sidenote">现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB</span> ）。这就是nunjucks中的precompile特性，也是提高模板引擎性能的关键。</p>
+<p>并且中间代码生成的函数将是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote">现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB</span> ）。这就是nunjucks中的precompile特性，也是提高模板引擎性能的关键。</p>
 <h3 id="context-environment-template">Context &amp;&amp; Environment &amp;&amp; Template</h3>
 <p>到目前为止，有了中间代码以后，我们只要传入参数就可以生成目标代码(HTML)了。而从外部传入的参数分为两种，上下文环境（渲染过程中直接使用到的变量等）储存在Context中，而配置等参数将被储存在Environment中。而Template最主要的目的则是组合使用Environment，其作用可以简单地理解为：</p>
 <pre><code class="lang-js">return root( // root为中间代码生成的函数
@@ -446,7 +545,7 @@ function escape(strings, ...values) {
 return escape`&lt;div&gt;{ uesrname }&lt;/div&gt;`;
 // &lt;div&gt;&amp;lt;script&amp;gt;&amp;lt;&amp;#x2F;script&amp;gt;&lt;/div&gt;
 </code></pre>
-<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="20" class="margin-toggle sidenote-number"></label><input type="checkbox" id="20" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
+<p>Tagged template strings这一特性很强大，你需要去充分利用它<label for="22" class="margin-toggle sidenote-number"></label><input type="checkbox" id="22" class="margin-toggle"/><span class="sidenote">Tagged templates invite library designers to create powerful domain-specific languages. ——<a href="https://hacks.mozilla.org/2015/05/es6-in-depth-template-strings-2/">ES6 In Depth: Template strings</a></span> 。</p>
 <h3 id="comments">comments</h3>
 <p>在nunjucks中我们可以写注释：</p>
 <pre><code class="lang-html">{# Loop through all the users #}
@@ -486,7 +585,7 @@ var res = eval(template);
 </code></pre>
 <h2 id="-template-strings-">用template strings替代模板引擎的优点和缺点</h2>
 <p>到目前位置，我们主要讨论了用template strings来替代模板引擎的可行性，下面我们会讨论这样做的优点和缺点。</p>
-<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="21" class="margin-toggle sidenote-number"></label><input type="checkbox" id="21" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
+<p>模板引擎是<a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>，其目的是拼接字符串。没有模板引擎我们当然也可以拼接字符串，只不过这一过程会很痛苦。而template strings本身就是为了解决这一问题而设计的，而tagged template strings又足够帮助我们实现模板引擎的功能<label for="23" class="margin-toggle sidenote-number"></label><input type="checkbox" id="23" class="margin-toggle"/><span class="sidenote">利用tagged template strings开发DSL当然也是可行的，这里的讨论不涉及开发DSL的情况</span> 。</p>
 <p>由于各种原因，通常模板引擎在处理很多问题时，通常会有自己的一套方法，比如说在一个模板中引入另一个模板你可能需要用import/require/partials语句，这实际上和JavaScript本身的import解决的是相似的问题。所以在使用template strings时，面对这些情况，我们就可以直接利用JavaScript中的特性来实现，而不需要像那样用一套新的东西来解决相似的问题。</p>
 <p>这样很自然地，使用template strings替代模板引擎最主要的优点在于：</p>
 <ol>
@@ -499,7 +598,7 @@ var res = eval(template);
 </ol>
 <p>但模板引擎毕竟是专门为处理模板而生的，有些用JavaScript实现比较麻烦的场景，用模板引擎的语法可能可以轻松地解决。实际上这里的讨论更像是在讨论使用DSL的优缺点。但使用template strings的理由在于 <strong>很多模板引擎上的很多特性都和JavaScript（ES6+）本身的特性重合了，我们没必要用一套新东西解决同样的问题</strong>。当然在ES6之前，JavaScript本身也没有模块，更别说考虑直接使用JavaScript中的特性来解决模板上的问题。</p>
 <p>而另一个推荐使用template strings的原因在于Universal JavaScript。如果模板本身就是JavaScript代码的话，那么在前后端同时使用一份代码会变得容易得多。</p>
-<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="22" class="margin-toggle sidenote-number"></label><input type="checkbox" id="22" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
+<p>另外不分离模板与代码的这一想主要是受到React的启发。React中的HTML(Virtual DOM, React DOM)部分和JavaScript代码紧密贴合<label for="24" class="margin-toggle sidenote-number"></label><input type="checkbox" id="24" class="margin-toggle"/><span class="sidenote">这里主要是对比Angular和Polymer等框架，即主要由JavaScript代码控制HTML内容，而不是以HTML为主，也不是HTML和JavaScript平分秋色</span> 的想法，至少从实践角度上来说是很有效的，它使得代码十分容易维护。那么对于模板来说，不去刻意分离模板代码与普通的代码、模板代码既是JavaScript代码或许是个好的思路。</p>
 <h2 id="-">生产环境上的应用</h2>
 <p>在生产环境上单单使用template strings没办法解决我们的所有需求，而截止至本文时点我也没有看见过任何类似的实现。所以如果你觉得这是个好主意，你需要充分利用tagged template strings这一特性来组织起模板层。万幸的是这一过程不需要涉及编译，所以这会远比重新写一个模板引擎要简单得多。之后我也会尝试写一个帮助实现这一目的的库。</p>
 <h2 id="-">其他相关链接</h2>
@@ -519,7 +618,7 @@ var res = eval(template);
 <p>（<a href="https://github.com/oyyd/oyyd-blog/tree/master/research/react-hot-loader">从这里查看下文中的部分代码</a>）</p>
 <h2 id="-webpack-dev-server-">从webpack-dev-server开始</h2>
 <p>webpack不仅能够起到打包的作用，它还“附带了”一个专门用于开发的、由express构建的迷你服务器，即webpack-dev-server。webpack-dev-server的基本作用是处理我们的打包任务，并且它还会作为一个静态文件服务器提供我们最新打包成的静态文件供本地开发使用。webpack-dev-server与我们平时开发用的静态文件服务器的不同之处在于，它知道新的文件在何时被打包了出来，以及究竟是哪个文件发生了改变。</p>
-<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="23" class="margin-toggle sidenote-number"></label><input type="checkbox" id="23" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
+<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<label for="25" class="margin-toggle sidenote-number"></label><input type="checkbox" id="25" class="margin-toggle"/><span class="sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
 <p><img src="/static/posts/webpack-hmr/hot-reload.gif" alt="complete-version"></p>
 <p>对的，到这里webpack实际上已经实现了<a href="http://livereload.com/">livereload</a>的功能。</p>
 <h2 id="-hmr-api">使用HMR的相关api</h2>
@@ -573,7 +672,7 @@ if (module.hot) {
 <p>在浏览器上加载这个页面后，我们就可以尝试修改sayHelloEntry.js模块中的<code>name</code>的值或是SayHello.js模块中的内容来查看结果：</p>
 <p><img src="/static/posts/webpack-hmr/simple-version.gif" alt="complete-version"></p>
 <p>虽然这个例子非常简单，但它也足以说明在webpack中的HMR的基本原理了。而你也应该很快注意到了，虽然在开发过程中，所有模块都有可能发生改变，但我们并不需要为每个模块写HMR代码。</p>
-<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="24" class="margin-toggle sidenote-number"></label><input type="checkbox" id="24" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
+<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<label for="26" class="margin-toggle sidenote-number"></label><input type="checkbox" id="26" class="margin-toggle"/><span class="sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
 <p><img src="/static/posts/webpack-hmr/bubble-up.png" alt="bubble-up"></p>
 <p>当一个模块C发生改变，而模块内又没有HMR代码来处理这一消息时，那这一消息就会被传递到依赖模块C的其他模块上；如果消息在新模块上没有被捕获的话就会再次进行传递；如果所有的消息都被捕获了的话，那我们的应用就应该已经按照代码进行了更新；反之如果有消息冒泡到了入口(entry)文件还没有被捕获的话，那就说明我们的代码中没有处理这类变更方法，那webpack就会刷新浏览器页面，即从HMR回退到LiveReload。</p>
 <h2 id="-react-hmr">在React上实现HMR</h2>
@@ -611,7 +710,7 @@ class Counter extends React.Component{
 export default Counter;
 </code></pre>
 <p>虽然HMR依然有效，但每次模块更新后，你会发现Counter的当前计数又会回到初始状态。因为在这一过程中，React组件中的state丢失了。</p>
-<p>state丢失的原因和React的diff算法<label for="25" class="margin-toggle sidenote-number"></label><input type="checkbox" id="25" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
+<p>state丢失的原因和React的diff算法<label for="27" class="margin-toggle sidenote-number"></label><input type="checkbox" id="27" class="margin-toggle"/><span class="sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
 <p>像我们在HMR的过程中更新了Counter.js模块，会重新生成新的Counter，实际上新的Counter和旧的Counter不是同一个Counter，即它们是不全等的。</p>
 <p>所以在当前React没有提供任何相关api的状况下，如果我们仍想要保留原来的state的话，那我们就不能用新的组件直接替换旧的组件，即我们要保留原来组件的外壳，并更新其上的所有方法（利用mutable data）。同时因为数据没有发生变化，所以我们还需要某种方式来强制命令React更新应用的状态。</p>
 <p>而这事实上就是react-proxy和react-deep-force-update的作用了。这两个库同样也是react-hot-loader和react-transform的依赖。由于这两个库的实现本身相对复杂费解，同时跟React内部的一些机制紧密相连，所以这里便不再深入了。</p>
@@ -662,259 +761,6 @@ if (module.hot) {
             <link>https://blog.oyyd.net/post/how_does_react_hot_loader_works</link>
             <guid isPermaLink="false">632bf391d8f8f9e2d0678d8da613d395</guid>
             <pubDate>Thu, 03 Dec 2015 16:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[ Universal(Isomorphic) JavaScript在React上的应用]]></title>
-            <description><![CDATA[<h1 id="universal-isomorphic-javascript-react-">Universal(Isomorphic) JavaScript在React上的应用</h1>
-<p>2015年11月26日</p>
-<p>React中的renderToString方法允许我们在服务器上渲染React部件，这点不仅可以帮助我们解决一些会出现在单页应用(SPA)上的问题，它甚至还允许我们将React用作模板引擎（template engine）来使用。下文还将附带一个简单的benchmark来对比React与传统模板引擎之间性能。</p>
-<h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
-<p>Universal Javascript又称Isomorphic JavaScript<label for="26" class="margin-toggle sidenote-number"></label><input type="checkbox" id="26" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="27" class="margin-toggle sidenote-number"></label><input type="checkbox" id="27" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
-<p>实现Universal Javascript的原理并不复杂，我们只需要在代码中获取当前运行环境（浏览器还是服务器？），并根据环境作出不同响应即可。比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
-<pre><code class="lang-js">if (Meteor.isServer) {
-  // This code only runs on the server
-}
-
-if (Meteor.isClient) {
-  // This code only runs on the client
-}
-</code></pre>
-<p>只要通过<code>Meteor.isServer</code>和<code>Meteor.isClient</code>，我们就能够控制代码在不同环境下的逻辑，从而使得这份代码可以同时在客户端和服务器上执行，并根据环境返回对应的结果。</p>
-<h2 id="universal-javascript-react-">Universal JavaScript可以给React应用带来什么？</h2>
-<p>那么对于React来讲，Universal Javascript又有什么用呢?我们知道，html标签加载了一部分就会显示一部分； 而React是通过javascript来渲染html内容的。这也就意味着在完成脚本的加载和运行之前，React应用中的html内容是不会出现在页面上的。</p>
-<p>像是本站blog.oyyd.net原来是用React + React Router写的SPA(单页)应用，页面内容是这样的：</p>
-<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt;oyyd blog - 这是亚东的博客（偏技术），你可以在上面看到我的一些想法和实践，欢迎来访。&lt;/title&gt;
-    &lt;meta charset=&quot;utf-8&quot;/&gt;
-    &lt;meta name=&quot;description=&quot; content=&quot;内容偏前端，但不局限于前端，没准你会感兴趣。&quot;/&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/dist/style.css&quot;/&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div id=&quot;main&quot;&gt;&lt;/div&gt;
-    &lt;script src=&quot;/dist/bundle.js&quot;&gt;&lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>可以看到代码中基本没有与内容相关的html标签，这就导致SPA一直存在的一些<strong>问题</strong>：</p>
-<ol>
-<li><p>用户在脚本加载运行之前是不会看到React部分的内容，从体验上来讲好像等待了更多的时间（特别是在网速差的时候）。</p>
-</li>
-<li><p>如果javascrript加载失败或是运行时产生错误的话（或是浏览器直接禁用了javascript的话），用户看不到任何内容。</p>
-</li>
-<li><p>搜索引擎无法有效地爬取页面内容<label for="28" class="margin-toggle sidenote-number"></label><input type="checkbox" id="28" class="margin-toggle"/><span class="sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
-</li>
-</ol>
-<p>对于这些问题，我们可以利用Universal JavaScript，也即React中的<code>renderToString</code>方法，在服务器上就渲染出React应用中的部分内容返回给浏览器，从而解决这些问题。</p>
-<h2 id="-">实现</h2>
-<p>现在的blog.oyyd.net就充分利用了React中的<code>renderToString</code>。你可以在浏览器中查看源码来查看这个网站现在的状况。接下来还是让我们通过一个更加简洁的例子来了解这一流程：</p>
-<blockquote>
-<p>注意：下面的代码并不完备，由于构建过程相对繁杂多样，所以这些代码更多是为了让我们能更好地关注这一流程中的重点步骤。</p>
-</blockquote>
-<p>假设我们要实现一个简单的计数器，这个计数器的初始值会在服务器端就设置好。</p>
-<p>整个流程大致如下：</p>
-<ol>
-<li><p>请求到来，服务器初始化我们的React计数器，并将其渲染成字符串。</p>
-</li>
-<li><p>把React生成的字符串和计数器的初始值放到模板中，合并成完整的HTML内容返回给浏览器。</p>
-</li>
-<li><p>在浏览器上，利用计数器的初始值初始化React应用。</p>
-</li>
-</ol>
-<p>其中我们的React计数器代码如下：</p>
-<pre><code class="lang-js">// Counter.js
-import React from &#39;react&#39;;
-
-class Counter extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      count: props.initialCount,
-    };
-  }
-  countPlusOne(){
-    this.setState({
-      count: this.state.count + 1,
-    });
-  }
-  render(){
-    return (
-      &lt;div&gt;
-        &lt;label&gt;数值: {this.state.count}&lt;/label&gt;
-        &lt;button onClick={this.countPlusOne.bind(this)}&gt;+1&lt;/button&gt;
-      &lt;/div&gt;
-    )
-  }
-}
-
-export default Counter;
-</code></pre>
-<p>当请求来临时，express根据参数设置初始状态生成一个Counter的ReactElement,并将其渲染成字符串：</p>
-<pre><code class="lang-js">// server.js
-import fs from &#39;fs&#39;;
-import express from &#39;express&#39;;
-import React from &#39;react&#39;;
-import {renderToString} from &#39;react-dom/server&#39;;
-
-import Counter from &#39;./components/Counter&#39;;
-
-const app = express();
-app.get(&#39;/:initialCount&#39;, (req, res) =&gt; {
-  const {initialCount} = req.params;
-
-  // 生成Counter实例的字符串
-  const counterString = renderToString(
-    &lt;Counter initialCount={initialCount}/&gt;
-  );
-
-  // 注意下面不仅将Counter的字符串放入了html内容中，并且
-  // 还将参数保存在了全局浏览器上的全局变量`__INITIAL_COUNT__`
-  req.send(
-    `&lt;html&gt;
-      &lt;head&gt;&lt;/head&gt;
-      &lt;body&gt;
-        &lt;div id=&quot;main&quot;&gt;${counterString}&lt;/div&gt;
-        &lt;script src=&quot;/bundle.js&quot;&gt;&lt;/script&gt;
-        &lt;script&gt;
-          window.__INITIAL_COUNT__ = ${initialCount};
-        &lt;/script&gt;
-        &lt;script src=&quot;/bootstrap.js&quot;&gt;&lt;/script&gt;
-      &lt;/body&gt;
-    &lt;/html&gt;`
-  );
-});
-
-app.listen(8080);
-</code></pre>
-<p>当浏览器上的请求从服务器上返回时，bootstrap.js脚本被加载运行，在浏览器上初始化完整的React应用：</p>
-<pre><code class="lang-js">// bootstrap.js
-React.render(
-  &lt;Counter initialCount={window.__INITIAL_COUNT__}/&gt;,
-  document.getElementById(&#39;main&#39;)
-);
-</code></pre>
-<p>到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。</p>
-<p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.__INITIAL_COUNT__</code>）也一并传过去，用于初始化。</p>
-<h2 id="-react-">事实上，我们在用React替代服务器端的模板引擎</h2>
-<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="29" class="margin-toggle sidenote-number"></label><input type="checkbox" id="29" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
-<p>如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。</p>
-<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="30" class="margin-toggle sidenote-number"></label><input type="checkbox" id="30" class="margin-toggle"/><span class="sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
-<p>那么让一门前端框架作为模板引擎是不是多余之举呢？</p>
-<p>事实可能完全相反。因为浏览器上js所使用的模板和服务器上渲染的模板原本就应该是同一份模板，它们同属于我们浏览器上的应用。只不过由于种种原因，我们一直不得不将其拆分成两部分。那么现在如果服务器的这份模板由本身就主要用于浏览器上的React来生成的话，我觉得是再合理不过的了。</p>
-<p><img src="/static/posts/react-server-render/react-as-template-engine.png" alt="React as Template Engine"></p>
-<p><del>当然因为React无法生成所有常用的标签，所以你可能还是需要模板引擎来帮你处理React应用之外的工作。</del>一般我们用在浏览器上的React应用不会用到诸如：html，script，body这样的标签，但我们可以在服务器渲染时使用他们来生成完整的内容。</p>
-<p>并且这样做，我们可以充分利用同一份代码，技术栈也会变得更加简单。想象一下，没有html、template、ejs、jade等文件，你的js文件就是你的模板文件，你可以直接利用js上的模块等特性，这能够省多少事！</p>
-<p>但是如果你把之前用于浏览器上的React部件直接拿来服务器渲染的话，你可能没办法如愿。举个例子：在浏览器上你很可能在会直接使用全局变量window，但在node上这会抛出错误。你需要在写你的应用的时候就考虑清楚一个部件在服务器上渲染时的情况。</p>
-<p>而你的React部件拥有state的话，你是没办法直接控制他们的状态的。但如果你使用<a href="https://github.com/rackt/redux">Redux</a>来将部件中的state移动到外部的话，你就可以通过Redux来从外部自由控制你部件的状态，也就可以控制服务器端渲染的内容了。</p>
-<h2 id="-benchmark">一个简单的benchmark</h2>
-<p>React不是纯粹的模板引擎，那么与node上其他的模板引擎相比，它的server render的性能会不会差很多呢？这里我们将前面的计数器代码做一下改动，通过一个小范围的、非常简单的benchmark来对比React和ejs之间性能的量级：</p>
-<blockquote>
-<p>这里还是要再次强调：这个benchmark的目的只是在于帮助我们了解他们之间大概的性能，实际应用时的状况很可能不是这样的。</p>
-</blockquote>
-<p>设备：Windows 8.1 Intel(R) Core(TM) i5-4210M CPU @ 2.60GHz 2.59GHz  8.00GB</p>
-<p>版本：React 14.0.2，ejs 2.3.4</p>
-<p>ejs使用的模板文件：</p>
-<pre><code class="lang-html">&lt;div&gt;
-  &lt;label&gt;数值:&lt;%=count%&gt;&lt;/label&gt;
-  &lt;button&gt;+1&lt;/button&gt;
-&lt;/div&gt;
-</code></pre>
-<p>React Counter(es6中类的形式)<label for="31" class="margin-toggle sidenote-number"></label><input type="checkbox" id="31" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
-<pre><code class="lang-js">import React from &#39;react&#39;;
-
-class Counter extends React.Component{
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      &lt;div&gt;
-        &lt;label&gt;数值:{this.props.count}&lt;/label&gt;
-        &lt;button&gt;+1&lt;/button&gt;
-      &lt;/div&gt;
-    );
-  }
-}
-
-export default Counter;
-</code></pre>
-<p>React Counter(传统方式)：</p>
-<pre><code class="lang-js">import React from &#39;react&#39;;
-
-const Counter = React.createClass({
-  render() {
-    return (
-      &lt;div&gt;
-        &lt;label&gt;数值:{this.props.count}&lt;/label&gt;
-        &lt;button&gt;+1&lt;/button&gt;
-      &lt;/div&gt;
-    );
-  },
-});
-
-export default Counter;
-</code></pre>
-<p>测试时的渲染语句：</p>
-<pre><code class="lang-js">// React
-renderToString(&lt;Counter count={10}/&gt;);
-
-// ejs
-ejs.render(template, {
-  count: 10,
-});
-</code></pre>
-<p>设置node环境为<code>production</code>，避免React做一些用于开发环境的工作，并开始渲染：</p>
-<pre><code>NODE_ENV=production node lib/index.js
-</code></pre><p>结果如下：</p>
-<p>数值单位是ope/sec（每秒渲染数）越高越好</p>
-<script type="text/chartdata" data-chartname="Bar" style="display:none;">{
-  "options": {
-    "multiTooltipTemplate": "<%= datasetLabel %>:<%= value %>"
-  },
-  "data": {
-      "labels": ["第1次", "第2次", "第3次", "第4次", "第5次"],
-      "datasets": [
-          {
-              "label": "React ES6 class",
-              "fillColor": "rgba(220,220,220,0.5)",
-              "strokeColor": "rgba(220,220,220,0.8)",
-              "highlightFill": "rgba(220,220,220,0.75)",
-              "highlightStroke": "rgba(220,220,220,1)",
-              "data": [7981, 9043, 11718, 8165, 8034]
-          },
-          {
-              "label": "React classic",
-              "fillColor": "rgba(151,187,205,0.5)",
-              "strokeColor": "rgba(151,187,205,0.8)",
-              "highlightFill": "rgba(151,187,205,0.75)",
-              "highlightStroke": "rgba(151,187,205,1)",
-              "data": [7172, 6904, 7421, 7592, 8030]
-          },
-          {
-              "label": "ejs",
-              "fillColor": "rgba(227,169,150,0.5)",
-              "strokeColor": "rgba(227,169,150,0.8)",
-              "highlightFill": "rgba(227,169,150,0.75)",
-              "highlightStroke": "rgba(227,169,150,1)",
-              "data": [17905, 17743, 16763, 19261, 17437]
-          }
-      ]
-  }
-}
-</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="32" class="margin-toggle sidenote-number"></label><input type="checkbox" id="32" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
-<p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经够用了，甚至该说是足够优秀了。况且React远不止是模板引擎。</p>
-<h2 id="-">结论</h2>
-<p>相对于其他语言来说，Universal JavaScript恐怕是Node在web上所具有的最独特的特性，也是最值得去挖掘的。我们这里讨论了一些React在服务器上的使用及其潜力，也一笔带过了实际应用中存在的一些问题。更深入的内容就留待以后吧。</p>
-<h2 id="-">相关链接</h2>
-<p>StrongLoop的教程: <a href="https://strongloop.com/strongblog/node-js-react-isomorphic-javascript-why-it-matters/">How to Implement Node + React Isomorphic JavaScript &amp; Why it Matters</a></p>
-<p><a href="https://github.com/erikras/react-redux-universal-hot-example">React Redux Universal Hot Example</a></p>
-<p><a href="https://github.com/aickin/react-dom-stream">react-dom-stream</a></p>
-]]></description>
-            <link>https://blog.oyyd.net/post/introduce_universal_javascript_and_its_implementation_in_static_pages</link>
-            <guid isPermaLink="false">4a736e05cbc84599b1fa7d72335115da</guid>
-            <pubDate>Wed, 25 Nov 2015 16:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>

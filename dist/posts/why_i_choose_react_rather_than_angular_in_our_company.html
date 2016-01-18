@@ -44,7 +44,7 @@
 而我们修改目标DOM的目的实际上是要维护维护DOM树和javascript
 状态的一致。</p>
 <p>维护这两者一致的工作本身是不可避免的，但问题是在代码量变大、代码变复杂的情况下，
-人工维护的代价可能要比我们想象的要复杂的多<label for="16" class="margin-toggle sidenote-number"></label><input type="checkbox" id="16" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
+人工维护的代价可能要比我们想象的要复杂的多<label for="17" class="margin-toggle sidenote-number"></label><input type="checkbox" id="17" class="margin-toggle"/><span class="sidenote"><a href="http://www.csdn.net/article/2013-04-12/2814864-Localytics-AngularJS-Backbone">Localytics公司在backbone的实践中明确提出了这一点</a></span> 。因为代码运行的某一时刻中，虽然你目标的DOM状态
 是确定的，但当前DOM树的状态却可能是多种多样的（不确定的）。理论上要把DOM树改变成目标状态的话，
 你的代码就需要考虑当前DOM树各种可能的状态。不仅如此，你的代码还需要包含改变DOM树状态
 的一步步的操作。</p>
@@ -90,7 +90,7 @@ componentDidUpdate等等的方法中（当然你不一定需要全都用到）�
 这样，当你们从React的角度来思考一个需求的实现时，你和你同事的思路一般不会相差太大。</p>
 <p>说这是个问题，是因为我觉得适合生产环境上的框架应该单靠框架本身就能使团队中的每个人都对某一个功能的开发抱有相近的想法。
 这样代码就更容易预测。</p>
-<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="17" class="margin-toggle sidenote-number"></label><input type="checkbox" id="17" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
+<h3 id="2-mvc-view-sidenote-react-view-">2. MVC与View<label for="18" class="margin-toggle sidenote-number"></label><input type="checkbox" id="18" class="margin-toggle"/><span class="sidenote">React称自己仅实现View</span> </h3>
 <p>我看到有些人评论React没有遵循MVC分割Model和View，加重了代码的耦合程度。</p>
 <p>比如Angular的Controller和Directive可以分别被认为是MVC（或MVVM）中的Model和View。
 这就意味着你可以将一个component拆分开来，分别实现这两个部分，也让更小粒度的代码复用成为了可能。</p>
@@ -108,7 +108,7 @@ Angular给我们提供了一套强大的工具，但你仍要去学习、实践�
 <h3 id="3-">3. 学习曲线很重要</h3>
 <p>并且在你希望你的同事接纳他们不熟悉的东西，或是需要给你的上司看到成果时，时显得更加重要。
 虽然要用好React的话也需要学习不少东西，但这一过程会平滑的多得多。</p>
-<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="18" class="margin-toggle sidenote-number"></label><input type="checkbox" id="18" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
+<h3 id="4-go-with-proven-and-solid-technologies-when-you-can-sidenote-what-powers-instagram-hundreds-of-instances-dozens-of-technologies-http-instagram-engineering-tumblr-com-post-13649370142-what-powers-instagram-hundreds-of-instances-">4. Go with proven and solid technologies when you can<label for="19" class="margin-toggle sidenote-number"></label><input type="checkbox" id="19" class="margin-toggle"/><span class="sidenote"><a href="http://instagram-engineering.tumblr.com/post/13649370142/what-powers-instagram-hundreds-of-instances">What Powers Instagram: Hundreds of Instances, Dozens of Technologies</a></span> </h3>
 <p>除了Facebook和Instagram以外，看看<a href="https://github.com/facebook/react/wiki/Sites-Using-React">这里</a>，你会发现
 Amazon, AirBnb, Uber,
 支付宝，淘宝等公司、产品都在上面。不管这些大公司在他们的产品中到底使用了多少React

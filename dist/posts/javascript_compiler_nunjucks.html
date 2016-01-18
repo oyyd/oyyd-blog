@@ -153,7 +153,7 @@ return {
   codeString // 中间代码
 );
 </code></pre>
-<p>并且中间代码生成的函数将是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB</span> ）。这就是nunjucks中的precompile特性，也是提高模板引擎性能的关键。</p>
+<p>并且中间代码生成的函数将是个纯函数，传入同样的参数给它会得到同样的结果，这也就意味着在nunjucks中，编译的结果（到Compiler这一步的结果）可以被缓存起来，供以后直接使用，而不需要每次都进行编译。保存完编译结果以后以后，我们就不再需要模板了，而可以直接使用编译结果以提高性能并缩小浏览器上nunjucks文件的大小（即使用nunjucks-slim.js<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote">现在这个时间点nunjucks.min.js文件大小为69KB,nunjucks-slim.min.js大小为24KB</span> ）。这就是nunjucks中的precompile特性，也是提高模板引擎性能的关键。</p>
 <h3 id="context-environment-template">Context &amp;&amp; Environment &amp;&amp; Template</h3>
 <p>到目前为止，有了中间代码以后，我们只要传入参数就可以生成目标代码(HTML)了。而从外部传入的参数分为两种，上下文环境（渲染过程中直接使用到的变量等）储存在Context中，而配置等参数将被储存在Environment中。而Template最主要的目的则是组合使用Environment，其作用可以简单地理解为：</p>
 <pre><code class="lang-js">return root( // root为中间代码生成的函数
