@@ -1,4 +1,9 @@
 export default [{
+  fileName: 'how_to_split_your_code_in_webpack',
+  title: 'how_to_split_your_code_in_webpack',
+  publicDate: '2016年01月17日',
+  description: 'TODO',
+},{
   fileName: 'javascript_compiler_nunjucks',
   title: '探究JavaScript上的编译器 —— nunjucks',
   publicDate: '2016年01月12日',
