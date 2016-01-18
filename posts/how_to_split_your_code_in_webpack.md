@@ -1,4 +1,4 @@
-# 使用webpack分割代码
+# 使用webpack分割代码的思路
 
 2016年01月18日
 
@@ -38,7 +38,7 @@ require.ensure([], function(require) {
 
 实际上`require.ensure`这种方式有些像requirejs或其他浏览器上的模块加载库。webpack可以根据split points来将多个文件自动打包成一个代码块（chunk），并在运行时（比如浏览器上）自动加载依赖的代码块。因为是以代码块为单位，而不像其他库一样是以单个JavaScript文件为单位，所以相比于传统的模块相关的库来说，webpack可以帮我们做很多优化。
 
-但值得注意的是，`require.ensure`并不是真正的动态加载，虽然同样是在运行中加载依赖，但webpack会加载所有的依赖$sidenote(也有特别的情况，比如在`if(false){}`中的`require`就不会被执行)，比如在下面的代码中：
+但值得注意的是，`require.ensure`并不是真正的动态加载，虽然同样是在运行中加载依赖，但webpack会加载所有的依赖$sidenote(也有特别的情况，比如在`if`语句中，如果条件为`false`，则代码体中的`require`就不会被执行)，比如在下面的代码中：
 
 ```js
 require.ensure([], function(require) {

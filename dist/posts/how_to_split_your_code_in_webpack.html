@@ -1,4 +1,4 @@
-<h1 id="-webpack-">使用webpack分割代码</h1>
+<h1 id="-webpack-">使用webpack分割代码的思路</h1>
 <p>2016年01月18日</p>
 <p><strong>前言：</strong></p>
 <p>可能你跟我一样最开始只是把webpack作为打包的工具，把所有的东西都打包进一个bundle.js文件供我们的应用使用。这种做法不仅简单、利于缓存，更重要的它可以使得我们的JavaScript代码更像是其他的编程语言那样运作，而不用为模块和加载的问题操心太多。但随着代码的不断增长，需要加载的代码会不断增加，并且当我们期望某些页面在移动设备上（app或浏览器）运行时，非wifi的网络环境会使得资源加载时间显得更加不可接受。</p>
@@ -22,7 +22,7 @@ require.ensure([], function(require) {
 })
 </code></pre>
 <p>实际上<code>require.ensure</code>这种方式有些像requirejs或其他浏览器上的模块加载库。webpack可以根据split points来将多个文件自动打包成一个代码块（chunk），并在运行时（比如浏览器上）自动加载依赖的代码块。因为是以代码块为单位，而不像其他库一样是以单个JavaScript文件为单位，所以相比于传统的模块相关的库来说，webpack可以帮我们做很多优化。</p>
-<p>但值得注意的是，<code>require.ensure</code>并不是真正的动态加载，虽然同样是在运行中加载依赖，但webpack会加载所有的依赖<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">也有特别的情况，比如在<code>if(false</span> {}</code>中的<code>require</code>就不会被执行)，比如在下面的代码中：</p>
+<p>但值得注意的是，<code>require.ensure</code>并不是真正的动态加载，虽然同样是在运行中加载依赖，但webpack会加载所有的依赖<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">也有特别的情况，比如在<code>if</code>语句中，如果条件为<code>false</code>，则代码体中的<code>require</code>就不会被执行</span> ，比如在下面的代码中：</p>
 <pre><code class="lang-js">require.ensure([], function(require) {
   var shouldLoad = false;
   if (shouldLoad) {
