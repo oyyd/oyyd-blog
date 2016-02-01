@@ -33,7 +33,13 @@ class About extends React.Component{
         <div className='region'>
           <h2>Works</h2>
           <div className='content' style={{paddingLeft: 10}}>
-            <h3>翻译 -
+            <h3>
+              协作者&nbsp;
+              <a href="https://github.com/mozilla/nunjucks" target="_blank">
+                mozilla/nunjucks
+              </a>
+            </h3>
+            <h3>翻译&nbsp;
               <a href='https://www.gitbook.com/book/oyyd/typescript-handbook-zh/details'
                 target='_blank'>
                 Typescript Handbook
