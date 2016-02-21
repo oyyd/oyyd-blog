@@ -1,28 +1,34 @@
 import { marked, } from 'marked-chartjs-binding';
 
-let commands = [];
+function initCommands() {
+  let commands = [];
 
-commands.push({
-  reg: /\$sidenote\((.*?)\)/,
-  handler: (() => {
-    let sideNoteCount = 0;
-    return (content) => {
-      sideNoteCount++;
-      return `<label for="${sideNoteCount}" class="margin-toggle sidenote-number"></label>` +
-      `<input type="checkbox" id="${sideNoteCount}" class="margin-toggle"/>` +
-      `<span class="sidenote">${content}</span> `;
-    };
-  })(),
-});
+  commands.push({
+    reg: /\$sidenote\((.*?)\)/,
+    handler: (() => {
+      let sideNoteCount = 0;
+      return (content) => {
+        sideNoteCount++;
+        return `<sup id="${sideNoteCount}" class="margin-toggle` +
+          ` sidenote-number">${sideNoteCount}</sup>` +
+        `<span for="${sideNoteCount}" class="mdl-tooltip sidenote">${content}</span> `;
+      };
+    })(),
+  });
 
-commands.push({
-  reg: /\$publicdate\((.*?)\)/,
-  handler: (content) => {
-    return content;
-  },
-});
+  commands.push({
+    reg: /\$publicdate\((.*?)\)/,
+    handler: (content) => {
+      return content;
+    },
+  });
+
+  return commands;
+}
 
 function translate(content) {
+  const commands = initCommands();
+
   let result = marked(content);
   for (let command of commands) {
     let regResult = command.reg.exec(result);

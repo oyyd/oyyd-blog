@@ -1,17 +1,20 @@
 import fs from 'fs';
 
-import {Provider} from 'react-redux';
+import { Provider, } from 'react-redux';
 import {renderToString} from 'react-dom/server';
 import React from 'react';
 import createStore from '../../client/state/createStore';
 import generateRoutes from '../../client/generateRoutes';
-import {match, RoutingContext} from 'react-router';
+import { match, RouterContext, } from 'react-router';
 import escapeJSONString from '../utils/escapeJSONString';
 
 import createPage from '../../template/createPage';
 
 const routes = generateRoutes(null);
+
 function renderPages(req, res) {
+  const store = createStore({}, req.url);
+
   match({routes, location: req.url},
     (error, redirectLocation, renderProps) => {
       if (error) {
@@ -21,9 +24,11 @@ function renderPages(req, res) {
       } else if (renderProps) {
         res.status(200).send(createPage({
           content: renderToString(
-            <RoutingContext {...renderProps}/>
+            <Provider store={store}>
+              <RouterContext {...renderProps}/>
+            </Provider>
           ),
-          initialState: escapeJSONString(JSON.stringify(createStore())),
+          initialState: escapeJSONString(JSON.stringify(store)),
         }));
       } else {
         res.status(404).send('Not found');

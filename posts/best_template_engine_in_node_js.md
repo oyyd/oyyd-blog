@@ -4,8 +4,7 @@ __前言：__
 
 JavaScript上有很多的模板引擎，不管是用于前端的、后端的、两者兼顾的，或是特性丰富的，或是在模板中尽可能减少逻辑的，选择十分丰富。如果你也曾在一个或大或小的项目中考虑如何选择模板引擎的话，那你肯定也和我一样犹豫过要怎么选择。
 
-另一方面，在我大量使用React的工作时间中，我越发认可React中jsx的设计$sidenote([JSX: E4X The Good Parts](http://blog.vjeux.com/2013/javascript/jsx-e4x-the-good-parts.html)
-)。而当我从React jsx的角度考虑一个好的模板引擎应该具有什么样的特性时，我意识到，对于比较简单的情形，使用ES6中的[template strings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings)外加一些约定就已经足矣。你甚至不需要模板引擎就能够很好地处理绝大多数你以前需要用模板引擎来处理的工作。
+另一方面，在我大量使用React的工作时间中，我越发认可React中jsx的设计$sidenote([JSX: E4X The Good Parts](http://blog.vjeux.com/2013/javascript/jsx-e4x-the-good-parts.html))。而当我从React jsx的角度考虑一个好的模板引擎应该具有什么样的特性时，我意识到，对于比较简单的情形，使用ES6中的[template strings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings)外加一些约定就已经足矣。你甚至不需要模板引擎就能够很好地处理绝大多数你以前需要用模板引擎来处理的工作。
 
 那么下面就让我们来简单地探讨一下用ES6 template strings替代模板引擎的可行性及其优劣。
 

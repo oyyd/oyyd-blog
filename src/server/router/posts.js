@@ -12,7 +12,7 @@ import generateRoutes from '../../client/generateRoutes';
 import createStore from '../../client/state/createStore';
 import PostsData from '../../client/posts.data';
 import {initPost} from '../../client/state/post/actions';
-import {match, RoutingContext} from 'react-router';
+import {match, RouterContext} from 'react-router';
 import escapeJSONString from '../utils/escapeJSONString';
 import createPage from '../../template/createPage';
 
@@ -48,9 +48,9 @@ function updatePostStore(store, postData) {
 }
 
 function pageRender(req, res) {
-  const store = createStore();
-
+  const store = createStore({}, req.url);
   const routes = generateRoutes(null);
+
   match({routes: routes, location: req.url},
     (error, redirectLocation, renderProps) => {
       if (error) {
@@ -71,7 +71,7 @@ function pageRender(req, res) {
             title: postData.title,
             content: renderToString(
               <Provider store={store}>
-                <RoutingContext {...renderProps}/>
+                <RouterContext {...renderProps}/>
               </Provider>
             ),
             description: postData.description,

@@ -1,10 +1,19 @@
 .blog-simple-list{
   .post-item{
-    .public-date{
+    margin: 30px 0;
+    > .title {
+      display: block;
+    }
+    @marginLeftSize: 10px;
+    > .public-date{
+      margin: 5px 0;
       font-style: normal;
       color: #999999;
       font-size: 1.1rem;
-      margin-right: 10px;
-    }  
+      margin-left: @marginLeftSize;
+    }
+    > .description {
+      margin-left: @marginLeftSize;
+    }
   }
 }

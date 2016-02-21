@@ -1,14 +1,20 @@
-@quoteBorderColor: #eee;
-@quoteColor: #999;
+body {
+  background-color: @bgGrey;
+}
+
 .oyyd-blog{
   @defaultFontFamily: ETBembo, Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
   @codeFontFamily: Inconsolata, Monaco, Consolas, 'Courier New', Courier, Tahoma, Arial, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+  background-color: @bgText;
   font-family: @defaultFontFamily;
   table{
     width: 55%;
   }
   a{
     line-height: 1.5em;
+    &.no-deco {
+      text-decoration: none;
+    }
   }
   code{
     background-color: #eee;
@@ -22,67 +28,111 @@
   li>p{
     margin: 0;
   }
+  @paddingSize: 44px;
   >.header{
-    .site-name{
-      cursor: pointer;
+    background-color: @bgGrey;
+    height: 164px;
+    position: relative;
+    .site-name {
+      margin: 0;
+      padding: 40px 0 0 @paddingSize + 13px;
+      display: block;
+      font-size: 16px;
+      line-height: 1.8rem;
+      color: white;
       border-bottom: none;
     }
-    .header-icon{
-      border-bottom: none;
-      margin-left: 5%;
-      &:hover{
-        [class^="icon-"], [class*=" icon-"], .alike-icon{
-          transform: rotateZ(15deg);
+    .nav {
+      color: white;
+      position: absolute;
+      bottom: 0;
+      // TODO:
+      width: 100%;
+      font-size: 14px;
+      > .column {
+        padding-left: @paddingSize;
+        display: inline-block;
+        > .item {
+          text-decoration: none;
+          color: white;
+          width: 100px;
+          display: inline-block;
+          margin-right: 20px;
+          height: 40px;
+          opacity: 0.7;
+          cursor: pointer;
+          text-align: center;
+          &.active, &:hover {
+            opacity: 1;
+          }
+          &.active {
+            border-bottom: 2px solid #18ffff;
+          }
+          &:last-child {
+            margin-right: 0;
+          }
         }
       }
-      &.github-link{
-        margin-left: 10%;
-      }
-      [class^="icon-"], [class*=" icon-"]{
+      > .links {
         display: inline-block;
-        font-size: 30px;
+        float: right;
+        margin-right: @paddingSize;
+        .header-icon {
+          display: inline-block;
+          width: 30px;
+          vertical-align: top;
+          margin-right: 40px;
+          border-bottom: none;
+          color: white;
+          opacity: 0.7;
+          &:last-child {
+            margin-right: 0;
+          }
+          &:hover{
+            opacity: 1;
+            [class^="icon-"], [class*=" icon-"], .alike-icon{
+              transform: rotateZ(15deg);
+            }
+          }
+          [class^="icon-"], [class*=" icon-"]{
+            display: inline-block;
+            font-size: 30px;
+          }
+          font-size: 20px;
+        }
       }
-      font-size: 20px;
     }
   }
   >.footer{
-    padding-top: 20px;
+    color: white;
+    height: 144px;
+    background-color: @bgGrey;
     text-align: center;
-    padding-right:12.5%;
     >p{
+      font-size: 14px;
       width: 100%;
+      padding-top: 44px;
     }
     >.cert{
-      font-size: 1.1rem;
+      font-size: 12px;
+      padding-top: 11px;
     }
   }
   >.content{
+    padding: @paddingSize;
     min-height: 400px;
-  }
-  h1{
-    font-size: 2.8rem;
-  }
-  h2{
-    font-style: normal;
-    font-size: 2rem;
-  }
-  h3{
-    font-size: 1.2rem;
-    font-style: normal;
-    font-weight: bold;
-  }
-  h4{
-    font-size: 1.3rem;
-  }
-  h1,h2,h3,h4,h5{
-    width: 55%;
+    > .region {
+      max-width: 800px;
+      width: 80%;
+      margin: 0 auto;
+    }
   }
   p, ol, ul{
-    font-size: 1.2rem;
+    font-size: 14px;
   }
   @media (max-width: 760px) {
     .contentWidth(){
-      width: 90%;
+      width: 100%;
     }
     .CodeMirror{
       .contentWidth();
@@ -95,7 +145,7 @@
   }
   @media (min-width: 760px) {
     .contentWidth(){
-      width: 55%;
+      width: 100%;
     }
     .CodeMirror{
       .contentWidth();
@@ -107,6 +157,7 @@
     }
   }
   .CodeMirror{
+    margin-bottom: 12px;
     height: auto;
     font-family: @codeFontFamily;
   }

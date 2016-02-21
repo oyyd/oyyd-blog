@@ -10,7 +10,7 @@ class About extends React.Component{
     return (
       <SimpleApp>
         <div className='region'>
-          <h2>About me</h2>
+          <h2 className='mdl-typography--display-1'>About me</h2>
           <p>Hi，我叫欧阳亚东。我每天都会写不少代码，并思考其中的事情。你可能有兴趣了解得更多一点：</p>
           <ul style={{listStyle: 'inherit'}}>
             <li>我花了一年多的时间学习日语，考了
@@ -24,32 +24,33 @@ class About extends React.Component{
           </ul>
         </div>
         <div className='region'>
-          <h2>Contact</h2>
+          <h2 className='mdl-typography--display-1'>Contact</h2>
           <p>
             不要担心，给我发邮件吧：
             <a href='mailto://oyydoibh@gmail.com'>oyydoibh@gmail.com</a>
           </p>
         </div>
         <div className='region'>
-          <h2>Works</h2>
-          <div className='content' style={{paddingLeft: 10}}>
-            <h3>
+          <h2 className='mdl-typography--display-1'>Works</h2>
+          <ul className='content'>
+            <li>
               协作者&nbsp;
               <a href="https://github.com/mozilla/nunjucks" target="_blank">
                 mozilla/nunjucks
               </a>
-            </h3>
-            <h3>翻译&nbsp;
+            </li>
+            <li>
+              翻译&nbsp;
               <a href='https://www.gitbook.com/book/oyyd/typescript-handbook-zh/details'
                 target='_blank'>
                 Typescript Handbook
               </a>
-            </h3>
-            <div>
-              <h3 style={{marginTop:30}}>D3 Gallery - <a href='http://bl.ocks.org/oyyd/859fafc8122977a3afd6' target='_blank'>Days-Hours Heatmap</a></h3>
+            </li>
+            <li>
+              <div>D3 Gallery - <a href='http://bl.ocks.org/oyyd/859fafc8122977a3afd6' target='_blank'>Days-Hours Heatmap</a></div>
               <img style={{marginTop: 20}} src='https://camo.githubusercontent.com/3bd164ff8c1d4b3b934b624016211f8ae6487422/687474703a2f2f626c2e6f636b732e6f72672f6f7979642f7261772f38353966616663383132323937376133616664362f7468756d626e61696c2e706e67'/>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
       </SimpleApp>
     );

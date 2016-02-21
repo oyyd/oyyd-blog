@@ -2,7 +2,7 @@
 <p>2015年11月26日</p>
 <p>React中的renderToString方法允许我们在服务器上渲染React部件，这点不仅可以帮助我们解决一些会出现在单页应用(SPA)上的问题，它甚至还允许我们将React用作模板引擎（template engine）来使用。下文还将附带一个简单的benchmark来对比React与传统模板引擎之间性能。</p>
 <h2 id="-universal-javascript-">什么是Universal Javascript？</h2>
-<p>Universal Javascript又称Isomorphic JavaScript<label for="9" class="margin-toggle sidenote-number"></label><input type="checkbox" id="9" class="margin-toggle"/><span class="sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<label for="10" class="margin-toggle sidenote-number"></label><input type="checkbox" id="10" class="margin-toggle"/><span class="sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
+<p>Universal Javascript又称Isomorphic JavaScript<sup id="1" class="margin-toggle sidenote-number">1</sup><span for="1" class="mdl-tooltip sidenote"><a href="https://medium.com/@mjackson/universal-javascript-4761051b7ae9">两个名称的来由</a></span> ，是指可以运行在客户端和服务器上的javascript代码。<sup id="2" class="margin-toggle sidenote-number">2</sup><span for="2" class="mdl-tooltip sidenote"><a href="http://isomorphic.net/">http://isomorphic.net</a></span> </p>
 <p>实现Universal Javascript的原理并不复杂，我们只需要在代码中获取当前运行环境（浏览器还是服务器？），并根据环境作出不同响应即可。比如在<a href="https://www.meteor.com/">Meteor</a>中，你会看到这样的代码出现在同一个文件中：</p>
 <pre><code class="lang-js">if (Meteor.isServer) {
   // This code only runs on the server
@@ -36,7 +36,7 @@ if (Meteor.isClient) {
 </li>
 <li><p>如果javascrript加载失败或是运行时产生错误的话（或是浏览器直接禁用了javascript的话），用户看不到任何内容。</p>
 </li>
-<li><p>搜索引擎无法有效地爬取页面内容<label for="11" class="margin-toggle sidenote-number"></label><input type="checkbox" id="11" class="margin-toggle"/><span class="sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
+<li><p>搜索引擎无法有效地爬取页面内容<sup id="3" class="margin-toggle sidenote-number">3</sup><span for="3" class="mdl-tooltip sidenote">对于google而言，有一些<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started">解决办法</a>来引导爬虫去另一个事先准备好页面内容的地方</span> ，难以进行SEO。</p>
 </li>
 </ol>
 <p>对于这些问题，我们可以利用Universal JavaScript，也即React中的<code>renderToString</code>方法，在服务器上就渲染出React应用中的部分内容返回给浏览器，从而解决这些问题。</p>
@@ -130,9 +130,9 @@ React.render(
 <p>到这里，我们的计数器应用就顺利地加载在了浏览器上，并且这一次，我们的页面一开始不会像SPA应用那样空空如也。</p>
 <p>这一过程就像是我们的React应用的初始化过程被分成了两次进行。先是在服务器上，我们初始化了React应用中的HTML的内容，并发送到前端；然后浏览器接过了这些内容，继续进行DOM事件绑定等工作。而值得注意的是，为了能在前端以正确的初始状态启动应用，我们需要把我们应用的状态（上面例子中的<code>window.__INITIAL_COUNT__</code>）也一并传过去，用于初始化。</p>
 <h2 id="-react-">事实上，我们在用React替代服务器端的模板引擎</h2>
-<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<label for="12" class="margin-toggle sidenote-number"></label><input type="checkbox" id="12" class="margin-toggle"/><span class="sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
+<p>如果你回想一下这一过程，你可能会注意到在这一流程中，React承担起了服务器上本应由模板引擎处理的(template engine)大部分工作<sup id="4" class="margin-toggle sidenote-number">4</sup><span for="4" class="mdl-tooltip sidenote"><del>现在的React是无法生成<code>html</code>, <code>script</code>等标签的</del>很惭愧，事实上是可以的。</span> 。</p>
 <p>如果你写过服务器端模板，同时也很熟悉React，那你可能会和我有同样的感受：React中的模板（或者说是jsx）用起来甚至比专业的模板引擎更加顺手。因为使用模板引擎意味着你在用一门模板语言和javascript交互；而React本身就是javascript，jsx本质也是javascript，所以React中的“模板”用起来要自然得多。</p>
-<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<label for="13" class="margin-toggle sidenote-number"></label><input type="checkbox" id="13" class="margin-toggle"/><span class="sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
+<p>如果你只需要静态页面的话，你完全可以写一些没有state的React部件来承担服务器上模板引擎的大部分工作。事实上现在已经有<a href="https://github.com/reactjs/express-react-views">express-react-views</a>这样的库来实现这一目的<sup id="5" class="margin-toggle sidenote-number">5</sup><span for="5" class="mdl-tooltip sidenote">其作者也是React的维护者<a href="https://github.com/zpao">@zpao</a></span> 。</p>
 <p>那么让一门前端框架作为模板引擎是不是多余之举呢？</p>
 <p>事实可能完全相反。因为浏览器上js所使用的模板和服务器上渲染的模板原本就应该是同一份模板，它们同属于我们浏览器上的应用。只不过由于种种原因，我们一直不得不将其拆分成两部分。那么现在如果服务器的这份模板由本身就主要用于浏览器上的React来生成的话，我觉得是再合理不过的了。</p>
 <p><img src="/static/posts/react-server-render/react-as-template-engine.png" alt="React as Template Engine"></p>
@@ -153,7 +153,7 @@ React.render(
   &lt;button&gt;+1&lt;/button&gt;
 &lt;/div&gt;
 </code></pre>
-<p>React Counter(es6中类的形式)<label for="14" class="margin-toggle sidenote-number"></label><input type="checkbox" id="14" class="margin-toggle"/><span class="sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
+<p>React Counter(es6中类的形式)<sup id="6" class="margin-toggle sidenote-number">6</sup><span for="6" class="mdl-tooltip sidenote">下面的代码都使用了babel进行转换，可能对结果会产生一些影响</span> ：</p>
 <pre><code class="lang-js">import React from &#39;react&#39;;
 
 class Counter extends React.Component{
@@ -236,7 +236,7 @@ ejs.render(template, {
       ]
   }
 }
-</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><label for="15" class="margin-toggle sidenote-number"></label><input type="checkbox" id="15" class="margin-toggle"/><span class="sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
+</script><p>然后你可以在通过下面这个链接再对比一下ejs和node上其他一些模板引擎的性能，来了进行更详细的对比：<a href="http://paularmstrong.github.io/node-templates/benchmarks.html">Node Template Engine Benchmarks</a><sup id="7" class="margin-toggle sidenote-number">7</sup><span for="7" class="mdl-tooltip sidenote">如果这个结果对于其他情况也是有效的话，那或许我们可以认为React的性能超过了jade。当然我说的是“或许”。</span> 。</p>
 <p>如果这个结果对于其他情况也是有效的话，那我个人认为React server render的性能已经够用了，甚至该说是足够优秀了。况且React远不止是模板引擎。</p>
 <h2 id="-">结论</h2>
 <p>相对于其他语言来说，Universal JavaScript恐怕是Node在web上所具有的最独特的特性，也是最值得去挖掘的。我们这里讨论了一些React在服务器上的使用及其潜力，也一笔带过了实际应用中存在的一些问题。更深入的内容就留待以后吧。</p>

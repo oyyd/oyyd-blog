@@ -1,3 +1,54 @@
 .blog-simple-post{
-  
+  .display-3() {
+    // mdl display-3
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: -.02em;
+  }
+  .display-2() {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-size: 45px;
+    font-weight: 400;
+    line-height: 48px;
+  }
+  .display-1() {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 40px;
+  }
+  .headline() {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 32px;
+  }
+  .sidenote-number {
+    color: @linkColor;
+    cursor: pointer;
+  }
+  h1 {
+    .display-2();
+  }
+  h2 {
+    .display-1();
+  }
+  h3 {
+    .headline();
+  }
+  p {
+    position: relative;
+  }
+  blockquote {
+    padding-left: 40px;
+    &:before {
+      left: 0.5rem;
+    }
+    > p {
+      width: 80%;
+      display: inline-block;
+    }
+  }
 }

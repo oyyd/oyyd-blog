@@ -70,8 +70,9 @@ class SimplePost extends React.Component {
   render() {
     const id = `${CONSTANTS.DISQUS.ARTICLE_ID_PREFIX}${this.props.title}`;
     const url = getPostUrl(this.props.fileName);
+
     return (
-      <div className='blog-simple-post'>
+      <div className='blog-simple-post region'>
         <MarkedContent>{this.props.htmlContent}</MarkedContent>
         <Disqus initialIdentifier={id}
           initialTitle={this.props.title} initialUrl={url}/>
@@ -111,6 +112,7 @@ const MarkedContent = React.createClass({
 
 function select(state) {
   const {title, htmlContent, fileName} = state.post;
+
   return {
     title,
     fileName,

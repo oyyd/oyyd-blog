@@ -7,13 +7,20 @@ import Disqus from '../Disqus';
 let SimpleList = React.createClass({
   render() {
     return (
-      <div className='blog-simple-list'>
-        <h2>文章列表</h2>
+      <div className='blog-simple-list region'>
+        <h2 className='mdl-typography--display-1'>文章列表</h2>
         {posts.map((item, index)=>(
-          <h3 className='post-item' key={item.title + item.publicDate}>
-            <span className='public-date'>{item.publicDate}</span>
-            <a href={'/post/' + item.fileName}>{item.title}</a>
-          </h3>
+          <div className='post-item mdl-typography--title' key={item.title + item.publicDate}>
+            <a className='title no-deco' href={'/post/' + item.fileName}>
+              {item.title}
+            </a>
+            <p className='public-date'>
+              {item.publicDate}
+            </p>
+            <p className='description'>
+              {item.description}
+            </p>
+          </div>
         ))}
         <Disqus/>
       </div>

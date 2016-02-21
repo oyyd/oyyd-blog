@@ -1,28 +1,19 @@
 'use strict';
 
 import React from 'react';
-import {Provider, connect} from 'react-redux';
-import {syncReduxAndRouter} from 'redux-simple-router';
+import { Provider, connect, } from 'react-redux';
+import { syncHistory, } from 'react-router-redux';
 import generateRoutes from './generateRoutes';
-import createBrowserHistory from 'history/lib/createBrowserHistory';
-import createMemoryHistory from 'history/lib/createMemoryHistory';
+import { browserHistory, } from 'react-router';
 
-function getHistory(env) {
-  if (env === 'server') {
-    return createMemoryHistory();
-  }
+require('material-design-lite');
 
-  return createBrowserHistory();
-}
-
-function createApp(store = null, env = 'client') {
+function createApp(store = null) {
   if (store === null) {
     throw new Error('no valid store provided to "createApp"');
   }
 
-  const history = getHistory(env);
-  const routes = generateRoutes(history);
-  syncReduxAndRouter(history, store);
+  const routes = generateRoutes(browserHistory);
 
   return (
     <Provider store={store}>

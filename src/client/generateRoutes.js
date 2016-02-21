@@ -3,7 +3,7 @@ import SimpleApp from './components/SimpleApp';
 import SimplePost from './components/SimplePost';
 import SimpleList from './components/SimpleList';
 import About from './pages/About/index.js';
-import {Router, Route, Link, IndexRoute} from 'react-router';
+import { Router, Route, Link, IndexRoute, } from 'react-router';
 
 function generateRoutes(history) {
   return (
