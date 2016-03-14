@@ -1,9 +1,14 @@
 export default [{
+  fileName: 'reactjs_conf_2016_recommendation',
+  title: '推荐React.js Conf 2016中的一些精彩演讲',
+  publicDate: '2016年02月25日',
+  description: 'TODO',
+}, {
   fileName: 'how_to_split_your_code_in_webpack',
   title: '使用webpack分割代码的思路',
   publicDate: '2016年01月18日',
   description: '把所有的东西都打包进一个文件的做法不仅简单而且利于缓存。但代码的增长和非wifi的网络环境会使得资源加载时间显得更加不可接受。好在webpack提供了一些强大的特性来帮助我们解决这一问题。',
-},{
+}, {
   fileName: 'javascript_compiler_nunjucks',
   title: '探究JavaScript上的编译器 —— nunjucks',
   publicDate: '2016年01月12日',

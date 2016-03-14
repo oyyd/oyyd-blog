@@ -1,11 +1,19 @@
 import React, { Component, } from 'react';
+import $ from 'jquery';
 
 import { connect, } from 'react-redux';
+import PerspectiveImg from '../PerspectiveImg';
 
 const ACTIVE_ITEMS = {
   ABOUT: 'ABOUT',
   POST_LIST: 'POST_LIST',
 };
+
+const HEADER_HEIGHT = 200;
+const BG_IMG_WIDTH = 1300;
+const BG_IMG_HEIGHT = 1000;
+const BG_LINE = '/static/img/app/header-bg/bg-line.png';
+const BG_IMG = '/static/img/app/header-bg/1.png';
 
 function getActiveItem(path) {
   switch (path) {
@@ -19,17 +27,48 @@ function getActiveItem(path) {
 class Header extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      windowWidth: 0,
+    };
+
+    this.handleResizing = this.handleResizing.bind(this);
+  }
+
+  componentDidMount() {
+    this.$window = $(window);
+    this.$window.resize(this.handleResizing);
+    this.handleResizing();
+  }
+
+  componentWillUnmount() {
+    this.$window.unbind('resize', this.handleResizing);
+  }
+
+  handleResizing() {
+    const windowWidth = this.$window.width();
+
+    this.setState({
+      windowWidth,
+    });
   }
 
   render() {
     return (
       <div className='header'>
-        <h1 href='/' className='site-name no-deco' title='返回列表'>
-          OYYD BLOG
-          <br/>
-          亚东博客
-        </h1>
-        {this.renderNav()}
+        <PerspectiveImg src={BG_IMG}
+          containerWidth={this.state.windowWidth}
+          containerHeight={HEADER_HEIGHT}
+          width={BG_IMG_WIDTH}
+          height={BG_IMG_HEIGHT}/>
+        <div className='hover-content'>
+          <h1 className='site-name no-deco'>
+            OYYD BLOG
+            <br/>
+            亚东博客
+          </h1>
+          {this.renderNav()}
+        </div>
       </div>
     );
   }
