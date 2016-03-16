@@ -1,8 +1,8 @@
 export default [{
   fileName: 'reactjs_conf_2016_recommendation',
   title: '推荐React.js Conf 2016中的一些精彩演讲',
-  publicDate: '2016年02月25日',
-  description: 'TODO',
+  publicDate: '2016年03月16日',
+  description: '今年会上没有特别爆炸性的项目出现，并且关于React Native的话题有很多。下面我会推荐一些我觉得比较精彩、比较有价值的演讲。',
 }, {
   fileName: 'how_to_split_your_code_in_webpack',
   title: '使用webpack分割代码的思路',
