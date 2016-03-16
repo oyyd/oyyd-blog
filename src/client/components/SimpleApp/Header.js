@@ -13,7 +13,7 @@ const HEADER_HEIGHT = 200;
 const BG_IMG_WIDTH = 1300;
 const BG_IMG_HEIGHT = 1000;
 const BG_LINE = '/static/img/app/header-bg/bg-line.png';
-const BG_IMG = '/static/img/app/header-bg/1.png';
+const BG_IMGS = ['/static/img/app/header-bg/1.png', '/static/img/app/header-bg/2.png'];
 
 function getActiveItem(path) {
   switch (path) {
@@ -27,6 +27,8 @@ function getActiveItem(path) {
 class Header extends Component {
   constructor(props) {
     super(props);
+
+    this.bgImg = BG_IMGS[Math.round(Math.random(1))];
 
     this.state = {
       windowWidth: 0,
@@ -56,7 +58,7 @@ class Header extends Component {
   render() {
     return (
       <div className='header'>
-        <PerspectiveImg src={BG_IMG}
+        <PerspectiveImg src={this.bgImg}
           containerWidth={this.state.windowWidth}
           containerHeight={HEADER_HEIGHT}
           width={BG_IMG_WIDTH}

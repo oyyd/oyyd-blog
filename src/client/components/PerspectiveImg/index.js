@@ -4,7 +4,7 @@ const { string, number, } = React.PropTypes;
 
 const START_RATIO = 1.3,
   END_RATIO= 1,
-  ANIMATION_TIME = 20;
+  ANIMATION_TIME = 28;
 
 function getZeroIfNaN(number) {
   if (isNaN(number)) {
@@ -65,7 +65,6 @@ class PerspectiveImg extends React.Component {
       left: getZeroIfNaN((containerWidth - newWidth) / 2),
       width: getZeroIfNaN(newWidth),
       height: getZeroIfNaN(newHeight),
-      visibility: show,
     };
   }
 

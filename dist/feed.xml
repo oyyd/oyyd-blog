@@ -4,8 +4,74 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 21 Feb 2016 08:47:33 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 16 Mar 2016 11:29:14 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[推荐React.js Conf 2016中的一些精彩演讲]]></title>
+            <description><![CDATA[<h1 id="-react-js-conf-2016-">推荐React.js Conf 2016中的一些精彩演讲</h1>
+<p><strong>前言：</strong> 在会前，twitter上出现了这样的对话...</p>
+<p><img src="/static/posts/react-conf-2016/before-everything.png" alt="Before everything"></p>
+<p>所以你可以预料到今年会上没有特别爆炸性的项目出现，并且关于React Native的话题有很多。我觉得今年话题的核心还是集中于React Native，我也会在这上面啰嗦一些我的想法。</p>
+<p>下面我会推荐一些我觉得比较精彩、比较有价值的演讲（由于时间有限我并没有去看lightning talk）。</p>
+<h2 id="react-native-">React Native相关演讲</h2>
+<h3 id="-nick-schrock-keynote-https-www-youtube-com-watch-v-mgukhcnrqga-"><a href="https://www.youtube.com/watch?v=MGuKhcnrqGA">Nick Schrock - Keynote</a></h3>
+<p>Nick做了今年的开场演讲，而且演讲风格非常逗趣。并且Nick在Facebook的7年中从未写过太多JavaScript，却被选作React会议开场的演讲者。说到这里估计你多多少少也会提起了些兴趣。</p>
+<p>Nick的演讲大部分内容主要集中于React Native，他以一个非JavaScript开发者的角度去阐述了React Native所可能带来的价值，我们可以从中提取出这样的观点：</p>
+<ul>
+<li>React Native并不是跨平台的，但我们却可以在平台之间共用大量代码（Facebook用React Native开发的两款App共享了约85% - 90%的代码）</li>
+<li>React Native从设计上就发挥了多核的优势</li>
+<li>用React Native开发应用（大部分时间）不需要重编译，开发效率高</li>
+<li>React Native的代码可以在线更新，避免一些不必要的硬发布流程</li>
+<li>用React Native开发应用只需要一个统一的团队</li>
+</ul>
+<p>当然Nick更多的是在阐述React Native的优点，这些我们多多少少也已经知道了。但如果React Native已经足够优秀的话，那我们应该能在过去的一年里看到更多用React Native开发的应用。这里我从阐述一些我认为的React Native <strong>目前</strong> 的劣势及容易误解的地方：</p>
+<ul>
+<li><p>React Native目前还不够成熟。目前React Native基本上一个月会发release两次，并且Android开发的体验还比不上iOS。</p>
+</li>
+<li><p>因为React Native的应用还不够广泛，这就意味着相关社区及相关开源项目的支持力度还不够。你碰到一个问题可能会很难google出有效的回答，同时你们也很难靠自己的力量去修复React Native中出现的bug（你们的团队需要同时充分掌握多门语言）。</p>
+</li>
+<li><p>在不同平台上共享的代码越多，可能意味着我们越没有充分发挥平台的优势和特点（主要是对UI／UE而言）。</p>
+</li>
+<li><p>React Native的开发既不同于Web开发也不同于Native开发，这意味着你目前很难从市场上找到有经验的人。</p>
+</li>
+<li><p>虽然你们React Native的项目主要需要的是JavaScript开发者，但如果你们想利用React Native开发一款用户体验至上的应用的话，你们还是需要有Android和iOS的开发者作支持（或是JavaScript开发人员也要有一定的Native经验），以便在一个需求不能够通过纯JavaScript的方案解决的时候能退回到Native的解决方案（主要是写一些桥接JavaScript和Native的代码，并不一定需要完全用Native来解决，并且如果社区支持能越来越给力的话，我们需要的Native支持也会越来越少）。</p>
+</li>
+</ul>
+<p>那么是否现在用React Native来开发用于生产环境的App是不是不切实际的呢？从一些公司的实践结果来说是否定的，这里强烈推荐加下来James Ide关于在实践环境中运用React Native的演讲。</p>
+<h3 id="-james-ide-https-youtu-be-2zthnq-hixa-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-"><a href="https://youtu.be/2Zthnq-hIXA?list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY">James Ide - 团队 × 技术</a></h3>
+<p>James在Exponent公司里亲历了React Native团队的建设和开发。James本人的工作经历足以证明他是一个优秀的工程师，所以他的演讲和对React Native的看法和经验也是极具参考价值的。</p>
+<p>这里另一款强烈推荐的，用React Native开发的优秀的App是Discord。Discord所有的客户端（Web、Mobile、Desktop）都是用JavaScript（React）开发的，并且用户体验极佳。</p>
+<h3 id="-parashuram-n-web-https-www-youtube-com-watch-v-b8j8xn3plpk-"><a href="https://www.youtube.com/watch?v=B8J8xn3pLpk">Parashuram N - 在原生应用上发挥Web的发布能力</a></h3>
+<p>React Native上非常有价值的一个特性是在线更新代码，而Parashuram是有效拓展这一特性的<a href="https://github.com/Microsoft/react-native-code-push">codepush</a>项目的作者。他给我们介绍了如何利用这一工具来发挥React Native的发布能力。</p>
+<p>除此之外，Parashuram是微软的员工，他还给我们演示了如何利用visual studio code相关插件简化React Native开发。虽然看起来参加会议的观众大多不使用vscode，有点尴尬，但我本人是非常希望Atom上有类似的、稳定的插件。</p>
+<h2 id="better-react">Better React</h2>
+<h3 id="-steve-mcguire-https-www-youtube-com-watch-v-kdarp5qz6nu-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-index-28-"><a href="https://www.youtube.com/watch?v=kDARP5QZ6nU&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY&amp;index=28">Steve McGuire - 对性能上的妥协说不</a></h3>
+<p>如果你真的在React开发过程中碰到了性能问题，或是项目本身对性能要求非常苛刻，你们又希望使用React，又或是希望在提高React应用的性能上寻找新思路的话，那我强烈推荐观看本视频。</p>
+<p>Steve是Netflix的员工，演讲中他介绍了他们是如何在便宜的30美元的设备上，一步步将用户的输入和应用的响应渲染时间压缩到100ms以内。他们的优化无所不用，对，无所不用。</p>
+<h3 id="-lin-clark-https-www-youtube-com-watch-v-wiqbzhdepvm-jared-forsyth-redux-re-frame-relay-om-next-https-www-youtube-com-watch-v-jwq3sgoixg-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-index-22-"><a href="https://www.youtube.com/watch?v=WIqbzHdEPVM">Lin Clark - 以卡通的形式介绍数据处理</a>及<a href="https://www.youtube.com/watch?v=-jwQ3sGoiXg&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY&amp;index=22">Jared Forsyth - Redux, Re-frame, Relay, Om/next, 天啊!</a></h3>
+<p>Lin以漫画的形式介绍了React上的几个专注于数据处理的框架的思想和异同，而Jared责对有React衍生出的，以及与React持有相同核心思想的框架做了介绍和对比。</p>
+<p>这里还强烈推荐James Long关于Redux的一个<a href="https://www.youtube.com/watch?v=BfzjuhX4wJ0">视频</a>，从中你可能会明白为什么不少人会认为Redux是React社区在2015年中的最佳产物。</p>
+<h3 id="-ben-alpert-https-www-youtube-com-watch-v-rjf2jyzs8a-"><a href="https://www.youtube.com/watch?v=-RJf2jYzs8A">Ben Alpert - 我们前方还有什么</a></h3>
+<p>Ben介绍了很多当前React体系的不足或是可以改进的地方。</p>
+<h2 id="-">其他演讲</h2>
+<p>除了上面这些两大类内容之外，也有不少有意思的演讲：</p>
+<h3 id="-jamison-dance-rethinking-all-practices-elm-https-www-youtube-com-watch-v-txxkx_i39a8-index-31-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-"><a href="https://www.youtube.com/watch?v=txxKx_I39a8&amp;index=31&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY">Jamison Dance - Rethinking All Practices: 用Elm构建应用</a></h3>
+<p>你可能跟我一样从未用过Elm，但却经常看到别人谈论Elm。通过这个视频即便我们没有用过Elm也能够了解其中的一些秘密。</p>
+<p>如果你连视频也不想看的话，我也有一个更简单粗暴的解释：React ＋ Redux上的所有优秀的特性加起来等于Elm。</p>
+<p>这个视频同时也是<a href="https://github.com/gaearon">gaearon</a>极力推荐的。</p>
+<h3 id="-syrus-akbary-js-graphql-https-www-youtube-com-watch-v-rnoypsrqyps-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-index-29-"><a href="https://www.youtube.com/watch?v=RNoyPSrQyPs&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY&amp;index=29">Syrus Akbary - 非JS服务器上的GraphQL框架</a></h3>
+<p>这里Syrus指的是python上的GraphQL实现<a href="https://github.com/graphql-python/graphene">graphene</a>。关于GraphQL要解决的问题和好处也可以选择去看GraphQL的官方文档。</p>
+<p>Syrus在GraphQL的实践过程中提出来的一点想法我觉得从另一个角度体现了GraphQL可以给我们带来的好处：服务器端不应该去具体知道客户端到底需要什么结构的数据，客户端的开发人员应该可以自己写query拿自己想要的数据及结构，这样他也就不用在需求变更的时候跑去问后端开发工程师去修改或提供API，从而造成更多的代码发生变动。GraphQL优化了我们开发的流程。</p>
+<h3 id="-helena-milosevic-https-www-youtube-com-watch-v-n233t0epwts-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-index-5-"><a href="https://www.youtube.com/watch?v=N233T0epWTs&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY&amp;index=5">Helena Milosevic - 揭开技术招聘流程的面纱</a></h3>
+<p>Helena是Facebook的HR，你没看错，这确实由HR进行的一次演讲。Helena想我们介绍了Facebook招聘技术岗位员工时的基本流程，事实上大体流程和国内的大公司进行的招聘流程还是非常相似的，比较特别的是有一个需要应聘者在白板上和面试官进行交流的环节。仔细想一下这个流程我觉得还是非常有意义的，因为应聘者在白板上阐述自己想法的过程会不仅考验他的专业知识，同时也体现了他和其它员工进行分享和讨论的能力。本身这类事情也是现实工作中非常有可能会出现的环节，是非常贴合实际的。</p>
+<p>最后Helena还分享了一句非常在理的话：</p>
+<p>Do or not do. Never try.</p>
+<p>与诸君共勉。</p>
+]]></description>
+            <link>https://blog.oyyd.net/post/reactjs_conf_2016_recommendation</link>
+            <guid isPermaLink="false">bfc9fbb201d93e59bdb7bf40f225783a</guid>
+            <pubDate>Wed, 24 Feb 2016 16:00:00 GMT</pubDate>
+        </item>
         <item>
             <title><![CDATA[使用webpack分割代码的思路]]></title>
             <description><![CDATA[<h1 id="-webpack-">使用webpack分割代码的思路</h1>
@@ -606,160 +672,6 @@ var res = eval(template);
             <link>https://blog.oyyd.net/post/best_template_engine_in_node_js</link>
             <guid isPermaLink="false">e376e1b601f9fe30966dd8f5ca201e23</guid>
             <pubDate>Tue, 15 Dec 2015 16:00:00 GMT</pubDate>
-        </item>
-        <item>
-            <title><![CDATA[探究Webpack中的HMR(hot module replacement)]]></title>
-            <description><![CDATA[<h1 id="-webpack-hmr-hot-module-replacement-">探究Webpack中的HMR(hot module replacement)</h1>
-<p>2015年12月04日</p>
-<p>什么是HMR？HMR能做什么？我们可以看看react-transform的演示：
-<img src="/static/posts/webpack-hmr/react-transform-example.gif" alt="react-transform-example"></p>
-<p>react-transform的实现是基于webpack-dev-server之上的，这里我将从webpack-dev-server和React两方面简单总结HMR的实现原理。</p>
-<p>（<a href="https://github.com/oyyd/oyyd-blog/tree/master/research/react-hot-loader">从这里查看下文中的部分代码</a>）</p>
-<h2 id="-webpack-dev-server-">从webpack-dev-server开始</h2>
-<p>webpack不仅能够起到打包的作用，它还“附带了”一个专门用于开发的、由express构建的迷你服务器，即webpack-dev-server。webpack-dev-server的基本作用是处理我们的打包任务，并且它还会作为一个静态文件服务器提供我们最新打包成的静态文件供本地开发使用。webpack-dev-server与我们平时开发用的静态文件服务器的不同之处在于，它知道新的文件在何时被打包了出来，以及究竟是哪个文件发生了改变。</p>
-<p>在“webpack-dev-server知道何时新文件会被打包出来的”这个基础之上，webpack-dev-server可以和浏览器之间建立一个web socket进行通信，一旦新文件被打包出来，webpack-dev-server就告诉浏览器这个消息，这时浏览器就可以自动刷新页面<sup id="1" class="margin-toggle sidenote-number">1</sup><span for="1" class="mdl-tooltip sidenote">或是刷新iframe</span> ，而不用等到开发者手动刷新。</p>
-<p><img src="/static/posts/webpack-hmr/hot-reload.gif" alt="complete-version"></p>
-<p>对的，到这里webpack实际上已经实现了<a href="http://livereload.com/">livereload</a>的功能。</p>
-<h2 id="-hmr-api">使用HMR的相关api</h2>
-<p>webpack知道是哪个模块发生了改变，并且还提供了api帮助我们更新应用的状态。在这基础之上，只要我们知道要怎么用更新后的模块来更新我们的应用，我们就不需要刷新页面来重新加载整个应用了。</p>
-<p>比如说我们需要使用一个模块A，这个模块A是个React Component，用来在页面上渲染<code>hello world</code>。对于这个简单的React Component来说，我们只需要在它更新以后重新渲染就能够保持应用的状态，而不需要其他工作。所以我们可以像下面这样做：</p>
-<p>我们的SayHello.js文件：</p>
-<pre><code class="lang-js">// SayHello.js
-import React from &#39;react&#39;;
-
-const color = &#39;black&#39;;
-
-class SayHello extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      &lt;div style={{color: color}}&gt;Hello, {this.props.name}!&lt;/div&gt;
-    );
-  }
-}
-
-export default SayHello;
-</code></pre>
-<p>我们的sayHelloEntry.js，</p>
-<pre><code class="lang-js">// sayHelloEntry.js
-import React from &#39;react&#39;;
-import ReactDOM from &#39;react-dom&#39;;
-
-import SayHello from &#39;./SayHello&#39;;
-
-const name = &#39;world&#39;;
-
-function renderComponent(RootComponent) {
-  ReactDOM.render(
-    &lt;RootComponent name={name}/&gt;,
-    document.getElementById(&#39;main&#39;)
-  );
-}
-
-// 通过module.hot获取webpack提供的一系列的api
-if (module.hot) {
-  module.hot.accept(); // 接受模块更新的事件，同时阻止这个事件继续冒泡
-  renderComponent(SayHello); // 进行渲染
-} else {
-  // 非HMR状态下的代码
-  renderComponent(SayHello);
-}
-</code></pre>
-<p>在浏览器上加载这个页面后，我们就可以尝试修改sayHelloEntry.js模块中的<code>name</code>的值或是SayHello.js模块中的内容来查看结果：</p>
-<p><img src="/static/posts/webpack-hmr/simple-version.gif" alt="complete-version"></p>
-<p>虽然这个例子非常简单，但它也足以说明在webpack中的HMR的基本原理了。而你也应该很快注意到了，虽然在开发过程中，所有模块都有可能发生改变，但我们并不需要为每个模块写HMR代码。</p>
-<p>那么当没有HMR相关代码的模块发生改变时，我们的应用到底是怎么运作的呢？这就是webpack HMR中的消息<sup id="2" class="margin-toggle sidenote-number">2</sup><span for="2" class="mdl-tooltip sidenote">称为消息可能并不合适，但下文就这么用吧</span> 冒泡（bubble up）机制。</p>
-<p><img src="/static/posts/webpack-hmr/bubble-up.png" alt="bubble-up"></p>
-<p>当一个模块C发生改变，而模块内又没有HMR代码来处理这一消息时，那这一消息就会被传递到依赖模块C的其他模块上；如果消息在新模块上没有被捕获的话就会再次进行传递；如果所有的消息都被捕获了的话，那我们的应用就应该已经按照代码进行了更新；反之如果有消息冒泡到了入口(entry)文件还没有被捕获的话，那就说明我们的代码中没有处理这类变更方法，那webpack就会刷新浏览器页面，即从HMR回退到LiveReload。</p>
-<h2 id="-react-hmr">在React上实现HMR</h2>
-<p>实现HMR时最复杂的地方是在应用层面上。现在在让我们看看如何在React上实现HMR。</p>
-<p>虽然在上面的例子中，我们的SayHello.js就是React组件，但这里我实际上避开了在React上应用HMR时最困难的一点：我们应用的state。</p>
-<p>如果我们把上面例子中的SayHello.js替换成一个计数器（Counter.js）的话：</p>
-<pre><code class="lang-js">// Counter.js
-import React from &#39;react&#39;;
-
-class Counter extends React.Component{
-  constructor(props) {
-    super(props);
-    this.state = {
-      count: props.initialCount,
-    };
-  }
-
-  plusOne() {
-    this.setState({
-      count: this.state.count + this.props.valueAddEachClick * 2,
-    });
-  }
-
-  render() {
-    const valueAddEachClick = this.props.valueAddEachClick * 2;
-    return (
-      &lt;div&gt;
-        &lt;label&gt;Value: {this.state.count}&lt;/label&gt;
-        &lt;button onClick={this.plusOne.bind(this)}&gt;+{valueAddEachClick}&lt;/button&gt;
-      &lt;/div&gt;
-    );
-  }
-}
-
-export default Counter;
-</code></pre>
-<p>虽然HMR依然有效，但每次模块更新后，你会发现Counter的当前计数又会回到初始状态。因为在这一过程中，React组件中的state丢失了。</p>
-<p>state丢失的原因和React的diff算法<sup id="3" class="margin-toggle sidenote-number">3</sup><span for="3" class="mdl-tooltip sidenote">关于React的diff算法，推荐看@vjeux的这篇<a href="http://calendar.perfplanet.com/2013/diff/">React’s diff algorithm</a></span> 有关。简单来说就是React在判断如何更新应用时，如果发现两个React Element类型不同的话，则会直接用新的React Element替换旧的React Element。</p>
-<p>像我们在HMR的过程中更新了Counter.js模块，会重新生成新的Counter，实际上新的Counter和旧的Counter不是同一个Counter，即它们是不全等的。</p>
-<p>所以在当前React没有提供任何相关api的状况下，如果我们仍想要保留原来的state的话，那我们就不能用新的组件直接替换旧的组件，即我们要保留原来组件的外壳，并更新其上的所有方法（利用mutable data）。同时因为数据没有发生变化，所以我们还需要某种方式来强制命令React更新应用的状态。</p>
-<p>而这事实上就是react-proxy和react-deep-force-update的作用了。这两个库同样也是react-hot-loader和react-transform的依赖。由于这两个库的实现本身相对复杂费解，同时跟React内部的一些机制紧密相连，所以这里便不再深入了。</p>
-<p>我们可以利用这两个库来完成帮助我们保留Counter的state：</p>
-<pre><code class="lang-js">//entry.js
-import React from &#39;react&#39;;
-import ReactDOM from &#39;react-dom&#39;;
-
-import Counter from &#39;./Counter&#39;;
-import createProxy from &#39;react-proxy&#39;;
-import deepForceUpdate from &#39;react-deep-force-update&#39;;
-
-if (module.hot) {
-  // module.hot.data是个{}，我们用它来在旧模块和新模块之间传递数据
-  module.hot.data = module.hot.data || {};
-  let {proxy, rootInstance} = module.hot.data;
-
-  if (!proxy) {
-    proxy = createProxy(Counter);
-    const Component = proxy.get();
-
-    rootInstance = ReactDOM.render(
-      &lt;Component initialCount={10} valueAddEachClick={2}/&gt;,
-      document.getElementById(&#39;main&#39;)
-    );
-  } else {
-    proxy.update(Counter);
-    deepForceUpdate(rootInstance);
-  }
-
-  module.hot.accept();
-
-  module.hot.dispose(function(data) {
-    // dispose方法用来定义一个一次性的函数，
-    // 这个函数会在当前模块被更新之前调用。所以
-    // 我们在这里，也就是proxy变量被销毁之前储存它。
-    data.proxy = proxy;
-    data.rootInstance = rootInstance;
-  });
-}
-</code></pre>
-<p>至此我们的代码也就小有所成了。</p>
-<p><img src="/static/posts/webpack-hmr/complete-version.gif" alt="complete-version"></p>
-<p>总结：</p>
-<p>HMR很有意思，虽然它看起来象是个玩具一样，但事实上它确实能够提高我们的开发效率，因为它缩短了我们初始化应用及手动恢复应用状态的时间。特别是对web前端这样，UI代码占很重一部分工作，随时需要查看应用样式的编程任务来说，这点更为重要。</p>
-<p>但现在要应用HMR，限制很多。不过本文截至时，@gaearon已经成了facebook的一员了，或许之后还能期待一下React在开发环境上为我们提供更多的可能性也说不定。</p>
-]]></description>
-            <link>https://blog.oyyd.net/post/how_does_react_hot_loader_works</link>
-            <guid isPermaLink="false">632bf391d8f8f9e2d0678d8da613d395</guid>
-            <pubDate>Thu, 03 Dec 2015 16:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>
