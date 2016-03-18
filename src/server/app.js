@@ -36,6 +36,7 @@ if (process.argv[2] === 'dev') {
   const options = {
     cert: fs.readFileSync(`/etc/ssl/certs/${domain}.crt`),
     key: fs.readFileSync(`/etc/ssl/private/${domain}.key`),
+    ca: fs.readFileSync(`/etc/ssl/certs/starfield.pem`),
   };
   port = proPort;
   server = https.createServer(options, app);

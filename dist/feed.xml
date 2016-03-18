@@ -4,7 +4,7 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 16 Mar 2016 11:36:21 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 18 Mar 2016 11:11:32 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[推荐React.js Conf 2016中的一些精彩演讲]]></title>
@@ -70,7 +70,7 @@
 ]]></description>
             <link>https://blog.oyyd.net/post/reactjs_conf_2016_recommendation</link>
             <guid isPermaLink="false">bfc9fbb201d93e59bdb7bf40f225783a</guid>
-            <pubDate>Wed, 24 Feb 2016 16:00:00 GMT</pubDate>
+            <pubDate>Tue, 15 Mar 2016 16:00:00 GMT</pubDate>
         </item>
         <item>
             <title><![CDATA[使用webpack分割代码的思路]]></title>
