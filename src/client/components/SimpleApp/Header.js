@@ -11,9 +11,16 @@ const ACTIVE_ITEMS = {
 
 const HEADER_HEIGHT = 200;
 const BG_IMG_WIDTH = 1300;
-const BG_IMG_HEIGHT = 1000;
+const BG_IMG_HEIGHT = 600;
 const BG_LINE = '/static/img/app/header-bg/bg-line.png';
-const BG_IMGS = ['/static/img/app/header-bg/1.png', '/static/img/app/header-bg/2.png'];
+const BG_IMGS = [
+  '/static/img/app/header-bg/1.png',
+  '/static/img/app/header-bg/2.png',
+  '/static/img/app/header-bg/3.png',
+  '/static/img/app/header-bg/4.png',
+  '/static/img/app/header-bg/5.png',
+];
+const BG_IMGS_LENGTH = BG_IMGS.length;
 
 function getActiveItem(path) {
   switch (path) {
@@ -28,7 +35,9 @@ class Header extends Component {
   constructor(props) {
     super(props);
 
-    this.bgImg = BG_IMGS[Math.round(Math.random(1))];
+    const randomIndex = Math.round(Math.random() * (BG_IMGS_LENGTH - 1));
+
+    this.bgImg = BG_IMGS[randomIndex];
 
     this.state = {
       windowWidth: 0,

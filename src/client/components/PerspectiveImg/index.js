@@ -4,7 +4,7 @@ const { string, number, } = React.PropTypes;
 
 const START_RATIO = 1.3,
   END_RATIO= 1,
-  ANIMATION_TIME = 28;
+  ANIMATION_TIME = 24;
 
 function getZeroIfNaN(number) {
   if (isNaN(number)) {
