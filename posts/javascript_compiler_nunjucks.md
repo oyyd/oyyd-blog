@@ -8,6 +8,8 @@
 
 到目前为止，已尝试修复的问题有：[#571](https://github.com/mozilla/nunjucks/pull/634), [#332](https://github.com/mozilla/nunjucks/pull/632), [#595](https://github.com/mozilla/nunjucks/pull/631), [#612](https://github.com/mozilla/nunjucks/pull/628), [#317](https://github.com/mozilla/nunjucks/pull/339)
 
+__补充：__ 后来我又修复了不少bug，也让@carljm给我collaborator的权利，但现在反而更想做自己的项目而没心思花时间在上面了。
+
 ## nunjucks的代码结构
 
 nunjucks的整体代码结构如下：

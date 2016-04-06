@@ -47,3 +47,5 @@ node server.js
 * refactor building process
 
 * Use md content instead of the html as Initial state of the post when server rendering
+
+* Incremental version control

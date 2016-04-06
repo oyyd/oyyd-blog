@@ -74,7 +74,7 @@ Ben介绍了很多当前React体系的不足或是可以改进的地方。
 
 你可能跟我一样从未用过Elm，但却经常看到别人谈论Elm。通过这个视频即便我们没有用过Elm也能够了解其中的一些秘密。
 
-如果你连视频也不想看的话，我也有一个更简单粗暴的解释：React ＋ Redux上的所有优秀的特性加起来等于Elm。
+如果你连视频也不想看的话，我也有一个更简单粗暴的解释：React ＋ Redux + FRP上的优秀的特性加起来等于Elm。
 
 这个视频同时也是[gaearon](https://github.com/gaearon)极力推荐的。
 
@@ -90,6 +90,6 @@ Helena是Facebook的HR，你没看错，这确实由HR进行的一次演讲。He
 
 最后Helena还分享了一句非常在理的话：
 
-Do or not do. Never try.
+Do or do not. Never try.
 
 与诸君共勉。

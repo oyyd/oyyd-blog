@@ -4,7 +4,7 @@
         <description><![CDATA[oyyd]]></description>
         <link>https://blog.oyyd.net</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Mon, 21 Mar 2016 07:29:50 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 06 Apr 2016 05:44:15 GMT</lastBuildDate>
         <atom:link href="https://blog.oyyd.netdist/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[推荐React.js Conf 2016中的一些精彩演讲]]></title>
@@ -57,7 +57,7 @@
 <p>除了上面这些两大类内容之外，也有不少有意思的演讲：</p>
 <h3 id="-jamison-dance-rethinking-all-practices-elm-https-www-youtube-com-watch-v-txxkx_i39a8-index-31-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-"><a href="https://www.youtube.com/watch?v=txxKx_I39a8&amp;index=31&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY">Jamison Dance - Rethinking All Practices: 用Elm构建应用</a></h3>
 <p>你可能跟我一样从未用过Elm，但却经常看到别人谈论Elm。通过这个视频即便我们没有用过Elm也能够了解其中的一些秘密。</p>
-<p>如果你连视频也不想看的话，我也有一个更简单粗暴的解释：React ＋ Redux上的所有优秀的特性加起来等于Elm。</p>
+<p>如果你连视频也不想看的话，我也有一个更简单粗暴的解释：React ＋ Redux + FRP上的优秀的特性加起来等于Elm。</p>
 <p>这个视频同时也是<a href="https://github.com/gaearon">gaearon</a>极力推荐的。</p>
 <h3 id="-syrus-akbary-js-graphql-https-www-youtube-com-watch-v-rnoypsrqyps-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-index-29-"><a href="https://www.youtube.com/watch?v=RNoyPSrQyPs&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY&amp;index=29">Syrus Akbary - 非JS服务器上的GraphQL框架</a></h3>
 <p>这里Syrus指的是python上的GraphQL实现<a href="https://github.com/graphql-python/graphene">graphene</a>。关于GraphQL要解决的问题和好处也可以选择去看GraphQL的官方文档。</p>
@@ -65,7 +65,7 @@
 <h3 id="-helena-milosevic-https-www-youtube-com-watch-v-n233t0epwts-list-plb0iamt7-gs0m8q95ric2lom6nc77q1iy-index-5-"><a href="https://www.youtube.com/watch?v=N233T0epWTs&amp;list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY&amp;index=5">Helena Milosevic - 揭开技术招聘流程的面纱</a></h3>
 <p>Helena是Facebook的HR，你没看错，这确实由HR进行的一次演讲。Helena想我们介绍了Facebook招聘技术岗位员工时的基本流程，事实上大体流程和国内的大公司进行的招聘流程还是非常相似的，比较特别的是有一个需要应聘者在白板上和面试官进行交流的环节。仔细想一下这个流程我觉得还是非常有意义的，因为应聘者在白板上阐述自己想法的过程会不仅考验他的专业知识，同时也体现了他和其它员工进行分享和讨论的能力。本身这类事情也是现实工作中非常有可能会出现的环节，是非常贴合实际的。</p>
 <p>最后Helena还分享了一句非常在理的话：</p>
-<p>Do or not do. Never try.</p>
+<p>Do or do not. Never try.</p>
 <p>与诸君共勉。</p>
 ]]></description>
             <link>https://blog.oyyd.net/post/reactjs_conf_2016_recommendation</link>
@@ -178,6 +178,7 @@ module.exports = {
 <h2 id="-">写在前面的实践结果</h2>
 <p>在前面<a href="https://blog.oyyd.net/post/javascript_compiler_marked">marked的学习过程</a>中，我简单地hack了marked来绑定了chartjs。但对于<a href="https://github.com/mozilla/nunjucks">nunjucks</a>，我没有想到比较好的实践方式。所以这次我将帮助修复nunjucks上的一些bug来作为本次实践。</p>
 <p>到目前为止，已尝试修复的问题有：<a href="https://github.com/mozilla/nunjucks/pull/634">#571</a>, <a href="https://github.com/mozilla/nunjucks/pull/632">#332</a>, <a href="https://github.com/mozilla/nunjucks/pull/631">#595</a>, <a href="https://github.com/mozilla/nunjucks/pull/628">#612</a>, <a href="https://github.com/mozilla/nunjucks/pull/339">#317</a></p>
+<p><strong>补充：</strong> 后来我又修复了不少bug，也让@carljm给我collaborator的权利，但现在反而更想做自己的项目而没心思花时间在上面了。</p>
 <h2 id="nunjucks-">nunjucks的代码结构</h2>
 <p>nunjucks的整体代码结构如下：</p>
 <p><img src="/static/posts/javascript-compiler/nunjucks.png" alt="nunjucks"></p>
@@ -445,6 +446,7 @@ endgraph
         <item>
             <title><![CDATA[探究用ES6 template strings替代前后端模板引擎]]></title>
             <description><![CDATA[<h1 id="-es6-template-strings-">探究用ES6 template strings替代前后端模板引擎</h1>
+<p><strong>补充：</strong> 后来我发现我的想法有些接近<a href="https://github.com/aui/artTemplate">artTemplate</a>的想法，感兴趣的朋友值得一试。</p>
 <p><strong>前言：</strong></p>
 <p>JavaScript上有很多的模板引擎，不管是用于前端的、后端的、两者兼顾的，或是特性丰富的，或是在模板中尽可能减少逻辑的，选择十分丰富。如果你也曾在一个或大或小的项目中考虑如何选择模板引擎的话，那你肯定也和我一样犹豫过要怎么选择。</p>
 <p>另一方面，在我大量使用React的工作时间中，我越发认可React中jsx的设计<sup id="1" class="margin-toggle sidenote-number">1</sup><span for="1" class="mdl-tooltip sidenote"><a href="http://blog.vjeux.com/2013/javascript/jsx-e4x-the-good-parts.html">JSX: E4X The Good Parts</a></span> 。而当我从React jsx的角度考虑一个好的模板引擎应该具有什么样的特性时，我意识到，对于比较简单的情形，使用ES6中的<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings">template strings</a>外加一些约定就已经足矣。你甚至不需要模板引擎就能够很好地处理绝大多数你以前需要用模板引擎来处理的工作。</p>
