@@ -29,7 +29,6 @@ class SimpleApp extends Component {
           <a href='https://www.getmdl.io/index.html'>material-design-lite</a>
           <span>.</span>
         </p>
-        <p className='cert'>京ICP备14040206号-1</p>
       </div>
     );
   }
