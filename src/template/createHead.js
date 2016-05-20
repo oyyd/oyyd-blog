@@ -1,5 +1,5 @@
 function createHead(ctx) {
-  let {title, description} = ctx;
+  const { title, description } = ctx;
 
   return (
     `<head>

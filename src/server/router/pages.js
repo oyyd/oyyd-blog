@@ -1,11 +1,9 @@
-import fs from 'fs';
-
-import { Provider, } from 'react-redux';
-import {renderToString} from 'react-dom/server';
+import { Provider } from 'react-redux';
+import { renderToString } from 'react-dom/server';
 import React from 'react';
 import createStore from '../../client/state/createStore';
 import generateRoutes from '../../client/generateRoutes';
-import { match, RouterContext, } from 'react-router';
+import { match, RouterContext } from 'react-router';
 import escapeJSONString from '../utils/escapeJSONString';
 
 import createPage from '../../template/createPage';
@@ -15,7 +13,7 @@ const routes = generateRoutes(null);
 function renderPages(req, res) {
   const store = createStore({}, req.url);
 
-  match({routes, location: req.url},
+  match({ routes, location: req.url },
     (error, redirectLocation, renderProps) => {
       if (error) {
         res.status(500).send(error.message);
@@ -25,7 +23,7 @@ function renderPages(req, res) {
         res.status(200).send(createPage({
           content: renderToString(
             <Provider store={store}>
-              <RouterContext {...renderProps}/>
+              <RouterContext {...renderProps} />
             </Provider>
           ),
           initialState: escapeJSONString(JSON.stringify(store)),

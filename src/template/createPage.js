@@ -1,7 +1,8 @@
 import createHead from './createHead';
 
 function createPage(ctx) {
-  let {title, description, content, initialState} = ctx;
+  const { content } = ctx;
+  let { title, description, initialState } = ctx;
 
   title = title || 'oyyd blog';
   description = description || '这是亚东的博客，你可以在上面看到我的一些想法和实践，欢迎来访。';
@@ -10,7 +11,7 @@ function createPage(ctx) {
   return (
     `<!DOCTYPE html>
     <html>
-      ${createHead({title, description})}
+      ${createHead({ title, description })}
       <body>
         <div id="main">${content}</div>
         <script>

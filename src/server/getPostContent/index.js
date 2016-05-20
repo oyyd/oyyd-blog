@@ -8,6 +8,7 @@ const prefix = process.cwd();
 // TODO: `SimplePostsCache` will cost too much memory someday
 // TODO: use redis or whatever
 const SimplePostsCache = {};
+
 function getPostContent(fileName) {
   return new Promise((resolve, reject) => {
     if (SimplePostsCache[fileName]) {

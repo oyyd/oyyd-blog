@@ -29,6 +29,11 @@
     "babel-runtime": "^6.0.14",
     "css-loader": "^0.15.6",
     "del": "^2.0.2",
+    "eslint": "^2.10.2",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.8.0",
+    "eslint-plugin-jsx-a11y": "^1.2.2",
+    "eslint-plugin-react": "^5.1.1",
     "extract-text-webpack-plugin": "^0.8.2",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.0",
@@ -41,7 +46,6 @@
     "less": "^2.5.1",
     "less-loader": "^2.2.0",
     "lodash": "^3.10.1",
-    "lodash.assign": "^3.2.0",
     "marked-chartjs-binding": "^1.0.1",
     "material-design-lite": "^1.1.1",
     "moment": "^2.10.3",
@@ -60,7 +64,6 @@
     "base-64": "^0.1.0",
     "compression": "^1.6.0",
     "express": "^4.13.3",
-    "lodash.escape": "^3.0.0",
     "react": "^0.14.7",
     "utf8": "^2.1.1"
   }
