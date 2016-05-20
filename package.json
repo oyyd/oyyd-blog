@@ -4,18 +4,17 @@
   "description": "oyyd blog",
   "main": "index.html",
   "scripts": {
-    "init": "babel src --out-dir lib",
-    "release": "gulp release",
-    "build:list": "gulp gen-list",
-    "build:lib": "gulp gen-lib",
-    "build:sitemap": "gulp gen-sitemap",
-    "watch": "gulp watch",
-    "watch:bundle": "webpack --watch --progress --colors",
-    "watch:lib": "babel src -w --out-dir lib",
-    "watch:post": "gulp watch-post",
+    "release": "babel tasks --out-dir lib/tasks && gulp --cwd . --gulpfile lib/tasks/gulpfile.js release",
+    "watch": "babel tasks --out-dir lib/tasks && gulp --cwd . --gulpfile lib/tasks/gulpfile.js watch",
     "start:single": "node lib/server/app.js dev",
     "start": "pm2 start process.json",
-    "start:dev": "pm2 start process.dev.json"
+    "start:dev": "pm2 start process.dev.json",
+
+    "init": "babel src --out-dir lib",
+    "watch:post": "gulp --gulpfile lib/tasks/gulpfile.js watch-post",
+    "build:list": "gulp --gulpfile lib/tasks/gulpfile.js gen-list",
+    "build:lib": "babel src --out-dir lib",
+    "build:sitemap": "gulp --gulpfile lib/tasks/gulpfile.js gen-sitemap"
   },
   "author": "oyyd",
   "license": "MIT",
