@@ -1,7 +1,7 @@
 function escapeJSONString(string) {
   return string
     .replace(/[\\]/g, '\\\\')
-    .replace(/["]/g, '"')
+    .replace(/[\"]/g, '\\\"')
     .replace(/[\/]/g, '\\/')
     .replace(/[\b]/g, '\\b')
     .replace(/[\f]/g, '\\f')
