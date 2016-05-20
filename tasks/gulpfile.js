@@ -1,4 +1,4 @@
-import path from 'path';
+import { join } from 'path';
 import { exec } from 'child_process';
 
 import gulp from 'gulp';
@@ -12,13 +12,15 @@ import './gen-sitemap';
 import './watch-post';
 import './watch';
 
-gulp.task('minifyJs', ['webpack'], () => gulp.src(path.join(__dirname, 'dist/*.js'))
-    .pipe(uglify())
-    .pipe(gulp.dest('dist/')));
+const path = join(process.cwd(), 'dist');
 
-gulp.task('minifyCss', ['minifyJs'], () => gulp.src(path.join(__dirname, 'dist/*.css'))
+gulp.task('minifyJs', ['webpack'], () => gulp.src(join(path, '*.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(path)));
+
+gulp.task('minifyCss', ['minifyJs'], () => gulp.src(join(path, '*.css'))
   .pipe(minifyCSS())
-  .pipe(gulp.dest('dist/')));
+  .pipe(gulp.dest(path)));
 
 gulp.task('webpack', ['gen-list'], callback => {
   exec('webpack --progress --color', (error, stdout /* , stderr */) => {

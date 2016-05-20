@@ -14,7 +14,7 @@ let config = fs.readFileSync(join(prefix, '.babelrc'), {encoding: 'utf8'});
 config = JSON.parse(config);
 
 gulp.task('del-lib', () => {
-  return del([join(prefix, 'lib')]);
+  return del([join(prefix, 'lib/*'), `!${join(prefix, 'lib', 'tasks')}`]);
 });
 
 gulp.task('gen-lib', ['del-lib'], () => {
