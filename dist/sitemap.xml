@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-<url> <loc>https://blog.oyyd.net/</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/about</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/reactjs_conf_2016_recommendation</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/how_to_split_your_code_in_webpack</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/javascript_compiler_nunjucks</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/javascript_compiler_marked</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/best_template_engine_in_node_js</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/how_does_react_hot_loader_works</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/introduce_universal_javascript_and_its_implementation_in_static_pages</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/immutable_data_structure_in_javascript</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://blog.oyyd.net/post/why_i_choose_react_rather_than_angular_in_our_company</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://blog.oyyd.net/</loc> </url>
+<url> <loc>https://blog.oyyd.net/about</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/reactjs_conf_2016_recommendation</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/how_to_split_your_code_in_webpack</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/javascript_compiler_nunjucks</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/javascript_compiler_marked</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/best_template_engine_in_node_js</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/how_does_react_hot_loader_works</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/introduce_universal_javascript_and_its_implementation_in_static_pages</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/immutable_data_structure_in_javascript</loc> </url>
+<url> <loc>https://blog.oyyd.net/post/why_i_choose_react_rather_than_angular_in_our_company</loc> </url>
 </urlset>
