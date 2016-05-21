@@ -1,5 +1,4 @@
 // server
-'use strict';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,15 +15,17 @@ function getPostContent(fileName) {
       return;
     }
 
-    fs.readFile(path.join(prefix, 'dist/posts', fileName + '.html'), {encoding: 'utf8'}, (err, data) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+    fs.readFile(
+      path.join(prefix, 'dist/posts', `${fileName}.html`),
+      { encoding: 'utf8' }, (err, data) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-      SimplePostsCache[fileName] = data;
-      resolve(data);
-    });
+        SimplePostsCache[fileName] = data;
+        resolve(data);
+      });
   });
 }
 

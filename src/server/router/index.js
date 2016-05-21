@@ -1,15 +1,18 @@
 import express from 'express';
 
-import pages from './pages';
-import _posts from './posts';
+import page from './page';
 
-const posts = _posts.bind(null, response => {
-  response();
-});
+function response(res) {
+  res();
+}
+
+const renderPost = page.bind(null, response, false);
+
+const renderPage = page.bind(null, response, true);
 
 const router = new express.Router();
 
-router.get('/post/:name', posts);
-router.use(pages);
+router.get('/post/:name', renderPost);
+router.use(renderPage);
 
 export default router;

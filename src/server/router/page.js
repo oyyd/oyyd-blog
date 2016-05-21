@@ -84,7 +84,7 @@ function getPostPageContent(res, store, postData, props, next) {
   }, next);
 }
 
-export default function postRender(callback, req, res) {
+export default function getPageRender(callback, isPage, req, res) {
   const store = createStore({}, req.url);
   const routes = generateRoutes(null);
   const fileName = req.url.slice(req.url.lastIndexOf('/') + 1);
@@ -98,8 +98,17 @@ export default function postRender(callback, req, res) {
     } else if (redirectLocation) {
       operator = redirectReq.bind(null, res,
         `${redirectLocation.pathname}${redirectLocation.search}`);
-    } else if (!renderProps || !postData) {
+    } else if (!renderProps || (!isPage && !postData)) {
       operator = notFound.bind(null, res);
+    } else if (isPage) {
+      operator = renderPage.bind(null, res, createPage({
+        content: renderToString(
+          <Provider store={store}>
+            <RouterContext {...renderProps} />
+          </Provider>
+        ),
+        initialState: escapeJSONString(JSON.stringify(store)),
+      }));
     }
 
     if (operator) {
