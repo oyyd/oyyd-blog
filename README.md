@@ -7,33 +7,27 @@ node > 4.2.x
 ###Develop
 
 ```
-npm run dev
-```
-
-or
-
-```
-webpack -w
+npm run watch
 ```
 
 ###Commands
 
-translate md to html and generate the rss-feed file from posts:
-
-```
-gulp gen-list
-```
-
 Release:
 
 ```
-gulp release
+npm run release
 ```
 
-Develop:
+Start local server:
 
 ```
-node server.js
+npm run start:single
+```
+
+Start production server(need pm2):
+
+```
+npm run start
 ```
 
 ###set up
@@ -41,10 +35,6 @@ node server.js
 ###TODO
 
 * Support both ajax and html loading when rendering a same page
-
-* refactor server side rendering
-
-* refactor building process
 
 * Use md content instead of the html as Initial state of the post when server rendering
 

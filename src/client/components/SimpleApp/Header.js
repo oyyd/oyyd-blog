@@ -117,8 +117,6 @@ class Header extends Component {
         <div className="hover-content">
           <h1 className="site-name no-deco">
             OYYD BLOG
-            <br />
-            Yadong博客
           </h1>
           {this.renderNav()}
         </div>
