@@ -7,6 +7,7 @@
     "release": "babel tasks --out-dir lib/tasks && gulp --cwd . --gulpfile lib/tasks/gulpfile.js release",
     "watch": "babel tasks --out-dir lib/tasks && gulp --cwd . --gulpfile lib/tasks/gulpfile.js watch",
     "start:single": "node lib/server/app.js dev",
+    "start:server": "node lib/server/app.js",
     "start": "pm2 start process.json",
     "start:dev": "pm2 start process.dev.json",
 
