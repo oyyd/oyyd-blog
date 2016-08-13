@@ -1,10 +1,7 @@
-'use strict';
-
 import React from 'react';
-import { Provider, connect, } from 'react-redux';
-import { syncHistory, } from 'react-router-redux';
+import { Provider } from 'react-redux';
 import generateRoutes from './generateRoutes';
-import { browserHistory, } from 'react-router';
+import { browserHistory } from 'react-router';
 
 require('material-design-lite');
 

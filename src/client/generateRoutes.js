@@ -10,9 +10,9 @@ function generateRoutes(history) {
     <Router history={history}>
       <Route path="/" component={SimpleApp}>
         <IndexRoute component={SimpleList} />
-        <Route path="post/:id" component={SimplePost}></Route>
+        <Route path="post/:id" component={SimplePost} />
       </Route>
-      <Route path="/about" component={About}></Route>
+      <Route path="/about" component={About} />
     </Router>
   );
 }

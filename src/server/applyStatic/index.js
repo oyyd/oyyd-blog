@@ -1,22 +1,22 @@
-import path from 'path';
+import { join } from 'path';
 
 import express from 'express';
 import compression from 'compression';
 
+const STATIC_PATHS =
+  ['/dist', '/static', '/posts', '/static-lib'];
 const prefix = process.cwd();
 
-function applyStatic(app) {
-  // show ownership to google webmaster tools
-  app.get('/google38940b23fa0e04ca.html', express.static(path.join(prefix)));
+function applyPath(app, path) {
+  app.use(path, compression());
+  app.use(path, express.static(join(prefix, path)));
+}
 
-  app.use('/dist', compression());
-  app.use('/dist', express.static(path.join(prefix, './dist')));
-  app.use('/static', compression());
-  app.use('/static', express.static(path.join(prefix, './static')));
-  app.use('/posts', compression());
-  app.use('/posts', express.static(path.join(prefix, './posts')));
-  app.use('/static-lib', compression());
-  app.use('/static-lib', express.static(path.join(prefix, './static-lib')));
+function applyStatic(app) {
+  // show the ownership to google webmaster tools
+  app.get('/google38940b23fa0e04ca.html', express.static(join(prefix)));
+
+  STATIC_PATHS.forEach(path => applyPath(app, path));
 }
 
 export default applyStatic;

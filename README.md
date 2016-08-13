@@ -34,6 +34,8 @@ npm run start
 
 ###TODO
 
+* Add anchor hooks
+
 * Support both ajax and html loading when rendering a same page
 
 * Use md content instead of the html as Initial state of the post when server rendering
