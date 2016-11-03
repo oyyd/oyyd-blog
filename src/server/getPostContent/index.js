@@ -1,6 +1,7 @@
 // server
 import fs from 'fs';
 import path from 'path';
+import parsePost from './parsePost';
 
 const prefix = process.cwd();
 
@@ -16,12 +17,13 @@ function getPostContent(fileName) {
     }
 
     fs.readFile(
-      path.join(prefix, 'dist/posts', `${fileName}.html`),
-      { encoding: 'utf8' }, (err, data) => {
+      path.join(prefix, 'posts', `${fileName}.md`), { encoding: 'utf8' }, (err, _data) => {
         if (err) {
           reject(err);
           return;
         }
+
+        const data = parsePost(_data);
 
         SimplePostsCache[fileName] = data;
         resolve(data);

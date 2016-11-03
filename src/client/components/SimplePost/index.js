@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
-import { curry, flowRight} from 'lodash';
-import { connect, } from 'react-redux';
-import { renderCharts, } from 'marked-chartjs-binding';
+import { connect } from 'react-redux';
+import { renderCharts } from 'marked-chartjs-binding';
 
 import CONSTANTS from '../../CONSTANTS';
 import Disqus from '../Disqus';
@@ -12,7 +10,7 @@ import isBrowser from '../../utils/isBrowser';
 
 const forEach = [].forEach;
 
-const {string} = React.PropTypes;
+const { string } = React.PropTypes;
 
 const CODEMIRROR_DEFAULT_CONFIG = {
   htmlMode: true,

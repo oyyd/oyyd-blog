@@ -1,5 +1,18 @@
 #oyyd blog
 
+### Version 2
+
+__Features:__
+
+- ES6 + async await + SourceMap
+- Flexibility > Performance
+- HMR
+- Server Side Rendering
+
+__Exclude:__
+
+- Heavy Usage of Preprocessing
+
 ### Environment
 
 node > 4.2.x

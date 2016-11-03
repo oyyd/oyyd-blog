@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 
 import { Provider } from 'react-redux';
 import getPostContent from '../getPostContent';
-import generateRoutes from '../../client/generateRoutes';
+import { generateRouter } from '../../client/generateRoutes';
 import createStore from '../../client/state/createStore';
 import PostsData from '../../client/posts.data';
 import { initPost } from '../../client/state/post/actions';
@@ -81,12 +81,12 @@ function getPostPageContent(res, store, postData, props, next) {
       ),
       description: postData.description,
     }));
-  }, next);
+  }, next).catch(next);
 }
 
 export default function getPageRender(callback, isPage, req, res) {
   const store = createStore({}, req.url);
-  const routes = generateRoutes(null);
+  const routes = generateRouter(null);
   const fileName = req.url.slice(req.url.lastIndexOf('/') + 1);
   const postData = postsDataHash[fileName];
 

@@ -17,10 +17,10 @@ function createPage(ctx) {
         <script>
           window.__INITIAL_STATE__ = JSON.parse("${initialState}");
         </script>
-        <script src="/static-lib/codemirror/codemirror.js"></script>
-        <script src="/static-lib/codemirror/mode/javascript/javascript.js"></script>
-        <script src="/static-lib/codemirror/mode/xml/xml.js"></script>
-        <script src="/dist/bundle.js"></script>
+        <script src="/static_lib/codemirror/codemirror.js"></script>
+        <script src="/static_lib/codemirror/mode/javascript/javascript.js"></script>
+        <script src="/static_lib/codemirror/mode/xml/xml.js"></script>
+        <script src="/dist/browser_bundle.js"></script>
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

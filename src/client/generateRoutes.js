@@ -5,15 +5,21 @@ import SimpleList from './components/SimpleList';
 import About from './pages/About/index.js';
 import { Router, Route, IndexRoute } from 'react-router';
 
-function generateRoutes(history) {
+export function generateRoutes() {
   return (
-    <Router history={history}>
-      <Route path="/" component={SimpleApp}>
-        <IndexRoute component={SimpleList} />
-        <Route path="post/:id" component={SimplePost} />
-      </Route>
+    <Route path="/" component={SimpleApp}>
+      <IndexRoute component={SimpleList} />
+      <Route path="post/:id" component={SimplePost} />
       <Route path="/about" component={About} />
-    </Router>
+    </Route>
+  );
+}
+
+export function generateRouter(history) {
+  const routes = generateRoutes();
+
+  return (
+    <Router history={history} children={routes} />
   );
 }
 

@@ -4,17 +4,33 @@ import { routeReducer, syncHistory } from 'react-router-redux';
 import { createMemoryHistory, browserHistory } from 'react-router';
 
 // reducers
-import post from './post/reducer';
+import postReducer from './post/reducer';
 
-export default function createStore(initialState, url) {
-  const reducers = combineReducers({
+function createReducer(post) {
+  return combineReducers({
     routing: routeReducer,
     post,
   });
+}
+
+export default function createStore(initialState, url, shouldPatch) {
+  const reducers = createReducer(postReducer);
 
   const history = (typeof url !== 'string') ? browserHistory : createMemoryHistory(url);
   const reduxRouterMiddleware = syncHistory(history);
   const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(_createStore);
 
-  return createStoreWithMiddleware(reducers, initialState);
+  const store = createStoreWithMiddleware(reducers, initialState);
+
+  if (module.hot && shouldPatch) {
+    module.hot.accept('./post/reducer', () => {
+      // eslint-disable-next-line
+      const postReducer = require('./post/reducer');
+      const nextRootReducer = createReducer(postReducer);
+
+      store.replaceReducer(nextRootReducer);
+    });
+  }
+
+  return store;
 }

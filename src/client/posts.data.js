@@ -1,4 +1,9 @@
 export default [{
+  fileName:'what_does_jest_solve',
+  title: '用jest进一步简化测试',
+  publicDate:'2016年10月24日',
+  description: 'jest是fb推出的测试代码库，得到了很多人的点赞。在javascript的生态上，测试代码库的使用普遍比较稳定，通常是在jasmine和mocha上做选择。那么为什么我们需要一个新的代码库呢？jest又解决了哪些问题呢？',
+}, {
   fileName: 'reactjs_conf_2016_recommendation',
   title: '推荐React.js Conf 2016中的一些精彩演讲',
   publicDate: '2016年03月16日',
