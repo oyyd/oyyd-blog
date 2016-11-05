@@ -11,6 +11,7 @@ module.exports = {
   watch: true,
   entry: {
     browser_bundle: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client',
       'webpack/hot/only-dev-server',
       'babel-polyfill',
@@ -26,7 +27,6 @@ module.exports = {
     loaders: [{
       test: /\.js?$/,
       loaders: [
-        'react-hot-loader/webpack',
         'babel?' + JSON.stringify({
           "presets": ["es2015"],
           "plugins": ["transform-react-jsx", "transform-async-to-generator"]

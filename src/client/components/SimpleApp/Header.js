@@ -115,9 +115,7 @@ class Header extends Component {
           height={BG_IMG_HEIGHT}
         />
         <div className="hover-content">
-          <h1 className="site-name no-deco">
-            OYYD BLOG
-          </h1>
+          <h1 className="site-name no-deco">OYYD BLOG</h1>
           {this.renderNav()}
         </div>
       </div>

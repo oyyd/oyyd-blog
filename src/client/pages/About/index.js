@@ -14,6 +14,17 @@ function About() {
   return (
     <div>
       <div className="region">
+        <h2 className="mdl-typography--display-1">About oyyd.blog</h2>
+        <p>features</p>
+        <ul>
+          <li>ES6 + async await + SourceMap</li>
+          <li>Flexibility > Performance</li>
+          <li>Server Side Rendering</li>
+          <li>Avoid Heavy Usage of Preprocessing</li>
+          <li>HMR(failed at react router)</li>
+        </ul>
+      </div>
+      <div className="region">
         <h2 className="mdl-typography--display-1">About me</h2>
         <p>Hi，我每天都会写不少代码，并思考其中的事情。你可能有兴趣了解得更多一点：</p>
         <ul style={LIST_STYLE}>
@@ -22,7 +33,7 @@ function About() {
           </li>
           <li>高中时参加了NOIP，开始编程，获得了一等奖，并从中体会到了别样的乐趣。</li>
           <li>可以讲闽南语。</li>
-          <li>听很多vocaloid相关的音乐（<a href={ATOLS_YOUTUBE_URL} target="_blank">ATOLS</a>）。</li>
+          <li>听很多vocaloid相关的音乐。</li>
           <li>不常使用社交软件。</li>
           <li>偶尔上pixiv。</li>
         </ul>

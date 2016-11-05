@@ -48,8 +48,6 @@ function generateRoutes() {
 
   routes = Object.assign(routes, _generateRoutes());
 
-  console.log('routes', routes);
-
   return routes;
 }
 

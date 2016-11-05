@@ -9,7 +9,7 @@ import router from './router';
 
 // TODO: make these into config file
 const domain = 'blog.oyyd.net';
-const devPort = 80;
+const devPort = 8080;
 const proPort = 443;
 const app = express();
 

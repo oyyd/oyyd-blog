@@ -5,7 +5,9 @@ const path = require('path');
 const childProcess = require('child_process');
 
 const configBrowserDEV = require('./webpack_config/browser.dev');
+const configBrowserPRO = require('./webpack_config/browser.pro');
 const configServerDEV = require('./webpack_config/server.dev');
+const configServerPRO = require('./webpack_config/server.pro');
 
 function onBuild(done) {
   return function(err, stats) {
@@ -22,11 +24,11 @@ function onBuild(done) {
 }
 
 gulp.task('backend-build', function(done) {
-  webpack(configServerDEV).run(onBuild(done));
+  webpack(configServerPRO).run(onBuild(done));
 });
 
 gulp.task('frontend-build', function(done) {
-  webpack(configBrowserDEV).run(onBuild(done));
+  webpack(configBrowserPRO).run(onBuild(done));
 });
 
 gulp.task('build', ['backend-build', 'frontend-build']);

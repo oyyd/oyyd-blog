@@ -4,7 +4,7 @@ import browserDEVConfig from '../../../webpack_config/browser.dev';
 import webpack from 'webpack';
 
 export default function apply(app) {
-  if (false) {
+  if (process.env.NODE_ENV === 'production') {
     return;
   }
 

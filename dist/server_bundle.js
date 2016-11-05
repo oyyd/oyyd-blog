@@ -2,41 +2,41 @@ require("source-map-support").install();
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -60,7 +60,7 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	var main = function () {
 	  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
 	    var server, proxyUpgradeServer, options;
@@ -70,40 +70,40 @@ require("source-map-support").install();
 	          case 0:
 	            _context.next = 2;
 	            return (0, _applyStatic2.default)(app);
-	
+
 	          case 2:
-	
+
 	            // page router
 	            app.use('/', _router2.default);
-	
+
 	            server = null;
-	
-	
+
+
 	            if (process.argv[2] === 'dev') {
 	              port = devPort;
 	              server = _http2.default.createServer(app);
 	            } else {
 	              proxyUpgradeServer = (0, _express2.default)();
-	
+
 	              proxyUpgradeServer.use('/', function (req, res) {
 	                res.redirect(301, 'https://' + domain);
 	              });
 	              proxyUpgradeServer.listen(80);
-	
+
 	              options = {
 	                cert: _fs2.default.readFileSync('/etc/ssl/certs/' + domain + '.crt'),
 	                key: _fs2.default.readFileSync('/etc/ssl/private/' + domain + '.key'),
 	                ca: _fs2.default.readFileSync('/etc/ssl/certs/starfield.pem')
 	              };
-	
+
 	              port = proPort;
 	              server = _https2.default.createServer(options, app);
 	            }
-	
+
 	            server.listen(port);
-	
+
 	            console.log('server running on ' + port); // eslint-disable-line
-	
+
 	          case 7:
 	          case 'end':
 	            return _context.stop();
@@ -111,48 +111,48 @@ require("source-map-support").install();
 	      }
 	    }, _callee, this);
 	  }));
-	
+
 	  return function main() {
 	    return _ref.apply(this, arguments);
 	  };
 	}();
-	
+
 	var _fs = __webpack_require__(3);
-	
+
 	var _fs2 = _interopRequireDefault(_fs);
-	
+
 	var _express = __webpack_require__(4);
-	
+
 	var _express2 = _interopRequireDefault(_express);
-	
+
 	var _http = __webpack_require__(5);
-	
+
 	var _http2 = _interopRequireDefault(_http);
-	
+
 	var _https = __webpack_require__(6);
-	
+
 	var _https2 = _interopRequireDefault(_https);
-	
+
 	var _applyStatic = __webpack_require__(7);
-	
+
 	var _applyStatic2 = _interopRequireDefault(_applyStatic);
-	
+
 	var _router = __webpack_require__(26);
-	
+
 	var _router2 = _interopRequireDefault(_router);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-	
+
 	// TODO: make these into config file
 	var domain = 'blog.oyyd.net';
 	var devPort = 8080;
 	var proPort = 443;
 	var app = (0, _express2.default)();
-	
+
 	var port = null;
-	
+
 	main().catch(function (err) {
 	  setTimeout(function () {
 	    throw err;
@@ -188,11 +188,11 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var applyStatic = function () {
 	  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(app) {
 	    var sitemap, feeds, xmlList;
@@ -202,31 +202,31 @@ require("source-map-support").install();
 	          case 0:
 	            _context.next = 2;
 	            return (0, _getSiteMap2.default)();
-	
+
 	          case 2:
 	            sitemap = _context.sent;
 	            feeds = (0, _getFeeds2.default)();
 	            xmlList = {
 	              sitemap: sitemap, feeds: feeds
 	            };
-	
+
 	            // show the ownership to google webmaster tools
-	
+
 	            app.get('/google38940b23fa0e04ca.html', _express2.default.static((0, _path.join)(prefix)));
-	
+
 	            (0, _applyDEVServer2.default)(app);
-	
+
 	            Object.keys(xmlList).forEach(function (name) {
 	              app.get('/dist/' + name + '.xml', function (req, res) {
 	                res.set('Content-Type', 'text/xml');
 	                res.send(xmlList[name]);
 	              });
 	            });
-	
+
 	            STATIC_PATHS.forEach(function (path) {
 	              return applyPath(app, path);
 	            });
-	
+
 	          case 9:
 	          case 'end':
 	            return _context.stop();
@@ -234,46 +234,46 @@ require("source-map-support").install();
 	      }
 	    }, _callee, this);
 	  }));
-	
+
 	  return function applyStatic(_x) {
 	    return _ref.apply(this, arguments);
 	  };
 	}();
-	
+
 	var _path = __webpack_require__(8);
-	
+
 	var _express = __webpack_require__(4);
-	
+
 	var _express2 = _interopRequireDefault(_express);
-	
+
 	var _compression = __webpack_require__(9);
-	
+
 	var _compression2 = _interopRequireDefault(_compression);
-	
+
 	var _getSiteMap = __webpack_require__(10);
-	
+
 	var _getSiteMap2 = _interopRequireDefault(_getSiteMap);
-	
+
 	var _getFeeds = __webpack_require__(14);
-	
+
 	var _getFeeds2 = _interopRequireDefault(_getFeeds);
-	
+
 	var _applyDEVServer = __webpack_require__(20);
-	
+
 	var _applyDEVServer2 = _interopRequireDefault(_applyDEVServer);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-	
+
 	var STATIC_PATHS = ['/dist', '/static', '/posts', '/static_lib'];
 	var prefix = process.cwd();
-	
+
 	function applyPath(app, path) {
 	  app.use(path, (0, _compression2.default)());
 	  app.use(path, _express2.default.static((0, _path.join)(prefix, path)));
 	}
-	
+
 	exports.default = applyStatic;
 
 /***/ },
@@ -293,34 +293,34 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _sitemap = __webpack_require__(11);
-	
+
 	var _sitemap2 = _interopRequireDefault(_sitemap);
-	
+
 	var _CONSTANTS = __webpack_require__(12);
-	
+
 	var _CONSTANTS2 = _interopRequireDefault(_CONSTANTS);
-	
+
 	var _posts = __webpack_require__(13);
-	
+
 	var _posts2 = _interopRequireDefault(_posts);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; } // server
-	
-	
+
+
 	var hostname = _CONSTANTS2.default.BLOG.ORIGIN;
 	var staticPages = ['/', '/about'];
 	var postPages = _posts2.default.map(function (item) {
 	  return '/post/' + item.fileName;
 	});
-	
+
 	exports.default = function () {
 	  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
 	    return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -336,17 +336,17 @@ require("source-map-support").install();
 	                  };
 	                })
 	              });
-	
+
 	              sitemap.toXML(function (err, xml) {
 	                if (err) {
 	                  reject(err);
 	                  return;
 	                }
-	
+
 	                resolve(xml);
 	              });
 	            }));
-	
+
 	          case 1:
 	          case 'end':
 	            return _context.stop();
@@ -354,11 +354,11 @@ require("source-map-support").install();
 	      }
 	    }, _callee, this);
 	  }));
-	
+
 	  function getSiteMap() {
 	    return _ref.apply(this, arguments);
 	  }
-	
+
 	  return getSiteMap;
 	}();
 
@@ -373,7 +373,7 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -394,7 +394,7 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -455,73 +455,73 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = getContent;
-	
+
 	var _path = __webpack_require__(8);
-	
+
 	var _path2 = _interopRequireDefault(_path);
-	
+
 	var _fs = __webpack_require__(3);
-	
+
 	var _fs2 = _interopRequireDefault(_fs);
-	
+
 	var _crypto = __webpack_require__(15);
-	
+
 	var _crypto2 = _interopRequireDefault(_crypto);
-	
+
 	var _moment = __webpack_require__(16);
-	
+
 	var _moment2 = _interopRequireDefault(_moment);
-	
+
 	var _rss = __webpack_require__(17);
-	
+
 	var _rss2 = _interopRequireDefault(_rss);
-	
+
 	var _translate = __webpack_require__(18);
-	
+
 	var _translate2 = _interopRequireDefault(_translate);
-	
+
 	var _posts = __webpack_require__(13);
-	
+
 	var _posts2 = _interopRequireDefault(_posts);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	var AUTHOR = 'oyyd';
 	var SITE_URL = 'https://blog.oyyd.net';
 	var FEED_URL = SITE_URL + '/dist/feed.xml';
-	
+
 	var POST_PREFIX = _path2.default.resolve(process.cwd(), './posts');
-	
+
 	function getPostUrl(fileName) {
 	  return SITE_URL + '/post/' + fileName;
 	}
-	
+
 	function getPostContent(fileName) {
 	  var filePath = _path2.default.join(POST_PREFIX, fileName);
 	  return _fs2.default.readFileSync(filePath, { encoding: 'utf8' });
 	}
-	
+
 	function getContent() {
 	  var feed = new _rss2.default({
 	    title: AUTHOR,
-	
+
 	    // jscs:disable
 	    feed_url: FEED_URL,
 	    site_url: SITE_URL
 	  });
-	
+
 	  _posts2.default.slice(0, 5).map(function (item) {
 	    var content = getPostContent(item.fileName + '.md');
 	    var htmlContent = (0, _translate2.default)(content);
-	
+
 	    var md5 = _crypto2.default.createHash('md5');
 	    var guid = md5.update(item.fileName).digest('hex');
-	
+
 	    return {
 	      guid: guid,
 	      title: item.title,
@@ -532,7 +532,7 @@ require("source-map-support").install();
 	  }).forEach(function (feedItem) {
 	    feed.item(feedItem);
 	  });
-	
+
 	  return feed.xml(true);
 	}
 
@@ -559,16 +559,16 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _markedChartjsBinding = __webpack_require__(19);
-	
+
 	function initCommands() {
 	  var commands = [];
-	
+
 	  commands.push({
 	    reg: /\$sidenote\((.*?)\)/,
 	    handler: function () {
@@ -579,29 +579,29 @@ require("source-map-support").install();
 	      };
 	    }()
 	  });
-	
+
 	  commands.push({
 	    reg: /\$publicdate\((.*?)\)/,
 	    handler: function handler(content) {
 	      return content;
 	    }
 	  });
-	
+
 	  return commands;
 	}
-	
+
 	function translate(content) {
 	  var commands = initCommands();
-	
+
 	  var result = (0, _markedChartjsBinding.marked)(content);
 	  var _iteratorNormalCompletion = true;
 	  var _didIteratorError = false;
 	  var _iteratorError = undefined;
-	
+
 	  try {
 	    for (var _iterator = commands[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	      var command = _step.value;
-	
+
 	      var regResult = command.reg.exec(result);
 	      while (regResult) {
 	        var match = regResult[0];
@@ -624,10 +624,10 @@ require("source-map-support").install();
 	      }
 	    }
 	  }
-	
+
 	  return result;
 	}
-	
+
 	exports.default = translate;
 
 /***/ },
@@ -641,42 +641,42 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = apply;
-	
+
 	var _webpackDevMiddleware = __webpack_require__(21);
-	
+
 	var _webpackDevMiddleware2 = _interopRequireDefault(_webpackDevMiddleware);
-	
+
 	var _webpackHotMiddleware = __webpack_require__(22);
-	
+
 	var _webpackHotMiddleware2 = _interopRequireDefault(_webpackHotMiddleware);
-	
+
 	var _browser = __webpack_require__(23);
-	
+
 	var _browser2 = _interopRequireDefault(_browser);
-	
+
 	var _webpack = __webpack_require__(24);
-	
+
 	var _webpack2 = _interopRequireDefault(_webpack);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function apply(app) {
-	  if (false) {
+	  if (true) {
 	    return;
 	  }
-	
+
 	  var compiler = (0, _webpack2.default)(_browser2.default);
-	
+
 	  app.use((0, _webpackDevMiddleware2.default)(compiler, {
 	    publicPath: _browser2.default.output.publicPath,
 	    log: function log() {}
 	  }));
-	
+
 	  app.use((0, _webpackHotMiddleware2.default)(compiler));
 	}
 
@@ -697,20 +697,20 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	/* eslint-disable */
 	var path = __webpack_require__(8);
 	var webpack = __webpack_require__(24);
-	
+
 	var ExtractTextPlugin = __webpack_require__(25);
-	
+
 	module.exports = {
 	  target: 'web',
 	  devtool: 'source-map',
 	  debug: true,
 	  watch: true,
 	  entry: {
-	    browser_bundle: ['webpack-hot-middleware/client', 'webpack/hot/only-dev-server', 'babel-polyfill', './src/client/bootstrap.js']
+	    browser_bundle: ['react-hot-loader/patch', 'webpack-hot-middleware/client', 'webpack/hot/only-dev-server', 'babel-polyfill', './src/client/bootstrap.js']
 	  },
 	  output: {
 	    path: path.join(__dirname, '../dist'),
@@ -720,7 +720,7 @@ require("source-map-support").install();
 	  module: {
 	    loaders: [{
 	      test: /\.js?$/,
-	      loaders: ['react-hot-loader/webpack', 'babel?' + JSON.stringify({
+	      loaders: ['babel?' + JSON.stringify({
 	        "presets": ["es2015"],
 	        "plugins": ["transform-react-jsx", "transform-async-to-generator"]
 	      })],
@@ -751,34 +751,34 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _express = __webpack_require__(4);
-	
+
 	var _express2 = _interopRequireDefault(_express);
-	
+
 	var _page = __webpack_require__(27);
-	
+
 	var _page2 = _interopRequireDefault(_page);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function response(res) {
 	  res();
 	}
-	
+
 	var renderPost = _page2.default.bind(null, response, false);
-	
+
 	var renderPage = _page2.default.bind(null, response, true);
-	
+
 	var router = new _express2.default.Router();
-	
+
 	router.get('/post/:name', renderPost);
 	router.use(renderPage);
-	
+
 	exports.default = router;
 
 /***/ },
@@ -786,64 +786,64 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = getPageRender;
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _server = __webpack_require__(29);
-	
+
 	var _reactRedux = __webpack_require__(30);
-	
+
 	var _getPostContent = __webpack_require__(31);
-	
+
 	var _getPostContent2 = _interopRequireDefault(_getPostContent);
-	
+
 	var _generateRoutes = __webpack_require__(33);
-	
+
 	var _createStore = __webpack_require__(46);
-	
+
 	var _createStore2 = _interopRequireDefault(_createStore);
-	
+
 	var _posts = __webpack_require__(13);
-	
+
 	var _posts2 = _interopRequireDefault(_posts);
-	
+
 	var _actions = __webpack_require__(50);
-	
+
 	var _reactRouter = __webpack_require__(45);
-	
+
 	var _escapeJSONString = __webpack_require__(51);
-	
+
 	var _escapeJSONString2 = _interopRequireDefault(_escapeJSONString);
-	
+
 	var _createPage = __webpack_require__(52);
-	
+
 	var _createPage2 = _interopRequireDefault(_createPage);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	// TODO: a better 404 response
 	var NOT_FOUND_CONTENT = 'not found'; // server
-	
-	
+
+
 	function transformPostsData(data) {
 	  var hash = {};
 	  var item = void 0;
-	
+
 	  var _iteratorNormalCompletion = true;
 	  var _didIteratorError = false;
 	  var _iteratorError = undefined;
-	
+
 	  try {
 	    for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	      item = _step.value;
-	
+
 	      hash[item.fileName] = item;
 	    }
 	  } catch (err) {
@@ -860,57 +860,57 @@ require("source-map-support").install();
 	      }
 	    }
 	  }
-	
+
 	  return hash;
 	}
-	
+
 	var postsDataHash = transformPostsData(_posts2.default);
-	
+
 	function updatePostStore(store, postData) {
 	  return new Promise(function (resolve, reject) {
 	    (0, _getPostContent2.default)(postData.fileName).then(function (htmlContent) {
 	      var title = postData.title,
 	          fileName = postData.fileName;
-	
-	
+
+
 	      try {
 	        store.dispatch((0, _actions.initPost)(title, fileName, htmlContent));
 	      } catch (e) {
 	        reject(e);
 	      }
-	
+
 	      resolve();
 	    });
 	  });
 	}
-	
+
 	function internalErr(res, message) {
 	  return res.status(500).send(message);
 	}
-	
+
 	function redirectReq(res, path) {
 	  return res.redirect(302, path);
 	}
-	
+
 	function notFound(res) {
 	  return res.status(404).send(NOT_FOUND_CONTENT);
 	}
-	
+
 	function renderPage(res, page) {
 	  return res.status(200).send(page);
 	}
-	
+
 	function getPostPageContent(res, store, postData, props, next) {
 	  return updatePostStore(store, postData).then(function () {
 	    var initialState = null;
-	
+
 	    try {
 	      initialState = (0, _escapeJSONString2.default)(JSON.stringify(store.getState()));
 	    } catch (err) {
 	      next(err);
 	      return;
 	    }
-	
+
 	    next(null, (0, _createPage2.default)({
 	      initialState: initialState,
 	      title: postData.title,
@@ -923,16 +923,16 @@ require("source-map-support").install();
 	    }));
 	  }, next).catch(next);
 	}
-	
+
 	function getPageRender(callback, isPage, req, res) {
 	  var store = (0, _createStore2.default)({}, req.url);
 	  var routes = (0, _generateRoutes.generateRouter)(null);
 	  var fileName = req.url.slice(req.url.lastIndexOf('/') + 1);
 	  var postData = postsDataHash[fileName];
-	
+
 	  (0, _reactRouter.match)({ routes: routes, location: req.url }, function (error, redirectLocation, renderProps) {
 	    var operator = null;
-	
+
 	    if (error) {
 	      operator = internalErr.bind(null, res, error.message);
 	    } else if (redirectLocation) {
@@ -949,12 +949,12 @@ require("source-map-support").install();
 	        initialState: (0, _escapeJSONString2.default)(JSON.stringify(store))
 	      }));
 	    }
-	
+
 	    if (operator) {
 	      callback(operator);
 	      return;
 	    }
-	
+
 	    operator = getPostPageContent(res, store, postData, renderProps, function (err, pageContent) {
 	      callback(err ? internalErr.bind(null, res, err.message) : renderPage.bind(null, res, pageContent));
 	    });
@@ -984,53 +984,53 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _fs = __webpack_require__(3);
-	
+
 	var _fs2 = _interopRequireDefault(_fs);
-	
+
 	var _path = __webpack_require__(8);
-	
+
 	var _path2 = _interopRequireDefault(_path);
-	
+
 	var _parsePost = __webpack_require__(32);
-	
+
 	var _parsePost2 = _interopRequireDefault(_parsePost);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	var prefix = process.cwd();
-	
+
 	// TODO: `SimplePostsCache` will cost too much memory someday
 	// TODO: use redis or whatever
 	// server
 	var SimplePostsCache = {};
-	
+
 	function getPostContent(fileName) {
 	  return new Promise(function (resolve, reject) {
 	    if (SimplePostsCache[fileName]) {
 	      resolve(SimplePostsCache[fileName]);
 	      return;
 	    }
-	
+
 	    _fs2.default.readFile(_path2.default.join(prefix, 'posts', fileName + '.md'), { encoding: 'utf8' }, function (err, _data) {
 	      if (err) {
 	        reject(err);
 	        return;
 	      }
-	
+
 	      var data = (0, _parsePost2.default)(_data);
-	
+
 	      SimplePostsCache[fileName] = data;
 	      resolve(data);
 	    });
 	  });
 	}
-	
+
 	exports.default = getPostContent;
 
 /***/ },
@@ -1038,18 +1038,18 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = parsePost;
-	
+
 	var _translate = __webpack_require__(18);
-	
+
 	var _translate2 = _interopRequireDefault(_translate);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function parsePost(rawText) {
 	  return (0, _translate2.default)(rawText);
 	}
@@ -1059,37 +1059,37 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.generateRoutes = generateRoutes;
 	exports.generateRouter = generateRouter;
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _SimpleApp = __webpack_require__(34);
-	
+
 	var _SimpleApp2 = _interopRequireDefault(_SimpleApp);
-	
+
 	var _SimplePost = __webpack_require__(38);
-	
+
 	var _SimplePost2 = _interopRequireDefault(_SimplePost);
-	
+
 	var _SimpleList = __webpack_require__(43);
-	
+
 	var _SimpleList2 = _interopRequireDefault(_SimpleList);
-	
+
 	var _index = __webpack_require__(44);
-	
+
 	var _index2 = _interopRequireDefault(_index);
-	
+
 	var _reactRouter = __webpack_require__(45);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function generateRoutes() {
 	  return _react2.default.createElement(
 	    _reactRouter.Route,
@@ -1099,13 +1099,13 @@ require("source-map-support").install();
 	    _react2.default.createElement(_reactRouter.Route, { path: '/about', component: _index2.default })
 	  );
 	}
-	
+
 	function generateRouter(history) {
 	  var routes = generateRoutes();
-	
+
 	  return _react2.default.createElement(_reactRouter.Router, { history: history, children: routes });
 	}
-	
+
 	exports.default = generateRoutes;
 
 /***/ },
@@ -1113,38 +1113,38 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _Header = __webpack_require__(35);
-	
+
 	var _Header2 = _interopRequireDefault(_Header);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
+
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
+
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
+
 	var SimpleApp = function (_Component) {
 	  _inherits(SimpleApp, _Component);
-	
+
 	  function SimpleApp(props) {
 	    _classCallCheck(this, SimpleApp);
-	
+
 	    return _possibleConstructorReturn(this, (SimpleApp.__proto__ || Object.getPrototypeOf(SimpleApp)).call(this, props));
 	  }
-	
+
 	  _createClass(SimpleApp, [{
 	    key: 'render',
 	    value: function render() {
@@ -1198,10 +1198,10 @@ require("source-map-support").install();
 	      );
 	    }
 	  }]);
-	
+
 	  return SimpleApp;
 	}(_react.Component);
-	
+
 	exports.default = SimpleApp;
 
 /***/ },
@@ -1209,49 +1209,49 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _jquery = __webpack_require__(36);
-	
+
 	var _jquery2 = _interopRequireDefault(_jquery);
-	
+
 	var _reactRedux = __webpack_require__(30);
-	
+
 	var _PerspectiveImg = __webpack_require__(37);
-	
+
 	var _PerspectiveImg2 = _interopRequireDefault(_PerspectiveImg);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
+
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
+
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
+
 	var string = _react2.default.PropTypes.string;
-	
-	
+
+
 	var ACTIVE_ITEMS = {
 	  ABOUT: 'ABOUT',
 	  POST_LIST: 'POST_LIST'
 	};
-	
+
 	var HEADER_HEIGHT = 200;
 	var BG_IMG_WIDTH = 1300;
 	var BG_IMG_HEIGHT = 600;
 	var BG_IMGS = ['/static/img/app/header-bg/1.png', '/static/img/app/header-bg/2.png', '/static/img/app/header-bg/3.png', '/static/img/app/header-bg/4.png', '/static/img/app/header-bg/5.png'];
 	var BG_IMGS_LENGTH = BG_IMGS.length;
-	
+
 	function getActiveItem(path) {
 	  switch (path) {
 	    case '/about':
@@ -1260,27 +1260,27 @@ require("source-map-support").install();
 	      return ACTIVE_ITEMS.POST_LIST;
 	  }
 	}
-	
+
 	var Header = function (_Component) {
 	  _inherits(Header, _Component);
-	
+
 	  function Header(props) {
 	    _classCallCheck(this, Header);
-	
+
 	    var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
-	
+
 	    var randomIndex = Math.round(Math.random() * (BG_IMGS_LENGTH - 1));
-	
+
 	    _this.bgImg = BG_IMGS[randomIndex];
-	
+
 	    _this.state = {
 	      windowWidth: 0
 	    };
-	
+
 	    _this.handleResizing = _this.handleResizing.bind(_this);
 	    return _this;
 	  }
-	
+
 	  _createClass(Header, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
@@ -1297,7 +1297,7 @@ require("source-map-support").install();
 	    key: 'handleResizing',
 	    value: function handleResizing() {
 	      var windowWidth = this.$window.width();
-	
+
 	      this.setState({
 	        windowWidth: windowWidth
 	      });
@@ -1306,7 +1306,7 @@ require("source-map-support").install();
 	    key: 'renderNav',
 	    value: function renderNav() {
 	      var ACTIVE_ITEM = getActiveItem(this.props.path);
-	
+
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'nav' },
@@ -1380,22 +1380,22 @@ require("source-map-support").install();
 	      );
 	    }
 	  }]);
-	
+
 	  return Header;
 	}(_react.Component);
-	
+
 	Header.propTypes = {
 	  path: string
 	};
-	
+
 	function mapState(state) {
 	  return {
 	    path: state.routing.location.pathname
 	  };
 	}
-	
+
 	var ConnectedHeader = (0, _reactRedux.connect)(mapState)(Header);
-	
+
 	exports.default = ConnectedHeader;
 
 /***/ },
@@ -1409,70 +1409,70 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
+
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
+
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
+
 	var _React$PropTypes = _react2.default.PropTypes,
 	    string = _React$PropTypes.string,
 	    number = _React$PropTypes.number;
-	
-	
+
+
 	var START_RATIO = 1.3,
 	    END_RATIO = 1,
 	    ANIMATION_TIME = 24;
-	
+
 	function getZeroIfNaN(number) {
 	  if (isNaN(number)) {
 	    return 0;
 	  }
-	
+
 	  return number;
 	}
-	
+
 	var PerspectiveImg = function (_React$Component) {
 	  _inherits(PerspectiveImg, _React$Component);
-	
+
 	  function PerspectiveImg(props) {
 	    _classCallCheck(this, PerspectiveImg);
-	
+
 	    var _this = _possibleConstructorReturn(this, (PerspectiveImg.__proto__ || Object.getPrototypeOf(PerspectiveImg)).call(this, props));
-	
+
 	    var width = props.width,
 	        height = props.height,
 	        containerWidth = props.containerWidth,
 	        containerHeight = props.containerHeight;
-	
-	
+
+
 	    _this.ratio = START_RATIO;
-	
+
 	    var imgStyle = Object.assign({}, style, _this.getImgStyle(true, props));
-	
+
 	    _this.state = {
 	      start: false,
 	      show: false,
 	      imgStyle: imgStyle
 	    };
-	
+
 	    _this.getImgStyle = _this.getImgStyle.bind(_this);
 	    return _this;
 	  }
-	
+
 	  _createClass(PerspectiveImg, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
@@ -1491,18 +1491,18 @@ require("source-map-support").install();
 	    key: 'getImgStyle',
 	    value: function getImgStyle(show, props) {
 	      props = props || this.props;
-	
+
 	      var _props = props,
 	          width = _props.width,
 	          height = _props.height,
 	          containerWidth = _props.containerWidth,
 	          containerHeight = _props.containerHeight;
 	      var ratio = this.ratio;
-	
-	
+
+
 	      var newWidth = containerWidth * ratio;
 	      var newHeight = newWidth * height / width;
-	
+
 	      return {
 	        top: getZeroIfNaN((containerHeight - newHeight) / 2),
 	        left: getZeroIfNaN((containerWidth - newWidth) / 2),
@@ -1514,7 +1514,7 @@ require("source-map-support").install();
 	    key: 'startAnimation',
 	    value: function startAnimation() {
 	      this.ratio = END_RATIO;
-	
+
 	      this.setState({
 	        show: true,
 	        imgStyle: Object.assign({
@@ -1530,10 +1530,10 @@ require("source-map-support").install();
 	        src: this.state.start ? this.props.src : null });
 	    }
 	  }]);
-	
+
 	  return PerspectiveImg;
 	}(_react2.default.Component);
-	
+
 	PerspectiveImg.propTypes = {
 	  src: string.isRequired,
 	  width: number.isRequired,
@@ -1541,11 +1541,11 @@ require("source-map-support").install();
 	  containerWidth: number.isRequired,
 	  containerHeight: number.isRequired
 	};
-	
+
 	var style = {
 	  position: 'absolute'
 	};
-	
+
 	exports.default = PerspectiveImg;
 
 /***/ },
@@ -1553,54 +1553,54 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _reactDom = __webpack_require__(39);
-	
+
 	var _reactDom2 = _interopRequireDefault(_reactDom);
-	
+
 	var _reactRedux = __webpack_require__(30);
-	
+
 	var _markedChartjsBinding = __webpack_require__(19);
-	
+
 	var _CONSTANTS = __webpack_require__(12);
-	
+
 	var _CONSTANTS2 = _interopRequireDefault(_CONSTANTS);
-	
+
 	var _Disqus = __webpack_require__(40);
-	
+
 	var _Disqus2 = _interopRequireDefault(_Disqus);
-	
+
 	var _getPostUrl = __webpack_require__(42);
-	
+
 	var _getPostUrl2 = _interopRequireDefault(_getPostUrl);
-	
+
 	var _isBrowser = __webpack_require__(41);
-	
+
 	var _isBrowser2 = _interopRequireDefault(_isBrowser);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
+
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
+
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
+
 	var forEach = [].forEach;
-	
+
 	var string = _react2.default.PropTypes.string;
-	
-	
+
+
 	var CODEMIRROR_DEFAULT_CONFIG = {
 	  htmlMode: true,
 	  readOnly: true,
@@ -1609,13 +1609,13 @@ require("source-map-support").install();
 	  theme: 'monokai-sublime',
 	  tabSize: 2
 	};
-	
+
 	function getModeFromNode(codeDOMNode) {
 	  var lang = codeDOMNode.getAttribute('class');
 	  if (!lang) {
 	    return '';
 	  }
-	
+
 	  lang = lang.slice(lang.indexOf('lang-') + 5);
 	  switch (lang.toLowerCase()) {
 	    case 'js':
@@ -1628,46 +1628,46 @@ require("source-map-support").install();
 	      return '';
 	  }
 	}
-	
+
 	function htmlDecode(input) {
 	  var e = document.createElement('div');
 	  e.innerHTML = input;
 	  return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
 	}
-	
+
 	// TODO: avoid double highlight
 	function highlightCode(codeBlockArr) {
 	  if (!(0, _isBrowser2.default)() || codeBlockArr.length === 0) {
 	    return;
 	  }
-	
+
 	  forEach.call(codeBlockArr, function (codeDOM) {
 	    var config = Object.assign({}, CODEMIRROR_DEFAULT_CONFIG, {
 	      value: htmlDecode(codeDOM.innerHTML),
 	      mode: getModeFromNode(codeDOM)
 	    });
-	
+
 	    new CodeMirror(function (elt) {
 	      codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
 	    }, config);
 	  });
 	}
-	
+
 	var SimplePost = function (_React$Component) {
 	  _inherits(SimplePost, _React$Component);
-	
+
 	  function SimplePost() {
 	    _classCallCheck(this, SimplePost);
-	
+
 	    return _possibleConstructorReturn(this, (SimplePost.__proto__ || Object.getPrototypeOf(SimplePost)).apply(this, arguments));
 	  }
-	
+
 	  _createClass(SimplePost, [{
 	    key: 'render',
 	    value: function render() {
 	      var id = '' + _CONSTANTS2.default.DISQUS.ARTICLE_ID_PREFIX + this.props.title;
 	      var url = (0, _getPostUrl2.default)(this.props.fileName);
-	
+
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'blog-simple-post region' },
@@ -1681,16 +1681,16 @@ require("source-map-support").install();
 	      );
 	    }
 	  }]);
-	
+
 	  return SimplePost;
 	}(_react2.default.Component);
-	
+
 	SimplePost.propTypes = {
 	  title: string,
 	  fileName: string,
 	  htmlContent: string
 	};
-	
+
 	var MarkedContent = _react2.default.createClass({
 	  componentDidMount: function componentDidMount() {
 	    this.highlightCodes();
@@ -1708,23 +1708,23 @@ require("source-map-support").install();
 	    return _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: this.props.children.toString() } });
 	  }
 	});
-	
+
 	function select(state) {
 	  var _state$post = state.post,
 	      title = _state$post.title,
 	      htmlContent = _state$post.htmlContent,
 	      fileName = _state$post.fileName;
-	
-	
+
+
 	  return {
 	    title: title,
 	    fileName: fileName,
 	    htmlContent: htmlContent
 	  };
 	}
-	
+
 	var ConnectedSimplePost = (0, _reactRedux.connect)(select)(SimplePost);
-	
+
 	exports.default = ConnectedSimplePost;
 
 /***/ },
@@ -1738,28 +1738,28 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _CONSTANTS = __webpack_require__(12);
-	
+
 	var _CONSTANTS2 = _interopRequireDefault(_CONSTANTS);
-	
+
 	var _isBrowser = __webpack_require__(41);
-	
+
 	var _isBrowser2 = _interopRequireDefault(_isBrowser);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	var string = _react2.default.PropTypes.string;
-	
-	
+
+
 	var Disqus = _react2.default.createClass({
 	  propTypes: {
 	    initialIdentifier: string,
@@ -1775,7 +1775,7 @@ require("source-map-support").install();
 	  },
 	  componentDidMount: function componentDidMount() {
 	    this.requireInit();
-	
+
 	    // if(window.DISQUS){
 	    //   this.configInit();
 	    // }else{
@@ -1786,13 +1786,13 @@ require("source-map-support").install();
 	    if (!(0, _isBrowser2.default)()) {
 	      return;
 	    }
-	
+
 	    // jscs:disable
 	    window.disqus_shortname = _CONSTANTS2.default.DISQUS.SHORT_NAME;
 	    window.disqus_identifier = this.props.initialIdentifier;
 	    window.disqus_title = this.props.initialTitle;
 	    window.disqus_url = this.props.initialUrl;
-	
+
 	    (function () {
 	      var dsq = document.createElement('script');
 	      dsq.type = 'text/javascript';
@@ -1800,11 +1800,11 @@ require("source-map-support").install();
 	      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
 	      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 	    })();
-	
+
 	    // jscs:enable
 	  },
-	
-	
+
+
 	  // configInit(){
 	  //   window.DISQUS.reset({
 	  //     reload: true,
@@ -1865,7 +1865,7 @@ require("source-map-support").install();
 	    return _react2.default.createElement('div', { className: 'blog-disqus', id: 'disqus_thread' });
 	  }
 	});
-	
+
 	exports.default = Disqus;
 
 /***/ },
@@ -1873,14 +1873,14 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	function isBrowser() {
 	  return typeof window !== 'undefined';
 	}
-	
+
 	exports.default = isBrowser;
 
 /***/ },
@@ -1888,22 +1888,22 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = getPostUrl;
-	
+
 	var _CONSTANTS = __webpack_require__(12);
-	
+
 	var _CONSTANTS2 = _interopRequireDefault(_CONSTANTS);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	var ORIGIN = _CONSTANTS2.default.BLOG.ORIGIN;
-	
+
 	// TODO: it wold be pain when we change url
-	
+
 	function getPostUrl(fileName) {
 	  return ORIGIN + '/post/' + fileName;
 	}
@@ -1913,29 +1913,29 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	var _reactDom = __webpack_require__(39);
-	
+
 	var _reactDom2 = _interopRequireDefault(_reactDom);
-	
+
 	var _posts = __webpack_require__(13);
-	
+
 	var _posts2 = _interopRequireDefault(_posts);
-	
+
 	var _Disqus = __webpack_require__(40);
-	
+
 	var _Disqus2 = _interopRequireDefault(_Disqus);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	var SimpleList = _react2.default.createClass({
 	  render: function render() {
 	    return _react2.default.createElement(
@@ -1971,7 +1971,7 @@ require("source-map-support").install();
 	    );
 	  }
 	});
-	
+
 	exports.default = SimpleList;
 
 /***/ },
@@ -1979,31 +1979,74 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _react = __webpack_require__(28);
-	
+
 	var _react2 = _interopRequireDefault(_react);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	var LIST_STYLE = {
 	  listStyle: 'inherit'
 	};
 	var IMG_STYLE = { marginTop: 20 };
-	
+
 	var JLPT_WIKI_URL = 'https://ja.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E8%AA%9E%E8%83%BD%E5%8A%9B%E8%A9%A6%E9%A8%93';
 	var ATOLS_YOUTUBE_URL = 'https://www.youtube.com/user/gridm7';
 	var D3_GALLERY_SRC = 'https://camo.githubusercontent.com/3bd164ff8c1d4b3b934b624016211f8ae6487422/687474703a2f2f626c2e6f636b732e6f72672f6f7979642f7261772f38353966616663383132323937376133616664362f7468756d626e61696c2e706e67';
 	var SSJS = 'https://github.com/oyyd/shadowsocks-js';
-	
+
 	function About() {
 	  return _react2.default.createElement(
 	    'div',
 	    null,
+	    _react2.default.createElement(
+	      'div',
+	      { className: 'region' },
+	      _react2.default.createElement(
+	        'h2',
+	        { className: 'mdl-typography--display-1' },
+	        'About oyyd.blog'
+	      ),
+	      _react2.default.createElement(
+	        'p',
+	        null,
+	        'features'
+	      ),
+	      _react2.default.createElement(
+	        'ul',
+	        null,
+	        _react2.default.createElement(
+	          'li',
+	          null,
+	          'ES6 + async await + SourceMap'
+	        ),
+	        _react2.default.createElement(
+	          'li',
+	          null,
+	          'Flexibility > Performance'
+	        ),
+	        _react2.default.createElement(
+	          'li',
+	          null,
+	          'Server Side Rendering'
+	        ),
+	        _react2.default.createElement(
+	          'li',
+	          null,
+	          'Avoid Heavy Usage of Preprocessing'
+	        ),
+	        _react2.default.createElement(
+	          'li',
+	          null,
+	          'HMR(failed at react router)'
+	        )
+	      )
+	    ),
 	    _react2.default.createElement(
 	      'div',
 	      { className: 'region' },
@@ -2044,13 +2087,7 @@ require("source-map-support").install();
 	        _react2.default.createElement(
 	          'li',
 	          null,
-	          '\u542C\u5F88\u591Avocaloid\u76F8\u5173\u7684\u97F3\u4E50\uFF08',
-	          _react2.default.createElement(
-	            'a',
-	            { href: ATOLS_YOUTUBE_URL, target: '_blank' },
-	            'ATOLS'
-	          ),
-	          '\uFF09\u3002'
+	          '\u542C\u5F88\u591Avocaloid\u76F8\u5173\u7684\u97F3\u4E50\u3002'
 	        ),
 	        _react2.default.createElement(
 	          'li',
@@ -2136,9 +2173,9 @@ require("source-map-support").install();
 	    )
 	  );
 	}
-	
+
 	About.title = 'oyyd-blog - 关于我';
-	
+
 	exports.default = About;
 
 /***/ },
@@ -2152,51 +2189,51 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.default = createStore;
-	
+
 	var _redux = __webpack_require__(47);
-	
+
 	var _reactRouterRedux = __webpack_require__(48);
-	
+
 	var _reactRouter = __webpack_require__(45);
-	
+
 	var _reducer = __webpack_require__(49);
-	
+
 	var _reducer2 = _interopRequireDefault(_reducer);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function createReducer(post) {
 	  return (0, _redux.combineReducers)({
 	    routing: _reactRouterRedux.routeReducer,
 	    post: post
 	  });
 	}
-	
+
 	// reducers
 	function createStore(initialState, url, shouldPatch) {
 	  var reducers = createReducer(_reducer2.default);
-	
+
 	  var history = typeof url !== 'string' ? _reactRouter.browserHistory : (0, _reactRouter.createMemoryHistory)(url);
 	  var reduxRouterMiddleware = (0, _reactRouterRedux.syncHistory)(history);
 	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(reduxRouterMiddleware)(_redux.createStore);
-	
+
 	  var store = createStoreWithMiddleware(reducers, initialState);
-	
+
 	  if (false) {
 	    module.hot.accept('./post/reducer', function () {
 	      // eslint-disable-next-line
 	      var postReducer = require('./post/reducer');
 	      var nextRootReducer = createReducer(postReducer);
-	
+
 	      store.replaceReducer(nextRootReducer);
 	    });
 	  }
-	
+
 	  return store;
 	}
 
@@ -2217,7 +2254,7 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -2226,11 +2263,11 @@ require("source-map-support").install();
 	  fileName: null,
 	  htmlContent: null
 	};
-	
+
 	function reducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialPost;
 	  var action = arguments[1];
-	
+
 	  switch (action.type) {
 	    case 'POST_INIT':
 	      return {
@@ -2242,7 +2279,7 @@ require("source-map-support").install();
 	      return state;
 	  };
 	}
-	
+
 	exports.default = reducer;
 
 /***/ },
@@ -2250,7 +2287,7 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -2269,14 +2306,14 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	function escapeJSONString(string) {
 	  return string.replace(/[\\]/g, '\\\\').replace(/[\"]/g, '\\\"').replace(/[\/]/g, '\\/').replace(/[\b]/g, '\\b').replace(/[\f]/g, '\\f').replace(/[\n]/g, '\\n').replace(/[\r]/g, '\\r').replace(/[\t]/g, '\\t');
 	}
-	
+
 	exports.default = escapeJSONString;
 
 /***/ },
@@ -2284,31 +2321,31 @@ require("source-map-support").install();
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
+
 	var _createHead = __webpack_require__(53);
-	
+
 	var _createHead2 = _interopRequireDefault(_createHead);
-	
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
+
 	function createPage(ctx) {
 	  var content = ctx.content;
 	  var title = ctx.title,
 	      description = ctx.description,
 	      initialState = ctx.initialState;
-	
-	
+
+
 	  title = title || 'oyyd blog';
 	  description = description || '这是亚东的博客，你可以在上面看到我的一些想法和实践，欢迎来访。';
 	  initialState = initialState || 'null';
-	
+
 	  return '<!DOCTYPE html>\n    <html>\n      ' + (0, _createHead2.default)({ title: title, description: description }) + '\n      <body>\n        <div id="main">' + content + '</div>\n        <script>\n          window.__INITIAL_STATE__ = JSON.parse("' + initialState + '");\n        </script>\n        <script src="/static_lib/codemirror/codemirror.js"></script>\n        <script src="/static_lib/codemirror/mode/javascript/javascript.js"></script>\n        <script src="/static_lib/codemirror/mode/xml/xml.js"></script>\n        <script src="/dist/browser_bundle.js"></script>\n        <script>\n          (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){\n          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n          })(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');\n\n          ga(\'create\', \'UA-70462946-1\', \'auto\');\n          ga(\'send\', \'pageview\');\n        </script>\n      </body>\n    </html>';
 	}
-	
+
 	exports.default = createPage;
 
 /***/ },
@@ -2316,20 +2353,19 @@ require("source-map-support").install();
 /***/ function(module, exports) {
 
 	"use strict";
-	
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	function createHead(ctx) {
 	  var title = ctx.title,
 	      description = ctx.description;
-	
-	
+
+
 	  return "<head>\n      <title>" + title + "</title>\n      <meta name=\"description\" content=\"" + description + "\"/>\n      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n      <link rel=\"shortcut icon\" href=\"/static/favicon.ico\" />\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/codemirror.css\"/>\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/theme/monokai-sublime.css\"/>\n      <link rel=\"stylesheet\" href=\"/dist/style.css\"/>\n    </head>";
 	}
-	
+
 	exports.default = createHead;
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=server_bundle.js.map
