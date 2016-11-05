@@ -646,38 +646,24 @@ require("source-map-support").install();
 	  value: true
 	});
 	exports.default = apply;
-
-	var _webpackDevMiddleware = __webpack_require__(21);
-
-	var _webpackDevMiddleware2 = _interopRequireDefault(_webpackDevMiddleware);
-
-	var _webpackHotMiddleware = __webpack_require__(22);
-
-	var _webpackHotMiddleware2 = _interopRequireDefault(_webpackHotMiddleware);
-
-	var _browser = __webpack_require__(23);
-
-	var _browser2 = _interopRequireDefault(_browser);
-
-	var _webpack = __webpack_require__(24);
-
-	var _webpack2 = _interopRequireDefault(_webpack);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	function apply(app) {
 	  if (true) {
 	    return;
 	  }
 
-	  var compiler = (0, _webpack2.default)(_browser2.default);
+	  var webpackMiddleware = __webpack_require__(21);
+	  var webpackHotMiddleware = __webpack_require__(22);
+	  var browserDEVConfig = __webpack_require__(23);
+	  var webpack = __webpack_require__(24);
 
-	  app.use((0, _webpackDevMiddleware2.default)(compiler, {
-	    publicPath: _browser2.default.output.publicPath,
+	  var compiler = webpack(browserDEVConfig);
+
+	  app.use(webpackMiddleware(compiler, {
+	    publicPath: browserDEVConfig.output.publicPath,
 	    log: function log() {}
 	  }));
 
-	  app.use((0, _webpackHotMiddleware2.default)(compiler));
+	  app.use(webpackHotMiddleware(compiler));
 	}
 
 /***/ },
