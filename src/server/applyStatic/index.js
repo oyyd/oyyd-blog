@@ -17,10 +17,10 @@ function applyPath(app, path) {
 
 async function applyStatic(app) {
   const sitemap = await getSiteMap();
-  const feeds = getFeeds();
+  const feed = getFeeds();
 
   const xmlList = {
-    sitemap, feeds,
+    sitemap, feed,
   };
 
   // show the ownership to google webmaster tools

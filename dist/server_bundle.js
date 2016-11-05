@@ -195,7 +195,7 @@ require("source-map-support").install();
 
 	var applyStatic = function () {
 	  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(app) {
-	    var sitemap, feeds, xmlList;
+	    var sitemap, feed, xmlList;
 	    return regeneratorRuntime.wrap(function _callee$(_context) {
 	      while (1) {
 	        switch (_context.prev = _context.next) {
@@ -205,9 +205,9 @@ require("source-map-support").install();
 
 	          case 2:
 	            sitemap = _context.sent;
-	            feeds = (0, _getFeeds2.default)();
+	            feed = (0, _getFeeds2.default)();
 	            xmlList = {
-	              sitemap: sitemap, feeds: feeds
+	              sitemap: sitemap, feed: feed
 	            };
 
 	            // show the ownership to google webmaster tools
