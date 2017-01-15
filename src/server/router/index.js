@@ -13,6 +13,7 @@ const renderPage = page.bind(null, response, true);
 const router = new express.Router();
 
 router.get('/post/:name', renderPost);
+
 router.use(renderPage);
 
 export default router;

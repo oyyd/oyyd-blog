@@ -398,6 +398,7 @@ require("source-map-support").install();
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	/* eslint-disable */
 	exports.default = [{
 	  fileName: 'what_does_jest_solve',
 	  title: '用jest进一步简化测试',
@@ -763,6 +764,7 @@ require("source-map-support").install();
 	var router = new _express2.default.Router();
 
 	router.get('/post/:name', renderPost);
+
 	router.use(renderPage);
 
 	exports.default = router;
@@ -2348,7 +2350,7 @@ require("source-map-support").install();
 	      description = ctx.description;
 
 
-	  return "<head>\n      <title>" + title + "</title>\n      <meta name=\"description\" content=\"" + description + "\"/>\n      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n      <link rel=\"shortcut icon\" href=\"/static/favicon.ico\" />\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/codemirror.css\"/>\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/theme/monokai-sublime.css\"/>\n      <link rel=\"stylesheet\" href=\"/dist/style.css\"/>\n    </head>";
+	  return "<head>\n      <title>" + title + "</title>\n      <meta name=\"description\" content=\"" + description + "\"/>\n      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n      <link rel=\"shortcut icon\" href=\"/static/favicon.ico\" />\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/codemirror.css\"/>\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/theme/monokai-sublime.css\"/>\n      <link rel=\"stylesheet\" href=\"/dist/style.css\"/>\n    </head>";
 	}
 
 	exports.default = createHead;
