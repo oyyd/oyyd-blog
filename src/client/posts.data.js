@@ -1,5 +1,10 @@
 /* eslint-disable */
 export default [{
+  fileName: 'explore_code_reloading_in_server_side',
+  title: '在redux上探索前后端一体的热替换体验',
+  publicDate: '2017年01月15日',
+  description: '熟悉react开发的人，或多或少会多听过甚至尝试过react-hot-loader，并为之眼前一亮。现在让我们放眼前后端开发，假如我们在同时进行前后端的代码开发，我们有没有可能能够不刷新页面呢？',
+}, {
   fileName: 'what_does_jest_solve',
   title: '用jest进一步简化测试',
   publicDate: '2016年10月24日',
