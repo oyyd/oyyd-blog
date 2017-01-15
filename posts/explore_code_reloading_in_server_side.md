@@ -1,5 +1,7 @@
 # 在redux上探索前后端一体的热替换体验
 
+$publicdate(2017年01月15日)
+
 ## 从react-hot-loader开始说起
 
 熟悉react开发的人，或多或少会多听过甚至尝试过[react-hot-loader](https://github.com/gaearon/react-hot-loader)，并为之眼前一亮。在多加探索一下，便会发现lisp/clojurescript和[lein-figwheel](https://github.com/bhauman/lein-figwheel)。更准确的说，软件上的[hot swapping](https://en.wikipedia.org/wiki/Hot_swapping)本身也不是新概念。
