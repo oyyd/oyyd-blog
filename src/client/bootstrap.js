@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Router, browserHistory } from 'react-router';
-import { generateRouter, generateRoutes as _generateRoutes } from './generateRoutes';
+import { generateRoutes as _generateRoutes } from './generateRoutes';
 import createAppStore from './state/createStore';
 import './simple-style.less';
 
@@ -54,6 +54,7 @@ function generateRoutes() {
 export default function renderApp() {
   // NOTE: hack跳过一致性判断
   const routes = generateRoutes();
+  // eslint-disable-next-line
   const store = createStore(window.__INITIAL_STATE__);
 
   // if (module.hot && module.hot.data && module.hot.data.notFirstTime) {
@@ -64,13 +65,15 @@ export default function renderApp() {
   // }
 
   const router = (
-    <Router history={browserHistory} routes={routes}></Router>
+    <Router history={browserHistory} routes={routes} />
   );
 
 
   if (module.hot) {
     module.hot.dispose((data) => {
+      // eslint-disable-next-line
       data.store = store;
+      // eslint-disable-next-line
       data.routes = routes;
     });
   }
@@ -87,6 +90,7 @@ if (module.hot) {
   module.hot.accept();
 
   module.hot.dispose((data) => {
+    // eslint-disable-next-line
     data.notFirstTime = true;
   });
 }

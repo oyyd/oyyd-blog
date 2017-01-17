@@ -401,7 +401,7 @@ require("source-map-support").install();
 	/* eslint-disable */
 	exports.default = [{
 	  fileName: 'explore_code_reloading_in_server_side',
-	  title: '在redux上探索前后端一体的热替换体验',
+	  title: '在redux上探索无需刷新前端页面的后端开发体验',
 	  publicDate: '2017年01月15日',
 	  description: '熟悉react开发的人，或多或少会多听过甚至尝试过react-hot-loader，并为之眼前一亮。现在让我们放眼前后端开发，假如我们在同时进行前后端的代码开发，我们有没有可能能够不刷新页面呢？'
 	}, {
@@ -1127,7 +1127,8 @@ require("source-map-support").install();
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable */
+
 
 	var SimpleApp = function (_Component) {
 	  _inherits(SimpleApp, _Component);
@@ -1587,7 +1588,8 @@ require("source-map-support").install();
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global CodeMirror */
+
 
 	var forEach = [].forEach;
 
@@ -1640,19 +1642,68 @@ require("source-map-support").install();
 	      mode: getModeFromNode(codeDOM)
 	    });
 
+	    // eslint-disable-next-line
 	    new CodeMirror(function (elt) {
 	      codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
 	    }, config);
 	  });
 	}
 
+	// eslint-disable-next-line
+	var MarkedContent = _react2.default.createClass({
+	  componentDidMount: function componentDidMount() {
+	    this.highlightCodes();
+	    this.wrapImgs();
+	    (0, _markedChartjsBinding.renderCharts)();
+	  },
+	  componentDidUpdate: function componentDidUpdate() {
+	    this.highlightCodes();
+	    (0, _markedChartjsBinding.renderCharts)();
+	  },
+	  highlightCodes: function highlightCodes() {
+	    // eslint-disable-next-line
+	    var codes = _reactDom2.default.findDOMNode(this).querySelectorAll('pre code');
+	    highlightCode(codes);
+	  },
+	  wrapImgs: function wrapImgs() {
+	    // eslint-disable-next-line
+	    var imgs = _reactDom2.default.findDOMNode(this).querySelectorAll('img');
+
+	    if (!(0, _isBrowser2.default)() || imgs.length === 0) {
+	      return;
+	    }
+
+	    imgs.forEach(function (imgEle) {
+	      var src = imgEle.getAttribute('src');
+	      var parentNode = imgEle.parentNode;
+
+
+	      var aEle = document.createElement('a');
+
+	      aEle.setAttribute('href', src);
+	      aEle.setAttribute('target', '_blank');
+
+	      parentNode.replaceChild(aEle, imgEle);
+
+	      aEle.appendChild(imgEle);
+	    });
+	  },
+	  render: function render() {
+	    // eslint-disable-next-line
+	    return _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: this.props.children.toString() } });
+	  }
+	});
+
+	// eslint-disable-next-line
+
 	var SimplePost = function (_React$Component) {
 	  _inherits(SimplePost, _React$Component);
 
-	  function SimplePost() {
+	  // eslint-disable-next-line
+	  function SimplePost(props) {
 	    _classCallCheck(this, SimplePost);
 
-	    return _possibleConstructorReturn(this, (SimplePost.__proto__ || Object.getPrototypeOf(SimplePost)).apply(this, arguments));
+	    return _possibleConstructorReturn(this, (SimplePost.__proto__ || Object.getPrototypeOf(SimplePost)).call(this, props));
 	  }
 
 	  _createClass(SimplePost, [{
@@ -1669,8 +1720,10 @@ require("source-map-support").install();
 	          null,
 	          this.props.htmlContent
 	        ),
-	        _react2.default.createElement(_Disqus2.default, { initialIdentifier: id,
-	          initialTitle: this.props.title, initialUrl: url })
+	        _react2.default.createElement(_Disqus2.default, {
+	          initialIdentifier: id,
+	          initialTitle: this.props.title, initialUrl: url
+	        })
 	      );
 	    }
 	  }]);
@@ -1683,24 +1736,6 @@ require("source-map-support").install();
 	  fileName: string,
 	  htmlContent: string
 	};
-
-	var MarkedContent = _react2.default.createClass({
-	  componentDidMount: function componentDidMount() {
-	    this.highlightCodes();
-	    (0, _markedChartjsBinding.renderCharts)();
-	  },
-	  componentDidUpdate: function componentDidUpdate() {
-	    this.highlightCodes();
-	    (0, _markedChartjsBinding.renderCharts)();
-	  },
-	  highlightCodes: function highlightCodes() {
-	    var codes = _reactDom2.default.findDOMNode(this).querySelectorAll('pre code');
-	    highlightCode(codes);
-	  },
-	  render: function render() {
-	    return _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: this.props.children.toString() } });
-	  }
-	});
 
 	function select(state) {
 	  var _state$post = state.post,

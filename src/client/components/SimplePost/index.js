@@ -1,3 +1,4 @@
+/* global CodeMirror */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
@@ -41,7 +42,7 @@ function getModeFromNode(codeDOMNode) {
 }
 
 function htmlDecode(input) {
-  var e = document.createElement('div');
+  const e = document.createElement('div');
   e.innerHTML = input;
   return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
 }
@@ -52,28 +53,87 @@ function highlightCode(codeBlockArr) {
     return;
   }
 
-  forEach.call(codeBlockArr, codeDOM => {
+  forEach.call(codeBlockArr, (codeDOM) => {
     const config = Object.assign({}, CODEMIRROR_DEFAULT_CONFIG, {
       value: htmlDecode(codeDOM.innerHTML),
       mode: getModeFromNode(codeDOM),
     });
 
+    // eslint-disable-next-line
     new CodeMirror((elt) => {
       codeDOM.parentNode.parentNode.replaceChild(elt, codeDOM.parentNode);
     }, config);
   });
 }
 
+// eslint-disable-next-line
+const MarkedContent = React.createClass({
+  componentDidMount() {
+    this.highlightCodes();
+    this.wrapImgs();
+    renderCharts();
+  },
+
+  componentDidUpdate() {
+    this.highlightCodes();
+    renderCharts();
+  },
+
+  highlightCodes() {
+    // eslint-disable-next-line
+    const codes = ReactDOM.findDOMNode(this).querySelectorAll('pre code');
+    highlightCode(codes);
+  },
+
+  wrapImgs() {
+    // eslint-disable-next-line
+    const imgs = ReactDOM.findDOMNode(this).querySelectorAll('img');
+
+    if (!isBrowser() || imgs.length === 0) {
+      return;
+    }
+
+    imgs.forEach((imgEle) => {
+      const src = imgEle.getAttribute('src');
+      const { parentNode } = imgEle;
+
+      const aEle = document.createElement('a');
+
+      aEle.setAttribute('href', src);
+      aEle.setAttribute('target', '_blank');
+
+      parentNode.replaceChild(aEle, imgEle);
+
+      aEle.appendChild(imgEle);
+    });
+  },
+
+  render() {
+    // eslint-disable-next-line
+    return <div dangerouslySetInnerHTML={{ __html: this.props.children.toString() }} />;
+  },
+});
+
+// eslint-disable-next-line
 class SimplePost extends React.Component {
+  // eslint-disable-next-line
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     const id = `${CONSTANTS.DISQUS.ARTICLE_ID_PREFIX}${this.props.title}`;
     const url = getPostUrl(this.props.fileName);
 
     return (
-      <div className='blog-simple-post region'>
-        <MarkedContent>{this.props.htmlContent}</MarkedContent>
-        <Disqus initialIdentifier={id}
-          initialTitle={this.props.title} initialUrl={url}/>
+      <div className="blog-simple-post region">
+        <MarkedContent>
+          {this.props.htmlContent}
+        </MarkedContent>
+        <Disqus
+          initialIdentifier={id}
+          initialTitle={this.props.title} initialUrl={url}
+        />
       </div>
     );
   }
@@ -85,31 +145,8 @@ SimplePost.propTypes = {
   htmlContent: string,
 };
 
-const MarkedContent = React.createClass({
-  componentDidMount() {
-    this.highlightCodes();
-    renderCharts();
-  },
-
-  componentDidUpdate() {
-    this.highlightCodes();
-    renderCharts();
-  },
-
-  highlightCodes() {
-    let codes = ReactDOM.findDOMNode(this).querySelectorAll('pre code');
-    highlightCode(codes);
-  },
-
-  render() {
-    return (
-      <div dangerouslySetInnerHTML={{__html: this.props.children.toString()}} />
-    );
-  },
-});
-
 function select(state) {
-  const {title, htmlContent, fileName} = state.post;
+  const { title, htmlContent, fileName } = state.post;
 
   return {
     title,
