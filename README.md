@@ -25,19 +25,13 @@ npm run watch
 
 ###Commands
 
-Release:
+Build:
 
 ```
-npm run release
+npm run build
 ```
 
-Start local server:
-
-```
-npm run start:single
-```
-
-Start production server(need pm2):
+Start server:
 
 ```
 npm run start
