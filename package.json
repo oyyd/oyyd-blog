@@ -6,9 +6,7 @@
   "scripts": {
     "build": "gulp build",
     "watch": "gulp backend-watch && npm run dev",
-    "dev": "node dist/server_bundle dev",
-    "start": "node dist/server_bundle",
-    "start:server": "node dist/server_bundle"
+    "start": "node dist/server_bundle"
   },
   "author": "oyyd",
   "license": "MIT",
