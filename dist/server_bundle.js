@@ -73,6 +73,9 @@ require("source-map-support").install();
 
 	          case 2:
 
+	            // hsts
+	            applyHSTS(app);
+
 	            // page router
 	            app.use('/', _router2.default);
 
@@ -85,7 +88,7 @@ require("source-map-support").install();
 
 	            console.log('server running on ' + port); // eslint-disable-line
 
-	          case 7:
+	          case 8:
 	          case 'end':
 	            return _context.stop();
 	        }
@@ -120,6 +123,17 @@ require("source-map-support").install();
 
 	var port = 8001;
 	var app = (0, _express2.default)();
+
+	function applyHSTS(application) {
+	  if (false) {
+	    return;
+	  }
+
+	  application.use('/', function (req, res, next) {
+	    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+	    return next();
+	  });
+	}
 
 	main().catch(function (err) {
 	  setTimeout(function () {
@@ -2352,7 +2366,7 @@ require("source-map-support").install();
 	      description = ctx.description;
 
 
-	  return "<head>\n      <title>" + title + "</title>\n      <meta name=\"description\" content=\"" + description + "\"/>\n      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n      <link rel=\"shortcut icon\" href=\"/static/favicon.ico\" />\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/codemirror.css\"/>\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/theme/monokai-sublime.css\"/>\n      <link rel=\"stylesheet\" href=\"/dist/style.css\"/>\n    </head>";
+	  return "<head>\n      <title>" + title + "</title>\n      <meta name=\"description\" content=\"" + description + "\"/>\n      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n      <link rel=\"shortcut icon\" href=\"/static/favicon.ico\" />\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/codemirror.css\"/>\n      <link rel=\"stylesheet\" href=\"/static_lib/codemirror/theme/monokai-sublime.css\"/>\n      <link rel=\"stylesheet\" href=\"/dist/style.css\"/>\n      <script type='text/javascript'>\n        var _vds = _vds || [];\n        window._vds = _vds;\n        (function(){\n          _vds.push(['setAccountId', 'b8dcd99e6c38d0d9']);\n          (function() {\n            var vds = document.createElement('script');\n            vds.type='text/javascript';\n            vds.async = true;\n            vds.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'dn-growing.qbox.me/vds.js';\n            var s = document.getElementsByTagName('script')[0];\n            s.parentNode.insertBefore(vds, s);\n          })();\n        })();\n      </script>\n    </head>";
 	}
 
 	exports.default = createHead;
